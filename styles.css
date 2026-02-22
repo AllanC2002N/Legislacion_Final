@@ -536,3 +536,36 @@ body {
     background-color: #e2e8f0;
     color: var(--blue-acc);
 }
+/* ---- Botón de Descarga Excel ---- */
+.download-section {
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    justify-content: center; /* Centra el botón */
+}
+
+.download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: var(--blue-acc); /* Azul principal */
+    color: white;
+    text-decoration: none;
+    padding: 10px 24px;
+    border-radius: 50px; /* Le da forma de pastilla redondeada */
+    font-weight: 700;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(2, 132, 199, 0.2);
+}
+
+.download-btn:hover {
+    background-color: #0369a1; /* Azul más oscuro al pasar el mouse */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(2, 132, 199, 0.3);
+}
+
+/* Previene que el SVG se deforme */
+.download-btn svg {
+    flex-shrink: 0;
+}
