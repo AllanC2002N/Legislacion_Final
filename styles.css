@@ -1,0 +1,536 @@
+/* ---- Reset y variables de diseño ---- */
+:root {
+    --bg-color: #f8fafc;
+    --card-bg: #ffffff;
+    --primary-text: #334155;
+    --secondary-text: #64748b;
+    --border-color: #e2e8f0;
+    
+    /* --- ESCALA DE 4 AZULES FRÍOS --- */
+    /* 1. Azul Claro (Cielo) - EDGI */
+    --blue-edgi: #38bdf8;
+    --blue-edgi-light: #e0f2fe;
+    
+    /* 2. Azul Medio (Estándar) - ACC */
+    --blue-acc:  #0284c7;
+    --blue-acc-light: #e0f8ff;
+
+    /* 3. Azul Índigo (Profundo) - ECO */
+    --blue-eco:  #6366f1;
+    --blue-eco-light: #eef2ff;
+
+    /* 4. Azul Petróleo (Teal/Verdoso) - PAY */
+    --blue-pay:  #0d9488;
+    --blue-pay-light: #ccfbf1;
+
+    /* Color genérico para sombras */
+    --hover-shadow-generic: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--primary-text);
+    line-height: 1.6;
+}
+
+/* ---- Navegación ---- */
+.navbar {
+    background-color: var(--card-bg);
+    padding: 1rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.nav-brand {
+    font-weight: 800;
+    font-size: 1.4rem;
+    letter-spacing: -0.5px;
+    color: var(--primary-text);
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 10px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--secondary-text);
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.nav-links a:hover, .nav-links a.active {
+    background-color: var(--border-color);
+    color: var(--primary-text);
+}
+
+/* ---- Contenedor Principal ---- */
+.container {
+    max-width: 1100px;
+    margin: 3rem auto;
+    padding: 0 1.5rem;
+}
+
+/* ---- Indicador Principal ---- */
+.main-indicator-card {
+    background-color: var(--card-bg);
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    text-align: center;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    margin-bottom: 3rem;
+    border: 1px solid var(--border-color);
+}
+
+.indicator-header h2 {
+    font-size: 3rem;
+    font-weight: 900;
+    letter-spacing: -1.5px;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+    color: var(--primary-text);
+}
+
+.subtitle {
+    color: var(--secondary-text);
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.main-value-display {
+    font-size: 5rem;
+    font-weight: 900;
+    color: var(--blue-acc); /* Usamos el azul medio como principal */
+    margin: 1.5rem 0 1rem 0;
+    line-height: 1;
+    letter-spacing: -2px;
+}
+
+.unit {
+    font-size: 1.5rem;
+    color: var(--secondary-text);
+    font-weight: 600;
+    margin-left: 0.5rem;
+}
+
+/* Fórmula del Indicador Principal */
+.main-formula {
+    background-color: #f8fafc;
+    display: inline-block;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 0.95rem;
+    color: var(--secondary-text);
+    margin-bottom: 0.5rem;
+    border: 1px solid var(--border-color);
+}
+
+.main-formula strong {
+    color: var(--primary-text);
+    font-weight: 700;
+}
+
+/* Selector de Años */
+.year-selector {
+    display: flex;
+    justify-content: center;
+    gap: 0.8rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+}
+
+.year-btn {
+    padding: 0.6rem 1.8rem;
+    border: 2px solid var(--border-color);
+    background-color: transparent;
+    color: var(--secondary-text);
+    cursor: pointer;
+    border-radius: 50px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    transition: all 0.2s ease;
+}
+
+.year-btn:hover {
+    border-color: var(--blue-acc);
+    color: var(--blue-acc);
+    background-color: var(--blue-acc-light);
+}
+
+.year-btn.active {
+    background-color: var(--blue-acc);
+    color: white;
+    border-color: var(--blue-acc);
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+}
+
+/* ---- Grilla de Sub-indicadores (2x2) ---- */
+.sub-indicators-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 2rem;
+    margin-bottom: 4rem;
+}
+
+@media (max-width: 768px) {
+    .sub-indicators-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.card {
+    background-color: var(--card-bg);
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+}
+
+.card:hover {
+    box-shadow: var(--hover-shadow-generic);
+    transform: translateY(-4px);
+}
+
+/* --- Personalización por Tarjeta (Escala de Azules) --- */
+
+/* EDGI - Azul Claro */
+.edgi-card { border-top: 4px solid var(--blue-edgi); }
+.edgi-card:hover { border-color: var(--blue-edgi); box-shadow: 0 10px 25px rgba(56, 189, 248, 0.15); }
+.edgi-card .icon { background-color: var(--blue-edgi-light); color: var(--blue-edgi); }
+.edgi-card .weight-badge { background-color: var(--blue-edgi-light); color: var(--blue-edgi); }
+
+/* ACC - Azul Medio */
+.acc-card { border-top: 4px solid var(--blue-acc); }
+.acc-card:hover { border-color: var(--blue-acc); box-shadow: 0 10px 25px rgba(2, 132, 199, 0.15); }
+.acc-card .icon { background-color: var(--blue-acc-light); color: var(--blue-acc); }
+.acc-card .weight-badge { background-color: var(--blue-acc-light); color: var(--blue-acc); }
+
+/* ECO - Azul Índigo */
+.eco-card { border-top: 4px solid var(--blue-eco); }
+.eco-card:hover { border-color: var(--blue-eco); box-shadow: 0 10px 25px rgba(99, 102, 241, 0.15); }
+.eco-card .icon { background-color: var(--blue-eco-light); color: var(--blue-eco); }
+.eco-card .weight-badge { background-color: var(--blue-eco-light); color: var(--blue-eco); }
+
+/* PAY - Azul Petróleo */
+.pay-card { border-top: 4px solid var(--blue-pay); }
+.pay-card:hover { border-color: var(--blue-pay); box-shadow: 0 10px 25px rgba(13, 148, 136, 0.15); }
+.pay-card .icon { background-color: var(--blue-pay-light); color: var(--blue-pay); }
+.pay-card .weight-badge { background-color: var(--blue-pay-light); color: var(--blue-pay); }
+
+/* ---- Cabecera de Tarjeta e Íconos ---- */
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.title-with-icon {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+}
+
+.card-header h3 {
+    color: var(--primary-text);
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.weight-badge {
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 12px;
+    margin-left: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.expand-icon {
+    font-size: 1.5rem;
+    color: var(--border-color);
+    transition: all 0.3s ease;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: #f1f5f9;
+}
+
+.card:hover .expand-icon {
+    color: var(--secondary-text);
+}
+
+.card.expanded .expand-icon {
+    transform: rotate(45deg);
+    background-color: var(--secondary-text);
+    color: white;
+}
+
+/* ---- Gráficos Circulares (Donut Charts) ---- */
+.circular-chart-container {
+    display: flex;
+    justify-content: center;
+    margin: 1rem 0 2rem 0;
+}
+
+.circular-chart {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    background: conic-gradient(var(--blue-acc) 0%, #e2e8f0 0%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: background 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.inner-circle {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background-color: var(--card-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+}
+
+.card-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--primary-text);
+    margin: 0;
+    text-align: center;
+    line-height: 1;
+    letter-spacing: -1px;
+}
+
+/* ---- Fórmula y Textos ---- */
+.formula-box {
+    background-color: #f8fafc;
+    padding: 1rem;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    color: var(--secondary-text);
+    border: 1px solid var(--border-color);
+    line-height: 1.5;
+}
+
+.formula-box strong {
+    color: var(--primary-text);
+    display: block;
+    margin-bottom: 0.3rem;
+}
+
+/* Detalles expandibles (Acordeón) */
+.card-details {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s cubic-bezier(0, 1, 0, 1), opacity 0.4s ease;
+    opacity: 0;
+}
+
+.card.expanded .card-details {
+    max-height: 800px;
+    opacity: 1;
+    transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease 0.2s;
+}
+
+.details-content {
+    padding-top: 2rem;
+    margin-top: 1.5rem;
+    border-top: 1px dashed var(--border-color);
+}
+
+.details-content h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--primary-text);
+    margin-bottom: 0.8rem;
+    margin-top: 1.5rem;
+}
+
+.details-content h4:first-child {
+    margin-top: 0;
+}
+
+.details-content p {
+    font-size: 0.95rem;
+    color: var(--secondary-text);
+    margin-bottom: 1.2rem;
+    line-height: 1.7;
+}
+
+.method-text {
+    background-color: #f8fafc;
+    padding: 1.2rem;
+    border-radius: 12px;
+    border-left: 4px solid var(--secondary-text);
+    font-style: italic;
+    color: var(--primary-text);
+}
+
+.ref-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: var(--blue-acc);
+    text-decoration: none;
+    font-weight: 600;
+    background-color: var(--blue-acc-light);
+    padding: 0.8rem 1.2rem;
+    border-radius: 10px;
+    transition: all 0.2s;
+    margin-top: 0.5rem;
+}
+
+.ref-link:hover {
+    background-color: #bae6fd; 
+    transform: translateY(-2px);
+}
+/* ---- Estilos para el Desglose (Breakdown) ---- */
+
+.breakdown-details {
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.breakdown-details summary {
+    color: var(--blue-acc);
+    font-weight: 700;
+    cursor: pointer;
+    margin-bottom: 0.8rem;
+    list-style: none; /* Elimina la flecha por defecto */
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+}
+
+/* Flecha personalizada */
+.breakdown-details summary::before {
+    content: "▶";
+    font-size: 0.7rem;
+    transition: transform 0.2s ease;
+}
+
+.breakdown-details[open] summary::before {
+    transform: rotate(90deg);
+}
+
+.breakdown-details summary::-webkit-details-marker {
+    display: none; /* Para Safari */
+}
+
+.breakdown-box {
+    background-color: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+}
+
+.breakdown-formula-code {
+    font-family: 'Courier New', Courier, monospace;
+    color: #4f46e5; /* Morado estilo código */
+    background-color: #f5f3ff;
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-bottom: 1.2rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.breakdown-list {
+    list-style: none;
+    padding: 0;
+}
+
+.breakdown-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--border-color);
+    font-size: 0.9rem;
+}
+
+.breakdown-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.breakdown-label {
+    color: var(--secondary-text);
+}
+
+.breakdown-label strong {
+    color: var(--primary-text);
+}
+
+.breakdown-value-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.breakdown-extra {
+    font-size: 0.75rem;
+    color: var(--secondary-text);
+    font-style: italic;
+}
+
+.ref-btn {
+    background-color: #f1f5f9;
+    color: #64748b;
+    text-decoration: none;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    transition: all 0.2s ease;
+}
+
+.ref-btn:hover {
+    background-color: #e2e8f0;
+    color: var(--blue-acc);
+}

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tablero de Indicadores</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-brand">Dashboard Digital</div>
+        <ul class="nav-links">
+            <li><a href="#" class="active">Indicadores</a></li>
+            <li><a href="#">Línea de Tiempo</a></li>
+            <li><a href="#">Tarjeta Ciudad</a></li>
+            <li><a href="#">TUTI</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        
+        <section class="main-indicator-card">
+            <div class="indicator-header">
+                <h2>IND-DIG</h2>
+                <span class="subtitle">Índice de Digitalización General</span>
+            </div>
+            
+            <div class="main-value-display">
+                <span id="ind-dig-value">0.00</span>
+                <span class="unit">pts</span>
+            </div>
+
+            <div class="main-formula">
+                <strong>Fórmula:</strong> (0.25 × EDGI) + (0.25 × ACC) + (0.25 × ECO) + (0.25 × PAY)
+            </div>
+
+            <div class="year-selector">
+                <button class="year-btn" onclick="updateDashboard(2022)" id="btn-2022">2022</button>
+                <button class="year-btn" onclick="updateDashboard(2023)" id="btn-2023">2023</button>
+                <button class="year-btn" onclick="updateDashboard(2024)" id="btn-2024">2024</button>
+                <button class="year-btn" onclick="updateDashboard(2025)" id="btn-2025">2025</button>
+            </div>
+        </section>
+
+        <section class="sub-indicators-grid">
+            
+            <div class="card edgi-card" onclick="toggleDetails('edgi')" id="card-edgi">
+                <div class="card-header">
+                    <div class="title-with-icon">
+                        <span class="icon">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        </span>
+                        <h3>EDGI</h3>
+                        <span class="weight-badge">Peso: 25%</span>
+                    </div>
+                    <span class="expand-icon">+</span>
+                </div>
+                <div class="circular-chart-container">
+                    <div class="circular-chart" id="edgi-chart">
+                        <div class="inner-circle">
+                            <span class="card-value" id="edgi-value">0.00</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="formula-box">
+                    <strong>Fórmula:</strong> <span id="edgi-formula">Cargando...</span>
+                </div>
+                <div class="card-details" id="edgi-details">
+                    <div class="details-content">
+                        <details class="breakdown-details" onclick="event.stopPropagation()">
+                            <summary>Ver desglose</summary>
+                            <div class="breakdown-box">
+                                <div class="breakdown-formula-code" id="edgi-breakdown-formula">Cargando...</div>
+                                <ul class="breakdown-list" id="edgi-breakdown-list"></ul>
+                            </div>
+                        </details>
+                        <h4>Contexto del Cálculo</h4>
+                        <p id="edgi-context">Cargando contexto...</p>
+                        <h4>Extracción de Datos</h4>
+                        <p id="edgi-method" class="method-text">Cargando método...</p>
+                        <a href="#" id="edgi-ref" class="ref-link" target="_blank" onclick="event.stopPropagation()">🔗 Ver dataset</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card acc-card" onclick="toggleDetails('acc')" id="card-acc">
+                <div class="card-header">
+                    <div class="title-with-icon">
+                        <span class="icon">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+                        </span>
+                        <h3>ACC</h3>
+                        <span class="weight-badge">Peso: 25%</span>
+                    </div>
+                    <span class="expand-icon">+</span>
+                </div>
+                <div class="circular-chart-container">
+                    <div class="circular-chart" id="acc-chart">
+                        <div class="inner-circle">
+                            <span class="card-value" id="acc-value">0.00</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="formula-box">
+                    <strong>Fórmula:</strong> <span id="acc-formula">Cargando...</span>
+                </div>
+                <div class="card-details" id="acc-details">
+                    <div class="details-content">
+                        <details class="breakdown-details" onclick="event.stopPropagation()">
+                            <summary>Ver desglose</summary>
+                            <div class="breakdown-box">
+                                <div class="breakdown-formula-code" id="acc-breakdown-formula">Cargando...</div>
+                                <ul class="breakdown-list" id="acc-breakdown-list"></ul>
+                            </div>
+                        </details>
+                        <h4>Contexto del Cálculo</h4>
+                        <p id="acc-context">Cargando contexto...</p>
+                        <h4>Extracción de Datos</h4>
+                        <p id="acc-method" class="method-text">Cargando método...</p>
+                        <a href="#" id="acc-ref" class="ref-link" target="_blank" onclick="event.stopPropagation()">🔗 Ver dataset</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card eco-card" onclick="toggleDetails('eco')" id="card-eco">
+                <div class="card-header">
+                    <div class="title-with-icon">
+                        <span class="icon">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </span>
+                        <h3>ECO</h3>
+                        <span class="weight-badge">Peso: 25%</span>
+                    </div>
+                    <span class="expand-icon">+</span>
+                </div>
+                <div class="circular-chart-container">
+                    <div class="circular-chart" id="eco-chart">
+                        <div class="inner-circle">
+                            <span class="card-value" id="eco-value" style="font-size: 1.4rem;">0.00</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="formula-box">
+                    <strong>Fórmula:</strong> <span id="eco-formula">Cargando...</span>
+                </div>
+                <div class="card-details" id="eco-details">
+                    <div class="details-content">
+                        <details class="breakdown-details" onclick="event.stopPropagation()">
+                            <summary>Ver desglose</summary>
+                            <div class="breakdown-box">
+                                <div class="breakdown-formula-code" id="eco-breakdown-formula">Cargando...</div>
+                                <ul class="breakdown-list" id="eco-breakdown-list"></ul>
+                            </div>
+                        </details>
+                        <h4>Contexto del Cálculo</h4>
+                        <p id="eco-context">Cargando contexto...</p>
+                        <h4>Extracción de Datos</h4>
+                        <p id="eco-method" class="method-text">Cargando método...</p>
+                        <a href="#" id="eco-ref" class="ref-link" target="_blank" onclick="event.stopPropagation()">🔗 Ver dataset</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card pay-card" onclick="toggleDetails('pay')" id="card-pay">
+                <div class="card-header">
+                    <div class="title-with-icon">
+                        <span class="icon">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                        </span>
+                        <h3>PAY</h3>
+                        <span class="weight-badge">Peso: 25%</span>
+                    </div>
+                    <span class="expand-icon">+</span>
+                </div>
+                <div class="circular-chart-container">
+                    <div class="circular-chart" id="pay-chart">
+                        <div class="inner-circle">
+                            <span class="card-value" id="pay-value">0.00</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="formula-box">
+                    <strong>Fórmula:</strong> <span id="pay-formula">Cargando...</span>
+                </div>
+                <div class="card-details" id="pay-details">
+                    <div class="details-content">
+                        <details class="breakdown-details" onclick="event.stopPropagation()">
+                            <summary>Ver desglose</summary>
+                            <div class="breakdown-box">
+                                <div class="breakdown-formula-code" id="pay-breakdown-formula">Cargando...</div>
+                                <ul class="breakdown-list" id="pay-breakdown-list"></ul>
+                            </div>
+                        </details>
+                        <h4>Contexto del Cálculo</h4>
+                        <p id="pay-context">Cargando contexto...</p>
+                        <h4>Extracción de Datos</h4>
+                        <p id="pay-method" class="method-text">Cargando método...</p>
+                        <a href="#" id="pay-ref" class="ref-link" target="_blank" onclick="event.stopPropagation()">🔗 Ver dataset</a>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <script type="module" src="main.js"></script>
+</body>
+</html>
