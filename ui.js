@@ -33,7 +33,6 @@ export function renderDashboard(year, data) {
         document.getElementById(`${ind}-formula`).innerText = data[ind].formula;
         document.getElementById(`${ind}-context`).innerText = data[ind].context;
         document.getElementById(`${ind}-method`).innerText = data[ind].method;
-        document.getElementById(`${ind}-ref`).href = data[ind].ref;
 
         const chart = document.getElementById(`${ind}-chart`);
         if (chart) {
