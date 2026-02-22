@@ -19,18 +19,13 @@ export function renderDashboard(year, data) {
         let prefix = '';
         let percentageForChart = 0;
 
-        if (ind === 'edgi' || ind === 'acc' || ind === 'pay') {
+        if (ind === 'edgi' || ind === 'acc' || ind === 'pay' || ind === 'eco') {
             suffix = '%';
             percentageForChart = data[ind].val;
         } else if (ind === 'acc' || ind === 'pay') {
             suffix = '%';
             percentageForChart = data[ind].val;
-        } else if (ind === 'eco') {
-            prefix = '$';
-            suffix = 'M';
-            const metaAhorro = 300; 
-            percentageForChart = (data[ind].val / metaAhorro) * 100;
-        }
+        } 
 
         percentageForChart = Math.min(percentageForChart, 100);
 
@@ -54,7 +49,7 @@ export function renderDashboard(year, data) {
             
             // Validamos que existan en el HTML antes de inyectar
             if (formulaEl && listEl) {
-                formulaEl.innerText = data[ind].breakdownFormula;
+                formulaEl.innerHTML = data[ind].breakdownFormula;
                 listEl.innerHTML = ''; 
                 
                 data[ind].breakdown.forEach(item => {
