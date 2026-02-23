@@ -2,7 +2,7 @@
 const timelineData = [
     {
         fecha: "Junio 1992",
-        titulo: "Llegada de Internet (Ecuanel)",
+        titulo: "Llegada de Internet (Ecuanet)",
         descripcion: "Ecuador ingresa a la era digital conectando sus primeros nodos en Quito. Este hito interconectó a universidades y entidades financieras con la red global.",
         detalle: "<strong>Categoría:</strong> Tecnología <br> <strong>Fuente:</strong> El Telégrafo",
         url: "https://www.eltelegrafo.com.ec/noticias/tecnologia/1/ecuador-accede-a-internet-desde-hace-25-anos"
