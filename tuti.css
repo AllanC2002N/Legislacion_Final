@@ -1,11 +1,13 @@
 /* =========================================================
-   ESTILOS UNIFICADOS: TARJETA CIUDAD - METRO
+   ESTILOS UNIFICADOS: DASHBOARD TUTI
    ========================================================= */
 
 :root {
-    --metro-main: #dc2626; 
-    --metro-light: #fee2e2; 
-    --metro-dark: #991b1b;
+    --tuti-main: #0033a0;    /* Azul Tuti */
+    --tuti-accent: #ffd100;  /* Amarillo Tuti */
+    --tuti-danger: #e3000f;  /* Rojo Tuti */
+    --tuti-light: #e6eff7;   /* Azul muy clarito para fondos */
+    
     --border-color: #e2e8f0;
     --primary-text: #1e293b;
     --secondary-text: #64748b;
@@ -13,39 +15,33 @@
 
 /* --- Estética General --- */
 .page-header { text-align: center; margin-bottom: 3rem; }
-.metro-title { font-size: 2.8rem; font-weight: 900; color: var(--metro-main); letter-spacing: -1px; text-align: center; }
+.tuti-title { font-size: 2.8rem; font-weight: 900; color: var(--tuti-main); letter-spacing: -1px; text-align: center; }
 .section-title { font-size: 1.4rem; color: var(--primary-text); margin-bottom: 1.5rem; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; margin-top: 2rem; }
 .section-title:first-of-type { margin-top: 0; }
 
 /* --- Grillas --- */
-.adoption-grid {
+.tuti-grid-3 {
     display: grid;
     grid-template-columns: 1fr; 
     gap: 1.5rem;
     margin-bottom: 3rem;
 }
 
-.metro-indicators-grid {
+.tuti-grid-4 {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); 
+    grid-template-columns: repeat(2, 1fr); /* 2 columnas x 2 filas para las 4 tarjetas */
     gap: 1.5rem;
     margin-bottom: 4rem;
     align-items: stretch;
 }
 
-.metro-indicators-grid .card:nth-child(4) { grid-column: 1 / 3; }
-.metro-indicators-grid .card:nth-child(5) { grid-column: 3 / 4; }
-
 @media (max-width: 800px) {
-    .metro-indicators-grid { grid-template-columns: repeat(2, 1fr); }
-    .metro-indicators-grid .card:nth-child(4),
-    .metro-indicators-grid .card:nth-child(5) { grid-column: span 1; }
-    .adoption-grid, .metro-indicators-grid { grid-template-columns: 1fr; }
+    .tuti-grid-4 { grid-template-columns: 1fr; }
 }
 
 /* --- Estilo Base de Tarjeta --- */
-.metro-card {
-    border-top: 4px solid var(--metro-main);
+.tuti-card {
+    border-top: 4px solid var(--tuti-main);
     background: #ffffff;
     position: relative; 
     overflow: hidden;
@@ -53,16 +49,17 @@
     display: flex;
     flex-direction: column;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
 }
 
-.metro-card:hover {
-    border-color: var(--metro-main);
-    box-shadow: 0 10px 25px rgba(220, 38, 38, 0.15);
+.tuti-card:hover {
+    border-color: var(--tuti-accent);
+    box-shadow: 0 10px 25px rgba(0, 51, 160, 0.15);
 }
 
-.metro-icon {
-    background-color: var(--metro-light) !important;
-    color: var(--metro-main) !important;
+.tuti-icon {
+    background-color: var(--tuti-light) !important;
+    color: var(--tuti-main) !important;
     padding: 10px;
     border-radius: 8px;
     font-size: 1.2rem;
@@ -77,13 +74,8 @@
     margin-bottom: 0.5rem;
 }
 
-.title-with-icon {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-}
+.title-with-icon { display: flex; align-items: center; gap: 0.8rem; }
 
-/* Ajustado para que el enlace <a> se vea exactamente como un botón */
 .info-btn {
     display: inline-block;
     text-decoration: none;
@@ -100,12 +92,37 @@
 }
 
 .info-btn:hover {
-    background-color: var(--metro-light);
-    color: var(--metro-main);
-    border-color: var(--metro-main);
+    background-color: var(--tuti-light);
+    color: var(--tuti-main);
+    border-color: var(--tuti-main);
 }
 
-/* --- Layout Horizontal (Adopción) --- */
+/* --- Botón Descarga --- */
+.download-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background-color: blue; 
+    color: #ffffff;
+    padding: 8px 30px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 0.95rem;
+    margin-top: 1.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.download-btn:hover {
+    background-color: var(--tuti-main); 
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 51, 160, 0.2);
+}
+
+/* --- Layout Horizontal (Expansión) --- */
 .horizontal-card-body {
     display: flex;
     flex-direction: row;
@@ -129,8 +146,8 @@
     .chart-side { min-height: 200px; } 
 }
 
-/* --- RECUADRO BLANCO DE NÚMEROS (Apilados) --- */
-.comparison-col, .comparison-col-white {
+/* --- RECUADRO BLANCO DE NÚMEROS --- */
+.comparison-col-white {
     background-color: #ffffff;
     border: 1px solid var(--border-color);
     border-radius: 12px;
@@ -147,9 +164,7 @@
     padding: 6px 0;
 }
 
-.year-row:not(:last-child) {
-    border-bottom: 1px dashed #f1f5f9;
-}
+.year-row:not(:last-child) { border-bottom: 1px dashed #f1f5f9; }
 
 .year-label {
     font-size: 0.75rem;
@@ -158,10 +173,10 @@
     text-transform: uppercase;
 }
 
-.card-value-sm {
+.card-value-sm.tuti-text {
     font-size: 1.2rem;
     font-weight: 900;
-    color: var(--metro-main);
+    color: var(--tuti-main);
 }
 
 /* --- Gráficos y Misceláneos --- */
@@ -189,7 +204,7 @@
 /* --- Caja de Conclusiones --- */
 .conclusion-box {
     background-color: #f8fafc; 
-    border-left: 5px solid var(--metro-main); 
+    border-left: 5px solid var(--tuti-accent); /* Borde amarillo Tuti */
     padding: 1.2rem 1.5rem;
     margin-top: -1rem; 
     margin-bottom: 3.5rem; 
@@ -200,53 +215,26 @@
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
-.conclusion-box strong {
-    color: var(--metro-dark);
-}
+.conclusion-box strong { color: var(--tuti-main); }
 
 /* --- Marcas de Agua Sutiles --- */
-.watermark-dollar::before, .watermark-number::before {
+.watermark-dollar::before, .watermark-cart::before {
     position: absolute;
     right: 5px;
     font-weight: 900;
-    color: var(--metro-main);
-    opacity: 0.12; 
+    color: var(--tuti-main);
+    opacity: 0.08; 
     pointer-events: none;
     z-index: 1;
     line-height: 1;
 }
 
 .watermark-dollar::before { content: '$'; bottom: -15px; font-size: 10rem; }
-.watermark-number::before { content: '#'; bottom: -20px; font-size: 11rem; }
+.watermark-cart::before { content: '🛒'; bottom: -20px; font-size: 8rem; }
 
-/* --- Tarjeta Destacada Impacto --- */
-.highlight-card { background-color: #fff1f2; border: 2px solid #fecaca; }
-.highlight-card .comparison-col-white { background-color: #ffffff; border-color: #fecaca; }
-.highlight-card .formula-box { background-color: #ffffff; border-color: #fecaca; }
+/* --- Tarjeta Destacada --- */
+.highlight-card { background-color: #f0f4ff; border: 2px solid #b3c6ff; }
+.highlight-card .comparison-col-white { background-color: #ffffff; border-color: #b3c6ff; }
+.highlight-card .formula-box { background-color: #ffffff; border-color: #b3c6ff; }
 
-/* Tarifario */
 .breakdown-list { list-style: none; padding: 0; margin: 0; }
-/* --- Botón de Descarga Excel --- */
-.download-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    background-color: red; /* Color oscuro elegante */
-    color: #ffffff;
-    padding: 8px 30px;
-    border-radius: 30px;
-    text-decoration: none;
-    font-weight: 800;
-    font-size: 0.95rem;
-    margin-top: 1.5rem;
-    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
-.download-btn:hover {
-    background-color: var(--metro-main); /* Cambia al rojo del Metro al pasar el mouse */
-    color: #ffffff;
-    transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(220, 38, 38, 0.2);
-}

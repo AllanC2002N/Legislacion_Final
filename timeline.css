@@ -1,0 +1,226 @@
+/* =========================================================
+   ESTILOS: LÍNEA DE TIEMPO INTERACTIVA
+   ========================================================= */
+
+:root {
+    --tl-accent: #dc2626;   /* Rojo Metro */
+    --tl-bg: #f8fafc;       
+    --border-color: #e2e8f0;
+    --primary-text: #1e293b;
+    --secondary-text: #64748b;
+}
+
+.page-header { text-align: center; margin-bottom: 4rem; }
+.timeline-title { font-size: 2.8rem; font-weight: 900; color: var(--primary-text); letter-spacing: -1px; margin-bottom: 0.5rem;}
+
+/* --- Contenedor Principal --- */
+.timeline-container {
+    position: relative;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem 0 4rem 0;
+}
+
+.timeline-line {
+    position: absolute;
+    width: 4px;
+    background-color: var(--border-color);
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 2px;
+    z-index: 1; 
+}
+
+.timeline-progress {
+    position: absolute;
+    width: 4px;
+    background-color: var(--tl-accent);
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 2px;
+    z-index: 2;
+    height: 0%; 
+    transition: height 0.1s ease-out;
+}
+
+/* --- Cada bloque --- */
+.timeline-item {
+    padding: 10px 40px;
+    position: relative;
+    width: 50%;
+    box-sizing: border-box;
+    opacity: 0; 
+    transform: translateY(30px); 
+    transition: all 0.6s ease-out;
+    z-index: 4; 
+}
+
+.timeline-item.visible { opacity: 1; transform: translateY(0); }
+
+.timeline-item.left { left: 0; }
+.timeline-item.right { left: 50%; }
+
+/* --- El punto en la línea (Dot) --- */
+.timeline-item::after {
+    content: '';
+    position: absolute;
+    width: 24px;   
+    height: 24px;
+    background-color: #ffffff;
+    border: 4px solid var(--border-color);
+    top: 24px;
+    border-radius: 50%;
+    z-index: 3;    
+    transition: all 0.4s ease;
+}
+
+.timeline-item.left::after { right: -12px; }
+.timeline-item.right::after { left: -12px; }
+
+.timeline-item.active-dot::after {
+    border-color: var(--tl-accent);
+    box-shadow: 0 0 0 6px rgba(220, 38, 38, 0.15); 
+}
+
+.timeline-item:hover::after {
+    background-color: var(--tl-accent);
+    transform: scale(1.2);
+}
+
+/* --- La Tarjeta (Card) --- */
+.timeline-card {
+    padding: 1.5rem;
+    background-color: #ffffff;
+    position: relative;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.timeline-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    border-color: rgba(220, 38, 38, 0.4);
+}
+
+/* --- NUEVO: Cabecera con Fecha y Botón REF --- */
+.card-header-tl {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+}
+
+.timeline-date {
+    display: inline-block;
+    padding: 4px 12px;
+    background-color: var(--tl-bg);
+    color: var(--tl-accent);
+    font-size: 0.85rem;
+    font-weight: 800;
+    border-radius: 20px;
+    border: 1px solid rgba(220, 38, 38, 0.15);
+}
+
+.info-btn {
+    display: inline-block;
+    text-decoration: none;
+    background-color: #f1f5f9;
+    color: var(--secondary-text);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 3px 6px;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.info-btn:hover {
+    background-color: #fee2e2;
+    color: var(--tl-accent);
+    border-color: var(--tl-accent);
+}
+
+.timeline-card h3 { margin: 0 0 0.5rem 0; font-size: 1.3rem; color: var(--primary-text); }
+.timeline-card p { margin: 0; font-size: 0.95rem; line-height: 1.6; color: var(--secondary-text); }
+
+/* --- Flechitas de las tarjetas --- */
+.timeline-card::before {
+    content: " ";
+    height: 0;
+    position: absolute;
+    top: 26px;
+    width: 0;
+    z-index: 1;
+    border: medium solid var(--border-color);
+    border-width: 10px 10px 10px 0;
+    border-color: transparent var(--border-color) transparent transparent;
+}
+.timeline-item.left .timeline-card::before {
+    right: -11px;
+    border-width: 10px 0 10px 10px;
+    border-color: transparent transparent transparent var(--border-color);
+}
+.timeline-item.right .timeline-card::before {
+    left: -11px;
+    border-width: 10px 10px 10px 0;
+    border-color: transparent var(--border-color) transparent transparent;
+}
+
+/* --- Interacción: Botón y Detalles Ocultos --- */
+.expand-btn {
+    background: none;
+    border: none;
+    color: var(--tl-accent);
+    font-weight: 800;
+    font-size: 0.85rem;
+    padding: 0;
+    margin-top: 1rem;
+    cursor: pointer;
+    text-decoration: underline;
+    transition: color 0.2s;
+}
+.expand-btn:hover { color: #991b1b; }
+
+.timeline-details {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--border-color);
+    font-size: 0.9rem;
+    color: var(--secondary-text);
+    display: none; 
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* --- RESPONSIVE (Móviles) --- */
+@media screen and (max-width: 768px) {
+    .timeline-line, .timeline-progress { left: 40px; } 
+    
+    .timeline-item {
+        width: 100%;
+        padding-left: 80px; 
+        padding-right: 20px;
+    }
+    
+    .timeline-item.left, .timeline-item.right { left: 0; }
+    
+    .timeline-item.left::after, .timeline-item.right::after {
+        left: 28px; 
+        right: auto;
+    }
+    
+    .timeline-item.left .timeline-card::before, 
+    .timeline-item.right .timeline-card::before {
+        left: -11px;
+        border-width: 10px 10px 10px 0;
+        border-color: transparent var(--border-color) transparent transparent;
+    }
+}

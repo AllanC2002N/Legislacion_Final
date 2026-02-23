@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Línea de Tiempo - Dashboard</title>
+    <link rel="stylesheet" href="styles.css"> 
+    <link rel="stylesheet" href="timeline.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-brand">Digitalización AC</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Indicadores</a></li>
+            <li><a href="timeline.html" class="active">Línea de Tiempo</a></li>
+            <li><a href="tarjeta.html">Tarjeta Ciudad</a></li>
+            <li><a href="tuti.html">TUTI</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        
+        <section class="page-header">
+            <h2 class="timeline-title">Línea de Tiempo Histórica</h2>
+            <p class="subtitle">Hitos clave en el desarrollo operativo y adopción ciudadana</p>
+        </section>
+
+        <section class="timeline-container" id="timeline-container">
+            <div class="timeline-line"></div>
+            <div class="timeline-progress" id="timeline-progress"></div>
+            
+            </section>
+
+    </main>
+
+    <script type="module" src="timeline.js"></script>
+</body>
+</html>

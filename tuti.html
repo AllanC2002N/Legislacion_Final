@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Tuti</title>
+    <link rel="stylesheet" href="styles.css"> <link rel="stylesheet" href="tuti.css"> <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-brand">Digitalización AC</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Indicadores</a></li>
+            <li><a href="timeline.html" class="active">Línea de Tiempo</a></li>
+            <li><a href="tarjeta.html">Tarjeta Ciudad</a></li>
+            <li><a href="tuti.html" class="active">TUTI</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        
+        <section class="page-header">
+            <h2 class="tuti-title">Expansión y Mercado - TUTI</h2>
+            <p class="subtitle">Análisis de crecimiento, cobertura y comportamiento del consumidor</p>
+            
+            <a href="Calculos_Tuti.xlsx" download="Calculos_Tuti.xlsx" class="download-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px;">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Descargar matriz de cálculos (Excel) 
+            </a>
+        </section>
+
+        <h3 class="section-title">Crecimiento y Alcance Operativo</h3>
+        <section class="tuti-grid-3">
+            
+            <div class="card tuti-card">
+                <div class="card-header">
+                    <div class="title-with-icon"><span class="icon tuti-icon">🏪</span><h3>Tiendas Activas</h3></div>
+                    <a href="AQUI_TU_URL" target="_blank" class="info-btn">REF</a>
+                </div>
+                <div class="horizontal-card-body">
+                    <div class="info-side">
+                        <div class="comparison-col-white">
+                            <div class="year-row"><span class="year-label">2023</span><span class="card-value-sm tuti-text" id="tiendas-23">0</span></div>
+                            <div class="year-row"><span class="year-label">2024</span><span class="card-value-sm tuti-text" id="tiendas-24">0</span></div>
+                            <div class="year-row"><span class="year-label">2025</span><span class="card-value-sm tuti-text" id="tiendas-25">0</span></div>
+                        </div>
+                        <div class="formula-box mt-auto">Locales operativos a nivel nacional.</div>
+                    </div>
+                    <div class="chart-side"><canvas id="chartTiendas"></canvas></div>
+                </div>
+            </div>
+
+            <div class="card tuti-card">
+                <div class="card-header">
+                    <div class="title-with-icon"><span class="icon tuti-icon">🧑‍🤝‍🧑</span><h3>Empleos Directos</h3></div>
+                    <a href="AQUI_TU_URL" target="_blank" class="info-btn">REF</a>
+                </div>
+                <div class="horizontal-card-body">
+                    <div class="info-side">
+                        <div class="comparison-col-white">
+                            <div class="year-row"><span class="year-label">2023</span><span class="card-value-sm tuti-text" id="empleos-23">0</span></div>
+                            <div class="year-row"><span class="year-label">2024</span><span class="card-value-sm tuti-text" id="empleos-24">0</span></div>
+                            <div class="year-row"><span class="year-label">2025</span><span class="card-value-sm tuti-text" id="empleos-25">0</span></div>
+                        </div>
+                        <div class="formula-box mt-auto">Personal contratado en tiendas y CD.</div>
+                    </div>
+                    <div class="chart-side"><canvas id="chartEmpleos"></canvas></div>
+                </div>
+            </div>
+
+            <div class="card tuti-card">
+                <div class="card-header">
+                    <div class="title-with-icon"><span class="icon tuti-icon">🗺️</span><h3>Presencia Provincial</h3></div>
+                    <a href="AQUI_TU_URL" target="_blank" class="info-btn">REF</a>
+                </div>
+                <div class="horizontal-card-body">
+                    <div class="info-side">
+                        <div class="comparison-col-white">
+                            <div class="year-row"><span class="year-label">Costa</span><span class="card-value-sm tuti-text" id="prov-costa">0%</span></div>
+                            <div class="year-row"><span class="year-label">Sierra</span><span class="card-value-sm tuti-text" id="prov-sierra">0%</span></div>
+                        </div>
+                        <div class="formula-box mt-auto">Distribución de locales por región.</div>
+                    </div>
+                    <div class="chart-side"><canvas id="chartProvincias"></canvas></div>
+                </div>
+            </div>
+        </section>
+
+        <div class="conclusion-box">
+            <strong>💡 Conclusión de Expansión:</strong> (INGRESA AQUÍ TU CONCLUSIÓN. Ej: La estrategia de Tuti se ha centrado en una penetración agresiva de mercado, abriendo un promedio de X tiendas mensuales, consolidando primero la Costa antes de expandirse fuertemente hacia la Sierra).
+        </div>
+
+        <h3 class="section-title">Comportamiento del Consumidor y Ventas</h3>
+        <section class="tuti-grid-4">
+            
+            <div class="card tuti-card flex-col watermark-cart">
+                <div class="card-header">
+                    <div class="title-with-icon"><span class="icon tuti-icon">🛒</span><h3>Transacciones Mensuales</h3></div>
+                    <a href="AQUI_TU_URL" target="_blank" class="info-btn">REF</a>
+                </div>
+                <div class="comparison-col-white">
+                    <div class="year-row"><span class="year-label">2024</span><span class="card-value-sm tuti-text" id="trans-24">0</span></div>
+                    <div class="year-row"><span class="year-label">2025</span><span class="card-value-sm tuti-text" id="trans-25">0</span></div>
+                </div>
+                <div class="mini-chart-container"><canvas id="chartTransacciones"></canvas></div>
+                <div class="formula-box mt-auto">Promedio de facturas emitidas al mes.</div>
+            </div>
+
+            <div class="card tuti-card flex-col watermark-dollar">
+                <div class="card-header">
+                    <div class="title-with-icon"><span class="icon tuti-icon">💳</span><h3>Ticket Promedio</h3></div>
+                    <a href="AQUI_TU_URL" target="_blank" class="info-btn">REF</a>
+                </div>
+                <div class="comparison-col-white">
+                    <div class="year-row"><span class="year-label">2024</span><span class="card-value-sm tuti-text" id="ticket-24">$0</span></div>
+                    <div class="year-row"><span class="year-label">2025</span><span class="card-value-sm tuti-text" id="ticket-25">$0</span></div>
+                </div>
+                <div class="mini-chart-container"><canvas id="chartTicket"></canvas></div>
+                <div class="formula-box mt-auto">Gasto promedio por cliente en cada visita.</div>
+            </div>
+
+            <div class="card tuti-card flex-col">
+                <div class="card-header">
+                    <div class="title-with-icon"><span class="icon tuti-icon">🏷️</span><h3>Marcas Propias (Hard Discount)</h3></div>
+                    <a href="AQUI_TU_URL" target="_blank" class="info-btn">REF</a>
+                </div>
+                <div class="comparison-col-white">
+                    <div class="year-row"><span class="year-label">Marcas Tuti</span><span class="card-value-sm tuti-text" id="marca-propia">0%</span></div>
+                    <div class="year-row"><span class="year-label">Tradicionales</span><span class="card-value-sm tuti-text" id="marca-comercial">0%</span></div>
+                </div>
+                <div class="mini-chart-container"><canvas id="chartMarcas"></canvas></div>
+                <div class="formula-box mt-auto">Participación en el volumen de ventas.</div>
+            </div>
+
+            <div class="card tuti-card flex-col highlight-card">
+                <div class="card-header">
+                    <div class="title-with-icon"><span class="icon tuti-icon" style="background-color: #ffffff !important; color: #0033a0 !important;">🛍️</span><h3>Top Categorías</h3></div>
+                    <a href="AQUI_TU_URL" target="_blank" class="info-btn">REF</a>
+                </div>
+                <div class="comparison-col-white" style="margin-bottom: 0;">
+                    <ul class="breakdown-list" id="categorias-list"></ul>
+                </div>
+                <div class="formula-box mt-auto" style="background-color: #ffffff;">Categorías con mayor rotación (FMCG).</div>
+            </div>
+
+        </section>
+
+        <div class="conclusion-box">
+            <strong>💡 Conclusión de Ventas:</strong> (INGRESA AQUÍ TU CONCLUSIÓN. Ej: El modelo de 'Hard Discount' demuestra su eficacia al mantener un ticket promedio bajo pero con una altísima frecuencia de compra. Destaca la enorme aceptación de las marcas propias, las cuales representan el X% de los productos en las canastas de los ecuatorianos).
+        </div>
+
+    </main>
+
+    <script type="module" src="tuti.js"></script>
+</body>
+</html>
