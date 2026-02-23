@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarjeta Ciudad - Metro</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="tarjeta.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-brand">Dashboard Digital</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Indicadores</a></li>
+            <li><a href="#">Línea de Tiempo</a></li>
+            <li><a href="tarjeta.html" class="active">Tarjeta Ciudad</a></li>
+            <li><a href="#">TUTI</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        
+        <section class="page-header">
+            <h2 class="metro-title">Tarjeta Ciudad - Metro</h2>
+            <p class="subtitle">Evolución de adopción e impacto en el sistema de transporte</p>
+        </section>
+
+        <h3 class="section-title">Adopción Ciudadana</h3>
+        <section class="adoption-grid">
+            
+            <div class="card metro-card">
+                <div class="card-header">
+                    <div class="title-with-icon"><span class="icon metro-icon">👤</span><h3>Cuentas Ciudad</h3></div>
+                    <a href="AQUI_TU_URL" target="_blank" class="info-btn">REF</a>
+                </div>
+                <div class="horizontal-card-body">
+                    <div class="info-side">
+                        <div class="comparison-col-white">
+                            <div class="year-row"><span class="year-label">2023</span><span class="card-value-sm metro-text" id="cuentas-23">0</span></div>
+                            <div class="year-row"><span class="year-label">2024</span><span class="card-value-sm metro-text" id="cuentas-24">0</span></div>
+                            <div class="year-row"><span class="year-label">2025</span><span class="card-value-sm metro-text" id="cuentas-25">0</span></div>
+                        </div>
+                        <div class="formula-box mt-auto">Usuarios registrados en la plataforma.</div>
+                    </div>
+                    <div class="chart-side"><canvas id="chartCuentas"></canvas></div>
+                </div>
+            </div>
+
+            <div class="card metro-card">
+                <div class="card-header">
+                    <div class="title-with-icon"><span class="icon metro-icon">🪪</span><h3>Cédulas Enlazadas</h3></div>
+                    <a href="AQUI_TU_URL" target="_blank" class="info-btn">REF</a>
+                </div>
+                <div class="horizontal-card-body">
+                    <div class="info-side">
+                        <div class="comparison-col-white">
+                            <div class="year-row"><span class="year-label">2023</span><span class="card-value-sm metro-text" id="cedulas-23">0</span></div>
+                            <div class="year-row"><span class="year-label">2024</span><span class="card-value-sm metro-text" id="cedulas-24">0</span></div>
+                            <div class="year-row"><span class="year-label">2025</span><span class="card-value-sm metro-text" id="cedulas-25">0</span></div>
+                        </div>
+                        <div class="formula-box mt-auto">Cuentas validadas con el Registro Civil.</div>
+                    </div>
+                    <div class="chart-side"><canvas id="chartCedulas"></canvas></div>
+                </div>
+            </div>
+
+            <div class="card metro-card">
+                <div class="card-header">
+                    <div class="title-with-icon"><span class="icon metro-icon">💳</span><h3>Tarjetas Emitidas</h3></div>
+                    <a href="AQUI_TU_URL" target="_blank" class="info-btn">REF</a>
+                </div>
+                <div class="horizontal-card-body">
+                    <div class="info-side">
+                        <div class="comparison-col-white">
+                            <div class="year-row"><span class="year-label">2023</span><span class="card-value-sm metro-text" id="tarjetas-23">0</span></div>
+                            <div class="year-row"><span class="year-label">2024</span><span class="card-value-sm metro-text" id="tarjetas-24">0</span></div>
+                            <div class="year-row"><span class="year-label">2025</span><span class="card-value-sm metro-text" id="tarjetas-25">0</span></div>
+                        </div>
+                        <div class="formula-box mt-auto">Tarjetas físicas y digitales activas.</div>
+                    </div>
+                    <div class="chart-side"><canvas id="chartTarjetas"></canvas></div>
+                </div>
+            </div>
+        </section>
+
+        <div class="conclusion-box">
+            <strong>💡 Conclusión:</strong> (INGRESA AQUÍ TU CONCLUSIÓN SOBRE LA ADOPCIÓN CIUDADANA)
+        </div>
+
+        <h3 class="section-title">Operatividad y Recaudación (Promedio Mensual)</h3>
+        <section class="metro-indicators-grid">
+            
+            <div class="card metro-card flex-col watermark-number">
+                <div class="card-header">
+                    <div class="title-with-icon"><span class="icon metro-icon">🎫</span><h3>Pasajes Comprados</h3></div>
+                    <a href="AQUI_TU_URL" target="_blank" class="info-btn">REF</a>
+                </div>
+                <div class="comparison-col-white">
+                    <div class="year-row"><span class="year-label">2024</span><span class="card-value-sm metro-text" id="pasajes-24">0</span></div>
+                    <div class="year-row"><span class="year-label">2025</span><span class="card-value-sm metro-text" id="pasajes-25">0</span></div>
+                </div>
+                <div class="formula-box mt-auto">Promedio de validaciones mensuales.</div>
+            </div>
+
+            <div class="card metro-card flex-col">
+                <div class="card-header">
+                    <div class="title-with-icon"><span class="icon metro-icon">💲</span><h3>Tarifario (2024 - 2025)</h3></div>
+                    <a href="AQUI_TU_URL" target="_blank" class="info-btn">REF</a>
+                </div>
+                <div class="comparison-col-white">
+                    <ul class="breakdown-list" id="tarifas-list"></ul>
+                </div>
+                <div class="formula-box mt-auto">Costo por tipo de usuario.</div>
+            </div>
+
+            <div class="card metro-card flex-col watermark-dollar">
+                <div class="card-header">
+                    <div class="title-with-icon"><span class="icon metro-icon">💰</span><h3>Monto Recaudado</h3></div>
+                    <a href="AQUI_TU_URL" target="_blank" class="info-btn">REF</a>
+                </div>
+                <div class="comparison-col-white">
+                    <div class="year-row"><span class="year-label">2024</span><span class="card-value-sm metro-text" id="monto-24">$0</span></div>
+                    <div class="year-row"><span class="year-label">2025</span><span class="card-value-sm metro-text" id="monto-25">$0</span></div>
+                </div>
+                <div class="formula-box mt-auto">Ingresos mensuales estimados por pasajes.</div>
+            </div>
+
+            <div class="card metro-card flex-col">
+                <div class="card-header">
+                    <div class="title-with-icon"><span class="icon metro-icon">📱</span><h3>Medios Digitales (vs Físico)</h3></div>
+                    <a href="https://metrodequito.gob.ec/metodos-acceso-digitales/#:~:text=47%20%25%20de%20usuarios%20usan%20m%C3%A9todos%20de,para%20viajar%20en%20el%20Metro%20de%20Quito." target="_blank" class="info-btn">REF</a>
+                </div>
+                <div class="comparison-col-white">
+                    <div class="year-row"><span class="year-label">2024</span><span class="card-value-sm metro-text" id="digitales-24">0</span></div>
+                    <div class="year-row"><span class="year-label">2025</span><span class="card-value-sm metro-text" id="digitales-25">0</span></div>
+                </div>
+                <div class="mini-chart-container"><canvas id="pagosChart"></canvas></div>
+                <div class="formula-box mt-auto">Pagos vía App, QR o Tarjeta vinculada.</div>
+            </div>
+
+            <div class="card metro-card highlight-card flex-col">
+                <div class="card-header">
+                    <div class="title-with-icon"><span class="icon metro-icon" style="background-color: #ffffff !important; color: rgb(255, 0, 0) !important;">🎯</span><h3>Impacto en el POS</h3></div>
+                    <a href="AQUI_TU_URL" target="_blank" class="info-btn">REF</a>
+                </div>
+                <div class="comparison-col-white">
+                    <div class="year-row"><span class="year-label">2024</span><span class="card-value-sm metro-text" id="impacto-24">0%</span></div>
+                    <div class="year-row"><span class="year-label">2025</span><span class="card-value-sm metro-text" id="impacto-25">0%</span></div>
+                </div>
+                <div class="mini-chart-container"><canvas id="chartImpacto"></canvas></div>
+                <div class="formula-box mt-auto" style="background-color: #ffffff;">Representación frente al total de POS.</div>
+            </div>
+        </section>
+
+        <div class="conclusion-box">
+            <strong>💡 Conclusión:</strong> (INGRESA AQUÍ TU CONCLUSIÓN SOBRE OPERATIVIDAD Y RECAUDACIÓN)
+        </div>
+
+    </main>
+
+    <script type="module" src="tarjeta.js"></script>
+</body>
+</html>
