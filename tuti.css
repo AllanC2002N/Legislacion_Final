@@ -1,42 +1,29 @@
 /* =========================================================
-   ESTILOS UNIFICADOS: DASHBOARD TUTI
+   ESTILOS UNIFICADOS: DASHBOARD TUTI (Simplificado)
    ========================================================= */
 
 :root {
     --tuti-main: #0033a0;    /* Azul Tuti */
     --tuti-accent: #ffd100;  /* Amarillo Tuti */
     --tuti-danger: #e3000f;  /* Rojo Tuti */
-    --tuti-light: #e6eff7;   /* Azul muy clarito para fondos */
+    --tuti-light: #e6eff7;   
     
     --border-color: #e2e8f0;
     --primary-text: #1e293b;
     --secondary-text: #64748b;
 }
 
-/* --- Estética General --- */
 .page-header { text-align: center; margin-bottom: 3rem; }
-.tuti-title { font-size: 2.8rem; font-weight: 900; color: var(--tuti-main); letter-spacing: -1px; text-align: center; }
+.tuti-title { font-size: 2.8rem; font-weight: 900; color: var(--tuti-main); letter-spacing: -1px; text-align: center; margin-bottom: 0.5rem;}
 .section-title { font-size: 1.4rem; color: var(--primary-text); margin-bottom: 1.5rem; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; margin-top: 2rem; }
 .section-title:first-of-type { margin-top: 0; }
 
-/* --- Grillas --- */
-.tuti-grid-3 {
-    display: grid;
-    grid-template-columns: 1fr; 
-    gap: 1.5rem;
-    margin-bottom: 3rem;
-}
-
-.tuti-grid-4 {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr); /* 2 columnas x 2 filas para las 4 tarjetas */
-    gap: 1.5rem;
-    margin-bottom: 4rem;
-    align-items: stretch;
-}
+/* --- Grillas Financieras --- */
+.tuti-grid-1 { display: grid; grid-template-columns: 1fr; gap: 2rem; margin-bottom: 2rem; }
+.tuti-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; margin-bottom: 3rem; }
 
 @media (max-width: 800px) {
-    .tuti-grid-4 { grid-template-columns: 1fr; }
+    .tuti-grid-2 { grid-template-columns: 1fr; }
 }
 
 /* --- Estilo Base de Tarjeta --- */
@@ -67,13 +54,7 @@
 }
 
 /* --- Cabecera de Tarjeta y Enlace REF --- */
-.card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
-}
-
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
 .title-with-icon { display: flex; align-items: center; gap: 0.8rem; }
 
 .info-btn {
@@ -91,11 +72,7 @@
     transition: all 0.2s ease;
 }
 
-.info-btn:hover {
-    background-color: var(--tuti-light);
-    color: var(--tuti-main);
-    border-color: var(--tuti-main);
-}
+.info-btn:hover { background-color: var(--tuti-light); color: var(--tuti-main); border-color: var(--tuti-main); }
 
 /* --- Botón Descarga --- */
 .download-btn {
@@ -103,10 +80,10 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    background-color: blue; 
+    background-color: var(--primary-text); 
     color: #ffffff;
-    padding: 8px 30px;
-    border-radius: 30px;
+    padding: 10px 24px;
+    border-radius: 8px;
     text-decoration: none;
     font-weight: 800;
     font-size: 0.95rem;
@@ -122,89 +99,26 @@
     box-shadow: 0 10px 15px -3px rgba(0, 51, 160, 0.2);
 }
 
-/* --- Layout Horizontal (Expansión) --- */
-.horizontal-card-body {
-    display: flex;
-    flex-direction: row;
-    gap: 1.5rem;
-    align-items: stretch;
-    margin-top: 0.5rem;
-    z-index: 2;
-}
-
-.info-side { flex: 1; display: flex; flex-direction: column; justify-content: center; }
-
-.chart-side { 
-    flex: 1.5; 
-    position: relative; 
-    min-height: 180px; 
+/* --- Contenedor para Gráficos Financieros --- */
+.chart-container-large {
+    position: relative;
+    height: 400px;
     width: 100%;
+    margin-top: 1rem;
+    z-index: 2;
 }
 
 @media (max-width: 768px) {
-    .horizontal-card-body { flex-direction: column; }
-    .chart-side { min-height: 200px; } 
+    .chart-container-large { height: 320px; }
 }
 
-/* --- RECUADRO BLANCO DE NÚMEROS --- */
-.comparison-col-white {
-    background-color: #ffffff;
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 12px 15px;
-    margin: 10px 0;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
-    z-index: 2;
-}
-
-.year-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 6px 0;
-}
-
-.year-row:not(:last-child) { border-bottom: 1px dashed #f1f5f9; }
-
-.year-label {
-    font-size: 0.75rem;
-    font-weight: 800;
-    color: var(--secondary-text);
-    text-transform: uppercase;
-}
-
-.card-value-sm.tuti-text {
-    font-size: 1.2rem;
-    font-weight: 900;
-    color: var(--tuti-main);
-}
-
-/* --- Gráficos y Misceláneos --- */
-.mini-chart-container {
-    position: relative;
-    height: 140px; 
-    width: 100%;
-    margin-bottom: 1rem;
-    z-index: 2;
-}
-
-.formula-box {
-    background-color: #f8fafc;
-    border: 1px solid var(--border-color);
-    font-size: 0.85rem;
-    padding: 10px;
-    border-radius: 8px;
-    color: var(--secondary-text);
-    z-index: 2;
-}
-
-.mt-auto { margin-top: auto; }
-.flex-col { display: flex; flex-direction: column; height: 100%; }
+/* --- Elementos de Texto --- */
+.formula-box { background-color: #f8fafc; border: 1px solid var(--border-color); font-size: 0.85rem; padding: 10px; border-radius: 8px; color: var(--secondary-text); z-index: 2; }
 
 /* --- Caja de Conclusiones --- */
 .conclusion-box {
     background-color: #f8fafc; 
-    border-left: 5px solid var(--tuti-accent); /* Borde amarillo Tuti */
+    border-left: 5px solid var(--tuti-accent); 
     padding: 1.2rem 1.5rem;
     margin-top: -1rem; 
     margin-bottom: 3.5rem; 
@@ -214,27 +128,4 @@
     line-height: 1.6;
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
-
 .conclusion-box strong { color: var(--tuti-main); }
-
-/* --- Marcas de Agua Sutiles --- */
-.watermark-dollar::before, .watermark-cart::before {
-    position: absolute;
-    right: 5px;
-    font-weight: 900;
-    color: var(--tuti-main);
-    opacity: 0.08; 
-    pointer-events: none;
-    z-index: 1;
-    line-height: 1;
-}
-
-.watermark-dollar::before { content: '$'; bottom: -15px; font-size: 10rem; }
-.watermark-cart::before { content: '🛒'; bottom: -20px; font-size: 8rem; }
-
-/* --- Tarjeta Destacada --- */
-.highlight-card { background-color: #f0f4ff; border: 2px solid #b3c6ff; }
-.highlight-card .comparison-col-white { background-color: #ffffff; border-color: #b3c6ff; }
-.highlight-card .formula-box { background-color: #ffffff; border-color: #b3c6ff; }
-
-.breakdown-list { list-style: none; padding: 0; margin: 0; }
