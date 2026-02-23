@@ -26,7 +26,7 @@
             <h2 class="tuti-title">Expansión y Mercado - TUTI</h2>
             <p class="subtitle">Análisis de crecimiento, cobertura y comportamiento del consumidor</p>
             
-            <a href="Calculos_Tuti.xlsx" download="Calculos_Tuti.xlsx" class="download-btn">
+            <a href="Calculos TUTI.xlsx" download="Calculos TUTI.xlsx" class="download-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px;">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                     <polyline points="7 10 12 15 17 10"></polyline>
@@ -42,7 +42,7 @@
             <div class="card tuti-card">
                 <div class="card-header">
                     <div class="title-with-icon"><span class="icon tuti-icon">📈</span><h3>Utilidad Neta (2019 - 2024)</h3></div>
-                    <a href="AQUI_TU_URL" target="_blank" class="info-btn">REF</a>
+                    <a href="https://appscvsgen.supercias.gob.ec/consultaCompanias/societario/busquedaCompanias.jsf" target="_blank" class="info-btn">REF</a>
                 </div>
                 <div class="chart-container-large">
                     <canvas id="chartUtilidad"></canvas>
@@ -54,11 +54,10 @@
         </section>
 
         <section class="tuti-grid-2">
-            
             <div class="card tuti-card">
                 <div class="card-header">
                     <div class="title-with-icon"><span class="icon tuti-icon">📊</span><h3>Ingresos Operacionales</h3></div>
-                    <a href="AQUI_TU_URL" target="_blank" class="info-btn">REF</a>
+                    <a href="https://appscvsgen.supercias.gob.ec/consultaCompanias/societario/busquedaCompanias.jsf" target="_blank" class="info-btn">REF</a>
                 </div>
                 <div class="chart-container-large">
                     <canvas id="chartIngresos"></canvas>
@@ -71,7 +70,7 @@
             <div class="card tuti-card">
                 <div class="card-header">
                     <div class="title-with-icon"><span class="icon tuti-icon">🍩</span><h3>Participación en el Mercado</h3></div>
-                    <a href="AQUI_TU_URL" target="_blank" class="info-btn">REF</a>
+                    <a href="https://appscvsgen.supercias.gob.ec/consultaCompanias/societario/busquedaCompanias.jsf" target="_blank" class="info-btn">REF</a>
                 </div>
                 <div class="chart-container-large" style="display: flex; align-items: center; justify-content: center;">
                     <canvas id="chartMercado"></canvas>
@@ -80,30 +79,69 @@
                     Cuota de mercado actual sobre el 100% de la industria retail alimentaria.
                 </div>
             </div>
-
         </section>
 
-        <section class="tuti-grid-1">
+        <section class="tuti-grid-2">
+            
             <div class="card tuti-card">
                 <div class="card-header">
-                    <div class="title-with-icon"><span class="icon tuti-icon">🎯</span><h3>Margen de Utilidad Neta (ROS)</h3></div>
-                    <a href="AQUI_TU_URL" target="_blank" class="info-btn">REF</a>
+                    <div class="title-with-icon"><span class="icon tuti-icon">⚖️</span><h3>Impacto de Comisiones sobre Utilidad (2024)</h3></div>
                 </div>
                 <div class="chart-container-large">
-                    <canvas id="chartROS"></canvas>
+                    <canvas id="chartImpactoUtilidad"></canvas>
                 </div>
                 <div class="formula-box" style="margin-top: 1.5rem;">
-                    Dispersión del rendimiento sobre las ventas (Return on Sales) entre 2022 y 2024.
+                    Proporción de las ganancias absorbidas por costos transaccionales POS (Línea amarilla marca el % de impacto).
+                </div>
+            </div>
+
+            <div class="card tuti-card">
+                <div class="card-header">
+                    <div class="title-with-icon"><span class="icon tuti-icon">💳</span><h3>Composición de Pagos POS</h3></div>
+                    <div>
+                        <a href="https://contenido.bce.fin.ec/documentos/Administracion/snp-estadistica-10.pdf" target="_blank" class="info-btn">REF 1</a>
+                        <a href="https://www.superbancos.gob.ec/bancos/pronunciamiento-de-la-sb-frente-a-pagos-realizados-con-tarjeta-de-credito-o-debito/" target="_blank" class="info-btn" style="margin-left: 5px;">REF 2</a>
+                    </div>
+                </div>
+                <div class="chart-container-large" style="display: flex; align-items: center; justify-content: center;">
+                    <canvas id="chartMacroPagos"></canvas>
+                </div>
+                <div class="formula-box" style="margin-top: 1.5rem;">
+                    Proporción del volumen monetario transaccionado en terminales POS (Crédito vs. Débito).
                 </div>
             </div>
         </section>
 
-        <div class="conclusion-box">
-            <strong>💡 Conclusión Financiera Global:</strong> La estrategia de "Hard Discount" de Tuti es evidente en las métricas. El margen ROS muestra una recuperación impecable desde el -2.81% (2022) hasta finalmente alcanzar la rentabilidad en 2024 (0.09%). Esto fue posible gracias a una expansión agresiva que disparó sus ventas brutas a casi 700 millones de dólares, arrebatando un sólido 7.68% de la cuota de mercado en tiempo récord, mientras competidores como TIA y El Rosado muestran claras caídas en sus márgenes de utilidad.
+        <h3 class="section-title" style="margin-top: 3rem;">Impacto del Gasto Financiero (Comisiones Bancarias)</h3>
+        
+        <section class="tuti-grid-1">
+            <div class="card tuti-card">
+                <div class="card-header">
+                    <div class="title-with-icon"><span class="icon tuti-icon">💰</span><h3>Costo Total por Comisión de Tarjetas (Millones USD)</h3></div>
+                </div>
+                <div class="chart-container-large" style="height: 400px;">
+                    <canvas id="chartComisiones"></canvas>
+                </div>
+                <div class="formula-box" style="margin-top: 1.5rem;">
+                    Gasto financiero anual estimado. El total de la barra representa la suma de comisiones por Tarjeta de Crédito (Rojo) y Débito (Gris).
+                </div>
+            </div>
+        </section>
+
+        <div class="conclusion-box" style="border-left-color: #e3000f; background-color: #fff5f5;">
+            <h4 style="color: #e3000f; margin-top: 0; display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 1.2rem;">🚀</span> El Gran Ausente: La Ventaja Competitiva de Tuti
+            </h4>
+            <p style="margin-bottom: 10px;">
+                Para calcular la fuga de capital por comisiones que sufren las cadenas tradicionales, se aplicó un coeficiente de digitalización transaccional <strong>CS = 22.49%</strong> (calculado sobre la relación macroeconómica nacional de POS / POS + Retiros). Sobre este volumen, se proyectaron las tasas de descuento: <strong>4.02%</strong> para Tarjetas de Crédito y <strong>2.00%</strong> para Débito.
+            </p>
+            <p style="margin-bottom: 0;">
+                Como se observa, el peso del POS es devastador: en empresas como TIA S.A., <strong>casi el 90% de su Utilidad Neta equivalente</strong> se diluye en pagar comisiones bancarias. <strong>Tuti no aparece en esta métrica</strong> porque su modelo <em>Hard Discount</em> ("Solo Efectivo o Transferencia directa") elimina casi por completo la intermediación del POS. Al no asumir estos multimillonarios costos, Tuti puede operar con márgenes brutos ínfimos y lograr rentabilidad final trasladando ese ahorro al consumidor.
+            </p>
         </div>
 
     </main>
 
-    <script type="module" src="tuti.js"></script>
+    <script src="tuti.js"></script>
 </body>
 </html>

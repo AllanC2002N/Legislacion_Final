@@ -1,45 +1,19 @@
 // =========================================================
-// 1. DATOS FINANCIEROS (RETAIL ALIMENTARIO)
+// 1. DATOS FINANCIEROS Y DE MERCADO
 // =========================================================
 
-// --- Utilidad Neta 2019-2024 ---
 const utilidadData = {
     labels: ['2019', '2020', '2021', '2022', '2023', '2024'],
     datasets: [
-        {
-            label: 'Tiendas Tuti TTDE S.A.',
-            data: [-3531909.25, -5905384.03, -6773706.07, -6749267.17, -6051477.18, 632855.98],
-            borderColor: '#e3000f', backgroundColor: '#e3000f', borderWidth: 4, tension: 0.3, pointRadius: 5, pointHoverRadius: 8
-        },
-        {
-            label: 'Corporación Favorita',
-            data: [146948162.24, 147499234.25, 143823630.32, 155767666.19, 165187931.58, 169565587.88],
-            borderColor: '#334155', borderWidth: 2, tension: 0.3, pointRadius: 3
-        },
-        {
-            label: 'Corporación El Rosado',
-            data: [28656111.27, 27622934.68, 25507431.13, 34172869.60, 38196833.17, 14646069.77],
-            borderColor: '#64748b', borderWidth: 2, tension: 0.3, pointRadius: 3
-        },
-        {
-            label: 'TIA S.A.',
-            data: [28975054.28, 28489595.55, 22699894.74, 30230705.00, 20086074.00, 6642977.00],
-            borderColor: '#94a3b8', borderWidth: 2, tension: 0.3, pointRadius: 3
-        },
-        {
-            label: 'Gerardo Ortiz e Hijos',
-            data: [12727412.00, 18171357.00, 23441765.33, 24095565.72, 20645569.49, 35348055.06],
-            borderColor: '#cbd5e1', borderWidth: 2, tension: 0.3, pointRadius: 3
-        },
-        {
-            label: 'Mega Santamaria',
-            data: [477228.00, 5639201.00, 5318398.00, 6856480.64, 5398336.15, 2823643.67],
-            borderColor: '#e2e8f0', borderWidth: 2, tension: 0.3, pointRadius: 3
-        }
+        { label: 'Tiendas Tuti TTDE S.A.', data: [-3531909.25, -5905384.03, -6773706.07, -6749267.17, -6051477.18, 632855.98], borderColor: '#e3000f', backgroundColor: '#e3000f', borderWidth: 4, tension: 0.3, pointRadius: 5, pointHoverRadius: 8, showLine: true },
+        { label: 'Corporación Favorita', data: [146948162.24, 147499234.25, 143823630.32, 155767666.19, 165187931.58, 169565587.88], borderColor: '#334155', borderWidth: 2, tension: 0.3, pointRadius: 3, showLine: true },
+        { label: 'Corporación El Rosado', data: [28656111.27, 27622934.68, 25507431.13, 34172869.60, 38196833.17, 14646069.77], borderColor: '#64748b', borderWidth: 2, tension: 0.3, pointRadius: 3, showLine: true },
+        { label: 'TIA S.A.', data: [28975054.28, 28489595.55, 22699894.74, 30230705.00, 20086074.00, 6642977.00], borderColor: '#94a3b8', borderWidth: 2, tension: 0.3, pointRadius: 3, showLine: true },
+        { label: 'Gerardo Ortiz e Hijos', data: [12727412.00, 18171357.00, 23441765.33, 24095565.72, 20645569.49, 35348055.06], borderColor: '#cbd5e1', borderWidth: 2, tension: 0.3, pointRadius: 3, showLine: true },
+        { label: 'Mega Santamaria', data: [477228.00, 5639201.00, 5318398.00, 6856480.64, 5398336.15, 2823643.67], borderColor: '#e2e8f0', borderWidth: 2, tension: 0.3, pointRadius: 3, showLine: true }
     ]
 };
 
-// --- Ingresos Operacionales 2022-2024 ---
 const ingresosData = {
     labels: ['2022', '2023', '2024'],
     datasets: [
@@ -52,7 +26,6 @@ const ingresosData = {
     ]
 };
 
-// --- Participación de Mercado ---
 const mercadoData = {
     labels: ['Corporación Favorita', 'Corporación El Rosado', 'TIA S.A.', 'Gerardo Ortiz e Hijos', 'Tiendas Tuti', 'Mega Santamaria'],
     datasets: [{
@@ -62,129 +35,189 @@ const mercadoData = {
     }]
 };
 
-// --- Margen ROS (Dispersión conectada con líneas) ---
-const rosData = {
+// NUEVOS DATOS: Impacto de Comisiones en Utilidad (Gráfico Combinado)
+const impactoData = {
+    labels: ['Corp. Favorita', 'Corp. El Rosado', 'TIA S.A.', 'Gerardo Ortiz', 'Mega Santamaria'],
     datasets: [
         {
-            label: 'Tiendas Tuti TTDE S.A.',
-            data: [{x: 2022, y: -2.81}, {x: 2023, y: -1.35}, {x: 2024, y: 0.09}],
-            backgroundColor: '#e3000f',
-            borderColor: '#e3000f',
-            pointRadius: 6,
-            pointHoverRadius: 9,
-            showLine: true, // ¡LÍNEA ACTIVADA!
-            borderWidth: 4, // Línea gruesa
-            tension: 0.1
+            type: 'bar',
+            label: 'Utilidad Neta 2024 ($M)',
+            data: [169.56, 14.64, 6.64, 35.34, 2.82],
+            backgroundColor: '#334155', // Gris oscuro corporativo
+            yAxisID: 'y'
         },
         {
-            label: 'Corporación Favorita',
-            data: [{x: 2022, y: 6.61}, {x: 2023, y: 6.65}, {x: 2024, y: 6.66}],
-            backgroundColor: '#334155', borderColor: '#334155', pointRadius: 4, showLine: true, borderWidth: 2, tension: 0.1
+            type: 'bar',
+            label: 'Costo Comisiones ($M)',
+            data: [20.12, 12.41, 5.96, 4.17, 1.88],
+            backgroundColor: '#e3000f', // Rojo de alerta/costo
+            yAxisID: 'y'
         },
         {
-            label: 'Corporación El Rosado',
-            data: [{x: 2022, y: 2.39}, {x: 2023, y: 2.44}, {x: 2024, y: 0.93}],
-            backgroundColor: '#64748b', borderColor: '#64748b', pointRadius: 4, showLine: true, borderWidth: 2, tension: 0.1
+            type: 'line',
+            label: 'Impacto en Utilidad (%)',
+            data: [11.87, 84.76, 89.78, 11.81, 66.63],
+            borderColor: '#fbbf24', // Línea amarilla/dorada para el %
+            backgroundColor: '#fbbf24',
+            borderWidth: 3,
+            pointRadius: 5,
+            tension: 0.3,
+            yAxisID: 'y1' // Eje secundario a la derecha
+        }
+    ]
+};
+
+const macroPagosData = {
+    labels: ['Tarjetas de Crédito', 'Tarjetas de Débito'],
+    datasets: [{
+        data: [75.01, 24.99],
+        backgroundColor: ['#e3000f', '#334155'],
+        borderWidth: 3,
+        borderColor: '#ffffff',
+        hoverOffset: 6
+    }]
+};
+
+const comisionesData = {
+    labels: ['Corp. Favorita C.A.', 'Corp. El Rosado S.A.', 'TIA S.A.', 'Gerardo Ortiz e Hijos', 'Mega Santamaria S.A.'],
+    datasets: [
+        {
+            label: 'Comisión T. Crédito (4.02%)',
+            data: [17.266741, 10.648432, 5.116105, 3.579975, 1.613789],
+            backgroundColor: '#e3000f', 
+            borderRadius: 4
         },
         {
-            label: 'TIA S.A.',
-            data: [{x: 2022, y: 3.89}, {x: 2023, y: 2.55}, {x: 2024, y: 0.88}],
-            backgroundColor: '#94a3b8', borderColor: '#94a3b8', pointRadius: 4, showLine: true, borderWidth: 2, tension: 0.1
-        },
-        {
-            label: 'Gerardo Ortiz e Hijos',
-            data: [{x: 2022, y: 5.10}, {x: 2023, y: 4.08}, {x: 2024, y: 6.70}],
-            backgroundColor: '#cbd5e1', borderColor: '#cbd5e1', pointRadius: 4, showLine: true, borderWidth: 2, tension: 0.1
-        },
-        {
-            label: 'Mega Santamaria',
-            data: [{x: 2022, y: 2.34}, {x: 2023, y: 1.91}, {x: 2024, y: 1.19}],
-            backgroundColor: '#9ca3af', borderColor: '#9ca3af', pointRadius: 4, showLine: true, borderWidth: 2, tension: 0.1
+            label: 'Comisión T. Débito (2.00%)',
+            data: [2.861945, 1.764967, 0.847989, 0.593377, 0.267484],
+            backgroundColor: '#334155', 
+            borderRadius: 4
         }
     ]
 };
 
 // =========================================================
-// 2. GENERADORES DE GRÁFICOS (CHART.JS)
+// 2. GENERADORES DE GRÁFICOS CON BLINDAJE (Seguros)
 // =========================================================
 
 function createMultiLineChart(canvasId) {
-    const ctx = document.getElementById(canvasId).getContext('2d');
-    new Chart(ctx, {
+    const el = document.getElementById(canvasId);
+    if (!el) return;
+    new Chart(el.getContext('2d'), {
         type: 'line', data: utilidadData,
         options: {
             responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
-            plugins: {
-                legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8, font: { size: 11 } } },
-                tooltip: { callbacks: { label: function(c) { return c.dataset.label + ': $' + (c.parsed.y / 1000000).toFixed(2) + ' M'; } } }
-            },
-            scales: {
-                y: { display: true, title: { display: true, text: 'Utilidad Neta (Millones USD)' }, grid: { color: '#f1f5f9' }, ticks: { callback: function(value) { return '$' + (value / 1000000).toFixed(0) + 'M'; } } },
-                x: { grid: { display: false }, ticks: { font: { weight: 'bold' } } }
-            }
+            plugins: { legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8, font: { size: 11 } } }, tooltip: { callbacks: { label: function(c) { return c.dataset.label + ': $' + (c.parsed.y / 1000000).toFixed(2) + ' M'; } } } },
+            scales: { y: { display: true, title: { display: true, text: 'Utilidad Neta (Millones USD)' }, grid: { color: '#f1f5f9' }, ticks: { callback: function(value) { return '$' + (value / 1000000).toFixed(0) + 'M'; } } }, x: { grid: { display: false }, ticks: { font: { weight: 'bold' } } } }
         }
     });
 }
 
 function createGroupedBarChart(canvasId) {
-    const ctx = document.getElementById(canvasId).getContext('2d');
-    new Chart(ctx, {
+    const el = document.getElementById(canvasId);
+    if (!el) return;
+    new Chart(el.getContext('2d'), {
         type: 'bar', data: ingresosData,
         options: {
             responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
-            plugins: { 
-                legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8, font: { size: 11 } } }, 
-                tooltip: { callbacks: { label: function(c) { return c.dataset.label + ': $' + (c.parsed.y / 1000000).toFixed(2) + ' M'; } } } 
-            },
-            scales: { 
-                y: { display: true, title: { display: true, text: 'Ingresos Operacionales (Millones USD)' }, grid: { color: '#f1f5f9' }, ticks: { callback: function(value) { return '$' + (value / 1000000).toFixed(0) + 'M'; } } }, 
-                x: { grid: { display: false }, ticks: { font: { weight: 'bold' } } } 
-            }
+            plugins: { legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8, font: { size: 11 } } }, tooltip: { callbacks: { label: function(c) { return c.dataset.label + ': $' + (c.parsed.y / 1000000).toFixed(2) + ' M'; } } } },
+            scales: { y: { display: true, title: { display: true, text: 'Ingresos Operacionales (Millones USD)' }, grid: { color: '#f1f5f9' }, ticks: { callback: function(value) { return '$' + (value / 1000000).toFixed(0) + 'M'; } } }, x: { grid: { display: false }, ticks: { font: { weight: 'bold' } } } }
         }
     });
 }
 
 function createMarketShareChart(canvasId) {
-    const ctx = document.getElementById(canvasId).getContext('2d');
-    new Chart(ctx, {
+    const el = document.getElementById(canvasId);
+    if (!el) return;
+    new Chart(el.getContext('2d'), {
         type: 'doughnut', data: mercadoData,
         options: {
             responsive: true, maintainAspectRatio: false, cutout: '65%',
-            plugins: {
-                legend: { position: 'right', labels: { usePointStyle: true, boxWidth: 10, font: { size: 11 } } },
-                tooltip: { callbacks: { label: function(c) { return ' ' + c.label + ': ' + c.parsed + '%'; } } }
-            }
+            plugins: { legend: { position: 'right', labels: { usePointStyle: true, boxWidth: 10, font: { size: 11 } } }, tooltip: { callbacks: { label: function(c) { return ' ' + c.label + ': ' + c.parsed + '%'; } } } }
         }
     });
 }
 
-function createScatterChart(canvasId) {
-    const ctx = document.getElementById(canvasId).getContext('2d');
-    new Chart(ctx, {
-        type: 'scatter',
-        data: rosData,
+// NUEVA FUNCIÓN: Gráfico Combinado Utilidad vs Costo vs Porcentaje
+function createImpactoUtilidadChart(canvasId) {
+    const el = document.getElementById(canvasId);
+    if (!el) return;
+    new Chart(el.getContext('2d'), {
+        data: impactoData,
         options: {
-            responsive: true,
-            maintainAspectRatio: false,
+            responsive: true, maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
             plugins: {
-                legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8, font: { size: 11 } } },
+                legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 10, font: { size: 11 } } },
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            return context.dataset.label + ': ' + context.parsed.y + '% (Año ' + context.parsed.x + ')';
+                            if (context.dataset.yAxisID === 'y1') {
+                                return context.dataset.label + ': ' + context.parsed.y + '%';
+                            }
+                            return context.dataset.label + ': $' + context.parsed.y + ' Millones';
                         }
                     }
                 }
             },
             scales: {
-                x: {
-                    type: 'linear', position: 'bottom', title: { display: true, text: 'Año' }, grid: { display: false },
-                    ticks: { stepSize: 1, callback: function(value) { return value.toString(); }, font: { weight: 'bold' } }
+                x: { 
+                    grid: { display: false }, 
+                    ticks: { font: { weight: 'bold', size: 10 } } 
                 },
-                y: {
-                    title: { display: true, text: 'Margen ROS (%)' }, grid: { color: '#f1f5f9' },
-                    ticks: { callback: function(value) { return value + '%'; } }
+                y: { 
+                    type: 'linear', display: true, position: 'left', 
+                    title: { display: true, text: 'Millones USD' },
+                    ticks: { callback: function(value) { return '$' + value + 'M'; } }
+                },
+                y1: { 
+                    type: 'linear', display: true, position: 'right', 
+                    title: { display: true, text: 'Impacto (%)' },
+                    grid: { drawOnChartArea: false }, // Evita que se superpongan las líneas de fondo
+                    ticks: { callback: function(value) { return value + '%'; } } 
                 }
+            }
+        }
+    });
+}
+
+function createMacroPagosChart(canvasId) {
+    const el = document.getElementById(canvasId);
+    if (!el) return;
+    new Chart(el.getContext('2d'), {
+        type: 'doughnut', data: macroPagosData,
+        options: {
+            responsive: true, maintainAspectRatio: false, cutout: '70%', 
+            plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 10, font: { size: 12, weight: 'bold' } } }, tooltip: { callbacks: { label: function(c) { return ' ' + c.label + ': ' + c.parsed + '%'; } } } }
+        }
+    });
+}
+
+function createComisionesChart(canvasId) {
+    const el = document.getElementById(canvasId);
+    if (!el) return;
+    new Chart(el.getContext('2d'), {
+        type: 'bar',
+        data: comisionesData,
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 10, font: { size: 12, weight: 'bold' } } },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) { return context.dataset.label + ': $' + context.parsed.y.toFixed(2) + ' M'; },
+                        footer: function(tooltipItems) {
+                            let total = 0;
+                            tooltipItems.forEach(function(item) { total += item.parsed.y; });
+                            return 'Costo Total POS: $' + total.toFixed(2) + ' M';
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: { stacked: true, grid: { display: false }, ticks: { font: { weight: 'bold', size: 11 } } },
+                y: { stacked: true, title: { display: true, text: 'Costo Bancario (Millones de USD)', font: { weight: 'bold' } }, grid: { color: '#f1f5f9' }, ticks: { callback: function(value) { return '$' + value + 'M'; } } }
             }
         }
     });
@@ -198,5 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
     createMultiLineChart('chartUtilidad');
     createGroupedBarChart('chartIngresos'); 
     createMarketShareChart('chartMercado'); 
-    createScatterChart('chartROS'); 
+    createImpactoUtilidadChart('chartImpactoUtilidad'); // Reemplaza al ROS
+    createMacroPagosChart('chartMacroPagos');
+    createComisionesChart('chartComisiones');
 });
