@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Tuti</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* =========================================================
+           1. ESTILOS GLOBALES BASE (Provenientes de styles.css)
+           ========================================================= */
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --primary-text: #334155;
+            --secondary-text: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--primary-text);
+            line-height: 1.6;
+        }
+
+        /* ---- Navegación ---- */
+        .navbar {
+            background-color: var(--card-bg);
+            padding: 1rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-brand {
+            font-weight: 800;
+            font-size: 1.4rem;
+            letter-spacing: -0.5px;
+            color: var(--primary-text);
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--secondary-text);
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            background-color: var(--border-color);
+            color: var(--primary-text);
+        }
+
+        /* ---- Contenedor Principal ---- */
+        .container {
+            max-width: 1100px;
+            margin: 3rem auto;
+            padding: 0 1.5rem;
+        }
+
+        /* =========================================================
+           2. ESTILOS UNIFICADOS: DASHBOARD TUTI 
+           ========================================================= */
+
+        :root {
+            --tuti-main: #0033a0;    /* Azul Tuti */
+            --tuti-accent: #ffd100;  /* Amarillo Tuti */
+            --tuti-danger: #e3000f;  /* Rojo Tuti */
+            --tuti-light: #e6eff7;   
+        }
+
+        .page-header { text-align: center; margin-bottom: 3rem; }
+        .tuti-title { font-size: 2.8rem; font-weight: 900; color: var(--tuti-main); letter-spacing: -1px; text-align: center; margin-bottom: 0.5rem;}
+        .subtitle { color: var(--secondary-text); font-size: 1.1rem; font-weight: 500;}
+        .section-title { font-size: 1.4rem; color: var(--primary-text); margin-bottom: 1.5rem; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; margin-top: 2rem; }
+        .section-title:first-of-type { margin-top: 0; }
+
+        /* --- Grillas Financieras --- */
+        .tuti-grid-1 { display: grid; grid-template-columns: 1fr; gap: 2rem; margin-bottom: 2rem; }
+        .tuti-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; margin-bottom: 3rem; }
+
+        @media (max-width: 800px) {
+            .tuti-grid-2 { grid-template-columns: 1fr; }
+        }
+
+        /* --- Estilo Base de Tarjeta --- */
+        .tuti-card {
+            border-top: 4px solid var(--tuti-main);
+            background: #ffffff;
+            position: relative; 
+            overflow: hidden;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .tuti-card:hover {
+            border-color: var(--tuti-accent);
+            box-shadow: 0 10px 25px rgba(0, 51, 160, 0.15);
+        }
+
+        .tuti-icon {
+            background-color: var(--tuti-light) !important;
+            color: var(--tuti-main) !important;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            z-index: 2;
+        }
+
+        /* --- Cabecera de Tarjeta y Enlace REF --- */
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+        .title-with-icon { display: flex; align-items: center; gap: 0.8rem; }
+        .title-with-icon h3 { color: var(--primary-text); font-size: 1.2rem; font-weight: 700; margin: 0;}
+
+        .info-btn {
+            display: inline-block;
+            text-decoration: none;
+            background-color: #f1f5f9;
+            color: var(--secondary-text);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 3px 6px;
+            line-height: 1.2;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .info-btn:hover { background-color: var(--tuti-light); color: var(--tuti-main); border-color: var(--tuti-main); }
+
+        /* --- Botón Descarga --- */
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background-color: var(--primary-text); 
+            color: #ffffff;
+            padding: 10px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 0.95rem;
+            margin-top: 1.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .download-btn:hover {
+            background-color: var(--tuti-main); 
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 51, 160, 0.2);
+        }
+
+        /* --- Contenedor para Gráficos Financieros --- */
+        .chart-container-large {
+            position: relative;
+            height: 400px;
+            width: 100%;
+            margin-top: 1rem;
+            z-index: 2;
+        }
+
+        @media (max-width: 768px) {
+            .chart-container-large { height: 320px; }
+        }
+
+        /* --- Elementos de Texto --- */
+        .formula-box { background-color: #f8fafc; border: 1px solid var(--border-color); font-size: 0.85rem; padding: 10px; border-radius: 8px; color: var(--secondary-text); z-index: 2; }
+
+        /* --- Caja de Conclusiones --- */
+        .conclusion-box {
+            background-color: #f8fafc; 
+            border-left: 5px solid var(--tuti-accent); 
+            padding: 1.2rem 1.5rem;
+            margin-top: -1rem; 
+            margin-bottom: 3.5rem; 
+            border-radius: 0 8px 8px 0;
+            color: var(--primary-text);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .conclusion-box strong { color: var(--tuti-main); }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-brand">Digitalización AC</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Indicadores</a></li>
+            <li><a href="timeline.html">Línea de Tiempo</a></li>
+            <li><a href="tarjeta.html">Tarjeta Ciudad</a></li>
+            <li><a href="tuti.html" class="active">TUTI</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        
+        <section class="page-header">
+            <h2 class="tuti-title">Expansión y Mercado - TUTI</h2>
+            <p class="subtitle">Análisis de crecimiento, cobertura y comportamiento del consumidor</p>
+            
+            <a href="Calculos TUTI.xlsx" download="Calculos TUTI.xlsx" class="download-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px;">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Descargar Cálculos (Excel)
+            </a>
+        </section>
+
+        <h3 class="section-title">Comparativa Financiera del Sector Retail</h3>
+        
+        <section class="tuti-grid-1">
+            <div class="card tuti-card">
+                <div class="card-header">
+                    <div class="title-with-icon"><span class="icon tuti-icon">📈</span><h3>Utilidad Neta (2019 - 2024)</h3></div>
+                    <a href="https://appscvsgen.supercias.gob.ec/consultaCompanias/societario/busquedaCompanias.jsf" target="_blank" class="info-btn">REF</a>
+                </div>
+                <div class="chart-container-large">
+                    <canvas id="chartUtilidad"></canvas>
+                </div>
+                <div class="formula-box" style="margin-top: 1.5rem;">
+                    Evolución de la utilidad o pérdida neta (Valores expresados en Millones de USD).
+                </div>
+            </div>
+        </section>
+
+        <section class="tuti-grid-2">
+            <div class="card tuti-card">
+                <div class="card-header">
+                    <div class="title-with-icon"><span class="icon tuti-icon">📊</span><h3>Ingresos Operacionales</h3></div>
+                    <a href="https://appscvsgen.supercias.gob.ec/consultaCompanias/societario/busquedaCompanias.jsf" target="_blank" class="info-btn">REF</a>
+                </div>
+                <div class="chart-container-large">
+                    <canvas id="chartIngresos"></canvas>
+                </div>
+                <div class="formula-box" style="margin-top: 1.5rem;">
+                    Facturación bruta entre competidores (Millones de USD).
+                </div>
+            </div>
+
+            <div class="card tuti-card">
+                <div class="card-header">
+                    <div class="title-with-icon"><span class="icon tuti-icon">🍩</span><h3>Participación en el Mercado</h3></div>
+                    <a href="https://appscvsgen.supercias.gob.ec/consultaCompanias/societario/busquedaCompanias.jsf" target="_blank" class="info-btn">REF</a>
+                </div>
+                <div class="chart-container-large" style="display: flex; align-items: center; justify-content: center;">
+                    <canvas id="chartMercado"></canvas>
+                </div>
+                <div class="formula-box" style="margin-top: 1.5rem;">
+                    Cuota de mercado actual sobre el 100% de la industria retail alimentaria.
+                </div>
+            </div>
+        </section>
+
+        <section class="tuti-grid-2">
+            
+            <div class="card tuti-card">
+                <div class="card-header">
+                    <div class="title-with-icon"><span class="icon tuti-icon">⚖️</span><h3>Impacto de Comisiones sobre Utilidad (2024)</h3></div>
+                </div>
+                <div class="chart-container-large">
+                    <canvas id="chartImpactoUtilidad"></canvas>
+                </div>
+                <div class="formula-box" style="margin-top: 1.5rem;">
+                    Proporción de las ganancias absorbidas por costos transaccionales POS (Línea amarilla marca el % de impacto).
+                </div>
+            </div>
+
+            <div class="card tuti-card">
+                <div class="card-header">
+                    <div class="title-with-icon"><span class="icon tuti-icon">💳</span><h3>Composición de Pagos POS</h3></div>
+                    <div>
+                        <a href="https://contenido.bce.fin.ec/documentos/Administracion/snp-estadistica-10.pdf" target="_blank" class="info-btn">REF 1</a>
+                        <a href="https://www.superbancos.gob.ec/bancos/pronunciamiento-de-la-sb-frente-a-pagos-realizados-con-tarjeta-de-credito-o-debito/" target="_blank" class="info-btn" style="margin-left: 5px;">REF 2</a>
+                    </div>
+                </div>
+                <div class="chart-container-large" style="display: flex; align-items: center; justify-content: center;">
+                    <canvas id="chartMacroPagos"></canvas>
+                </div>
+                <div class="formula-box" style="margin-top: 1.5rem;">
+                    Proporción del volumen monetario transaccionado en terminales POS (Crédito vs. Débito).
+                </div>
+            </div>
+        </section>
+
+        <h3 class="section-title" style="margin-top: 3rem;">Impacto del Gasto Financiero (Comisiones Bancarias)</h3>
+        
+        <section class="tuti-grid-1">
+            <div class="card tuti-card">
+                <div class="card-header">
+                    <div class="title-with-icon"><span class="icon tuti-icon">💰</span><h3>Costo Total por Comisión de Tarjetas (Millones USD)</h3></div>
+                </div>
+                <div class="chart-container-large" style="height: 400px;">
+                    <canvas id="chartComisiones"></canvas>
+                </div>
+                <div class="formula-box" style="margin-top: 1.5rem;">
+                    Gasto financiero anual estimado. El total de la barra representa la suma de comisiones por Tarjeta de Crédito (Rojo) y Débito (Gris).
+                </div>
+            </div>
+        </section>
+
+        <h3 class="section-title" style="margin-top: 3rem;">Proyección Estratégica: Medio de Pago Digital</h3>
+        
+        <section class="tuti-grid-1">
+            <div class="card tuti-card" style="border-color: #e3000f;">
+                <div class="card-header">
+                    <div class="title-with-icon"><span class="icon tuti-icon" style="background-color: #fff5f5 !important; color: #e3000f !important;">📉</span><h3 style="color: #e3000f;">Impacto POS: Retail vs TUTI</h3></div>
+                </div>
+                <div class="chart-container-large" style="height: 300px;">
+                    <canvas id="chartImpactoPOS"></canvas>
+                </div>
+                <div class="formula-box" style="margin-top: 1.5rem; background-color: #fff5f5; border-color: #fecaca;">
+                    Contraste del impacto positivo que generan las empresas de retail tradicional en el ecosistema POS, frente a la afectación (-1.28%) que sufre el mercado POS debido a la no adopción de este medio digital por parte de TUTI.
+                </div>
+            </div>
+        </section>
+
+        <div class="conclusion-box" style="border-left-color: #e3000f; background-color: #fff5f5;">
+            <h4 style="color: #e3000f; margin-top: 0; display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 1.2rem;">🚀</span> El Gran Ausente: La Ventaja Competitiva de Tuti
+            </h4>
+            <p style="margin-bottom: 10px;">
+                Para calcular la fuga de capital por comisiones que sufren las cadenas tradicionales, se aplicó un coeficiente de digitalización transaccional <strong>CS = 22.49%</strong> (calculado sobre la relación macroeconómica nacional de POS / POS + Retiros). Sobre este volumen, se proyectaron las tasas de descuento: <strong>4.02%</strong> para Tarjetas de Crédito y <strong>2.00%</strong> para Débito.
+            </p>
+            <p style="margin-bottom: 10px;">
+                Como se observa, el peso del POS es devastador: en empresas como TIA S.A., <strong>casi el 90% de su Utilidad Neta equivalente</strong> se diluye en pagar comisiones bancarias. <strong>Tuti no asume estos costos</strong> porque su modelo <em>Hard Discount</em> ("Solo Efectivo o Transferencia directa") elimina casi por completo la intermediación financiera tradicional.
+            </p>
+            <p style="margin-bottom: 0;">
+                A nivel macroeconómico, esto genera un fuerte contraste: mientras la industria del retail tradicional aporta positivamente un <strong>10.38%</strong> al volumen del ecosistema de terminales POS, el hecho de que Tuti no ofrezca este medio de pago digital provoca una afectación directa del <strong>-1.28%</strong> al volumen transaccional general del POS. Sin embargo, para la empresa, prescindir de este sistema es una decisión estratégica vital: blinda sus márgenes de rentabilidad, asegura su sostenibilidad a largo plazo y le permite trasladar ese ahorro multimillonario directamente al precio final para el consumidor.
+            </p>
+        </div>
+
+    </main>
+
+    <script>
+        // =========================================================
+        // 1. DATOS FINANCIEROS Y DE MERCADO
+        // =========================================================
+
+        const utilidadData = {
+            labels: ['2019', '2020', '2021', '2022', '2023', '2024'],
+            datasets: [
+                { label: 'Tiendas Tuti TTDE S.A.', data: [-3531909.25, -5905384.03, -6773706.07, -6749267.17, -6051477.18, 632855.98], borderColor: '#e3000f', backgroundColor: '#e3000f', borderWidth: 4, tension: 0.3, pointRadius: 5, pointHoverRadius: 8, showLine: true },
+                { label: 'Corporación Favorita', data: [146948162.24, 147499234.25, 143823630.32, 155767666.19, 165187931.58, 169565587.88], borderColor: '#334155', borderWidth: 2, tension: 0.3, pointRadius: 3, showLine: true },
+                { label: 'Corporación El Rosado', data: [28656111.27, 27622934.68, 25507431.13, 34172869.60, 38196833.17, 14646069.77], borderColor: '#64748b', borderWidth: 2, tension: 0.3, pointRadius: 3, showLine: true },
+                { label: 'TIA S.A.', data: [28975054.28, 28489595.55, 22699894.74, 30230705.00, 20086074.00, 6642977.00], borderColor: '#94a3b8', borderWidth: 2, tension: 0.3, pointRadius: 3, showLine: true },
+                { label: 'Gerardo Ortiz e Hijos', data: [12727412.00, 18171357.00, 23441765.33, 24095565.72, 20645569.49, 35348055.06], borderColor: '#cbd5e1', borderWidth: 2, tension: 0.3, pointRadius: 3, showLine: true },
+                { label: 'Mega Santamaria', data: [477228.00, 5639201.00, 5318398.00, 6856480.64, 5398336.15, 2823643.67], borderColor: '#e2e8f0', borderWidth: 2, tension: 0.3, pointRadius: 3, showLine: true }
+            ]
+        };
+
+        const ingresosData = {
+            labels: ['2022', '2023', '2024'],
+            datasets: [
+                { label: 'Tiendas Tuti TTDE S.A.', data: [240094053.15, 446665993.97, 693240837.34], backgroundColor: '#e3000f', borderRadius: 4 },
+                { label: 'Corporación Favorita', data: [2355580171.13, 2483015099.25, 2546101459.75], backgroundColor: '#334155', borderRadius: 4 },
+                { label: 'Corporación El Rosado', data: [1431995151.99, 1567038006.29, 1570185672.02], backgroundColor: '#64748b', borderRadius: 4 },
+                { label: 'TIA S.A.', data: [776159786.92, 787980599.00, 754405497.00], backgroundColor: '#94a3b8', borderRadius: 4 },
+                { label: 'Gerardo Ortiz e Hijos', data: [472127549.26, 505779781.14, 527892328.87], backgroundColor: '#cbd5e1', borderRadius: 4 },
+                { label: 'Mega Santamaria', data: [293503606.50, 282256705.61, 237964565.18], backgroundColor: '#e2e8f0', borderRadius: 4 }
+            ]
+        };
+
+        const mercadoData = {
+            labels: ['Corporación Favorita', 'Corporación El Rosado', 'TIA S.A.', 'Gerardo Ortiz e Hijos', 'Tiendas Tuti', 'Mega Santamaria'],
+            datasets: [{
+                data: [41.09, 25.42, 12.90, 8.38, 7.68, 4.53],
+                backgroundColor: ['#334155', '#64748b', '#94a3b8', '#cbd5e1', '#e3000f', '#f1f5f9'],
+                borderWidth: 3, borderColor: '#ffffff', hoverOffset: 6
+            }]
+        };
+
+        const impactoData = {
+            labels: ['Corp. Favorita', 'Corp. El Rosado', 'TIA S.A.', 'Gerardo Ortiz', 'Mega Santamaria'],
+            datasets: [
+                {
+                    type: 'bar',
+                    label: 'Utilidad Neta 2024 ($M)',
+                    data: [169.56, 14.64, 6.64, 35.34, 2.82],
+                    backgroundColor: '#334155', 
+                    yAxisID: 'y'
+                },
+                {
+                    type: 'bar',
+                    label: 'Costo Comisiones ($M)',
+                    data: [20.12, 12.41, 5.96, 4.17, 1.88],
+                    backgroundColor: '#e3000f', 
+                    yAxisID: 'y'
+                },
+                {
+                    type: 'line',
+                    label: 'Impacto en Utilidad (%)',
+                    data: [11.87, 84.76, 89.78, 11.81, 66.63],
+                    borderColor: '#fbbf24', 
+                    backgroundColor: '#fbbf24',
+                    borderWidth: 3,
+                    pointRadius: 5,
+                    tension: 0.3,
+                    yAxisID: 'y1' 
+                }
+            ]
+        };
+
+        const macroPagosData = {
+            labels: ['Tarjetas de Crédito', 'Tarjetas de Débito'],
+            datasets: [{
+                data: [75.01, 24.99],
+                backgroundColor: ['#e3000f', '#334155'],
+                borderWidth: 3,
+                borderColor: '#ffffff',
+                hoverOffset: 6
+            }]
+        };
+
+        const comisionesData = {
+            labels: ['Corp. Favorita C.A.', 'Corp. El Rosado S.A.', 'TIA S.A.', 'Gerardo Ortiz e Hijos', 'Mega Santamaria S.A.'],
+            datasets: [
+                {
+                    label: 'Comisión T. Crédito (4.02%)',
+                    data: [17.266741, 10.648432, 5.116105, 3.579975, 1.613789],
+                    backgroundColor: '#e3000f', 
+                    borderRadius: 4
+                },
+                {
+                    label: 'Comisión T. Débito (2.00%)',
+                    data: [2.861945, 1.764967, 0.847989, 0.593377, 0.267484],
+                    backgroundColor: '#334155', 
+                    borderRadius: 4
+                }
+            ]
+        };
+
+        // NUEVA DATA: Gráfico de Impacto POS Retail vs Tuti
+        const nuevoImpactoPOSData = {
+            labels: ['Aporte del Retail Tradicional', 'Afectación por ausencia en TUTI'],
+            datasets: [{
+                label: 'Impacto en el ecosistema POS (%)',
+                data: [10.38, -1.28],
+                backgroundColor: ['#334155', '#e3000f'],
+                borderRadius: 6,
+                barPercentage: 0.5
+            }]
+        };
+
+        // =========================================================
+        // 2. GENERADORES DE GRÁFICOS CON BLINDAJE (Seguros)
+        // =========================================================
+
+        function createMultiLineChart(canvasId) {
+            const el = document.getElementById(canvasId);
+            if (!el) return;
+            new Chart(el.getContext('2d'), {
+                type: 'line', data: utilidadData,
+                options: {
+                    responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+                    plugins: { legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8, font: { size: 11 } } }, tooltip: { callbacks: { label: function(c) { return c.dataset.label + ': $' + (c.parsed.y / 1000000).toFixed(2) + ' M'; } } } },
+                    scales: { y: { display: true, title: { display: true, text: 'Utilidad Neta (Millones USD)' }, grid: { color: '#f1f5f9' }, ticks: { callback: function(value) { return '$' + (value / 1000000).toFixed(0) + 'M'; } } }, x: { grid: { display: false }, ticks: { font: { weight: 'bold' } } } }
+                }
+            });
+        }
+
+        function createGroupedBarChart(canvasId) {
+            const el = document.getElementById(canvasId);
+            if (!el) return;
+            new Chart(el.getContext('2d'), {
+                type: 'bar', data: ingresosData,
+                options: {
+                    responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+                    plugins: { legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8, font: { size: 11 } } }, tooltip: { callbacks: { label: function(c) { return c.dataset.label + ': $' + (c.parsed.y / 1000000).toFixed(2) + ' M'; } } } },
+                    scales: { y: { display: true, title: { display: true, text: 'Ingresos Operacionales (Millones USD)' }, grid: { color: '#f1f5f9' }, ticks: { callback: function(value) { return '$' + (value / 1000000).toFixed(0) + 'M'; } } }, x: { grid: { display: false }, ticks: { font: { weight: 'bold' } } } }
+                }
+            });
+        }
+
+        function createMarketShareChart(canvasId) {
+            const el = document.getElementById(canvasId);
+            if (!el) return;
+            new Chart(el.getContext('2d'), {
+                type: 'doughnut', data: mercadoData,
+                options: {
+                    responsive: true, maintainAspectRatio: false, cutout: '65%',
+                    plugins: { legend: { position: 'right', labels: { usePointStyle: true, boxWidth: 10, font: { size: 11 } } }, tooltip: { callbacks: { label: function(c) { return ' ' + c.label + ': ' + c.parsed + '%'; } } } }
+                }
+            });
+        }
+
+        function createImpactoUtilidadChart(canvasId) {
+            const el = document.getElementById(canvasId);
+            if (!el) return;
+            new Chart(el.getContext('2d'), {
+                data: impactoData,
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 10, font: { size: 11 } } },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    if (context.dataset.yAxisID === 'y1') {
+                                        return context.dataset.label + ': ' + context.parsed.y + '%';
+                                    }
+                                    return context.dataset.label + ': $' + context.parsed.y + ' Millones';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { font: { weight: 'bold', size: 10 } } },
+                        y: { 
+                            type: 'linear', display: true, position: 'left', 
+                            title: { display: true, text: 'Millones USD' },
+                            ticks: { callback: function(value) { return '$' + value + 'M'; } }
+                        },
+                        y1: { 
+                            type: 'linear', display: true, position: 'right', 
+                            title: { display: true, text: 'Impacto (%)' },
+                            grid: { drawOnChartArea: false }, 
+                            ticks: { callback: function(value) { return value + '%'; } } 
+                        }
+                    }
+                }
+            });
+        }
+
+        function createMacroPagosChart(canvasId) {
+            const el = document.getElementById(canvasId);
+            if (!el) return;
+            new Chart(el.getContext('2d'), {
+                type: 'doughnut', data: macroPagosData,
+                options: {
+                    responsive: true, maintainAspectRatio: false, cutout: '70%', 
+                    plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 10, font: { size: 12, weight: 'bold' } } }, tooltip: { callbacks: { label: function(c) { return ' ' + c.label + ': ' + c.parsed + '%'; } } } }
+                }
+            });
+        }
+
+        function createComisionesChart(canvasId) {
+            const el = document.getElementById(canvasId);
+            if (!el) return;
+            new Chart(el.getContext('2d'), {
+                type: 'bar',
+                data: comisionesData,
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 10, font: { size: 12, weight: 'bold' } } },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) { return context.dataset.label + ': $' + context.parsed.y.toFixed(2) + ' M'; },
+                                footer: function(tooltipItems) {
+                                    let total = 0;
+                                    tooltipItems.forEach(function(item) { total += item.parsed.y; });
+                                    return 'Costo Total POS: $' + total.toFixed(2) + ' M';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { stacked: true, grid: { display: false }, ticks: { font: { weight: 'bold', size: 11 } } },
+                        y: { stacked: true, title: { display: true, text: 'Costo Bancario (Millones de USD)', font: { weight: 'bold' } }, grid: { color: '#f1f5f9' }, ticks: { callback: function(value) { return '$' + value + 'M'; } } }
+                    }
+                }
+            });
+        }
+
+        // NUEVA FUNCIÓN: Gráfico Impacto POS
+        function createNuevoImpactoPOSChart(canvasId) {
+            const el = document.getElementById(canvasId);
+            if (!el) return;
+            new Chart(el.getContext('2d'), {
+                type: 'bar',
+                data: nuevoImpactoPOSData,
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: { label: function(c) { return c.parsed.y + '%'; } }
+                        }
+                    },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { font: { weight: 'bold', size: 12 } } },
+                        y: { 
+                            display: true, 
+                            title: { display: true, text: 'Impacto Global (%)', font: { weight: 'bold' } },
+                            grid: { color: function(context) { return context.tick.value === 0 ? '#000000' : '#e2e8f0'; }, lineWidth: function(context) { return context.tick.value === 0 ? 2 : 1; } },
+                            ticks: { callback: function(value) { return value + '%'; } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // =========================================================
+        // 3. INICIALIZACIÓN DEL DOM
+        // =========================================================
+
+        document.addEventListener('DOMContentLoaded', () => {
+            createMultiLineChart('chartUtilidad');
+            createGroupedBarChart('chartIngresos'); 
+            createMarketShareChart('chartMercado'); 
+            createImpactoUtilidadChart('chartImpactoUtilidad'); 
+            createMacroPagosChart('chartMacroPagos');
+            createComisionesChart('chartComisiones');
+            createNuevoImpactoPOSChart('chartImpactoPOS'); // Inicia el nuevo gráfico
+        });
+    </script>
+</body>
+</html>

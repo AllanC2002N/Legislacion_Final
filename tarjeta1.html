@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarjeta Ciudad - Metro</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* =========================================================
+           1. ESTILOS GLOBALES BASE (Provenientes de styles.css)
+           ========================================================= */
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --primary-text: #334155;
+            --secondary-text: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--primary-text);
+            line-height: 1.6;
+        }
+
+        /* ---- Navegación ---- */
+        .navbar {
+            background-color: var(--card-bg);
+            padding: 1rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-brand {
+            font-weight: 800;
+            font-size: 1.4rem;
+            letter-spacing: -0.5px;
+            color: var(--primary-text);
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--secondary-text);
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            background-color: var(--border-color);
+            color: var(--primary-text);
+        }
+
+        /* ---- Contenedor Principal ---- */
+        .container {
+            max-width: 1100px;
+            margin: 3rem auto;
+            padding: 0 1.5rem;
+        }
+
+        /* =========================================================
+           2. ESTILOS UNIFICADOS: TARJETA CIUDAD - METRO
+           ========================================================= */
+
+        :root {
+            --metro-main: #dc2626; 
+            --metro-light: #fee2e2; 
+            --metro-dark: #991b1b;
+        }
+
+        /* --- Estética General --- */
+        .page-header { text-align: center; margin-bottom: 3rem; }
+        .metro-title { font-size: 2.8rem; font-weight: 900; color: var(--metro-main); letter-spacing: -1px; text-align: center; }
+        .subtitle { color: var(--secondary-text); font-size: 1.1rem; font-weight: 500;}
+        .section-title { font-size: 1.4rem; color: var(--primary-text); margin-bottom: 1.5rem; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; margin-top: 2rem; }
+        .section-title:first-of-type { margin-top: 0; }
+
+        /* --- Grillas --- */
+        .adoption-grid {
+            display: grid;
+            grid-template-columns: 1fr; 
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .metro-indicators-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 1.5rem;
+            margin-bottom: 4rem;
+            align-items: stretch;
+        }
+
+        .metro-indicators-grid .card:nth-child(4) { grid-column: 1 / 3; }
+        .metro-indicators-grid .card:nth-child(5) { grid-column: 3 / 4; }
+
+        @media (max-width: 800px) {
+            .metro-indicators-grid { grid-template-columns: repeat(2, 1fr); }
+            .metro-indicators-grid .card:nth-child(4),
+            .metro-indicators-grid .card:nth-child(5) { grid-column: span 1; }
+            .adoption-grid, .metro-indicators-grid { grid-template-columns: 1fr; }
+        }
+
+        /* --- Estilo Base de Tarjeta --- */
+        .metro-card {
+            border-top: 4px solid var(--metro-main);
+            background: #ffffff;
+            position: relative; 
+            overflow: hidden;
+            padding: 1.5rem;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-left: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .metro-card:hover {
+            border-color: var(--metro-main);
+            box-shadow: 0 10px 25px rgba(220, 38, 38, 0.15);
+            transform: translateY(-4px);
+        }
+
+        .metro-icon {
+            background-color: var(--metro-light) !important;
+            color: var(--metro-main) !important;
+            padding: 10px;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            z-index: 2;
+        }
+
+        /* --- Cabecera de Tarjeta y Enlace REF --- */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .title-with-icon {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .title-with-icon h3, .title-with-icon h4 {
+            color: var(--primary-text);
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        /* Ajustado para que el enlace <a> se vea exactamente como un botón */
+        .info-btn {
+            display: inline-block;
+            text-decoration: none;
+            background-color: #f1f5f9;
+            color: var(--secondary-text);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 3px 6px;
+            line-height: 1.2;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .info-btn:hover {
+            background-color: var(--metro-light);
+            color: var(--metro-main);
+            border-color: var(--metro-main);
+        }
+
+        /* --- Layout Horizontal (Adopción) --- */
+        .horizontal-card-body {
+            display: flex;
+            flex-direction: row;
+            gap: 1.5rem;
+            align-items: stretch;
+            margin-top: 0.5rem;
+            z-index: 2;
+        }
+
+        .info-side { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+
+        .chart-side { 
+            flex: 1.5; 
+            position: relative; 
+            min-height: 180px; 
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .horizontal-card-body { flex-direction: column; }
+            .chart-side { min-height: 200px; } 
+        }
+
+        /* --- RECUADRO BLANCO DE NÚMEROS (Apilados) --- */
+        .comparison-col, .comparison-col-white {
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 15px;
+            margin: 10px 0;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+            z-index: 2;
+        }
+
+        .year-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+        }
+
+        .year-row:not(:last-child) {
+            border-bottom: 1px dashed #f1f5f9;
+        }
+
+        .year-label {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--secondary-text);
+            text-transform: uppercase;
+        }
+
+        .card-value-sm {
+            font-size: 1.2rem;
+            font-weight: 900;
+            color: var(--metro-main);
+        }
+
+        /* --- Gráficos y Misceláneos --- */
+        .mini-chart-container {
+            position: relative;
+            height: 140px; 
+            width: 100%;
+            margin-bottom: 1rem;
+            z-index: 2;
+        }
+
+        .formula-box {
+            background-color: #f8fafc;
+            border: 1px solid var(--border-color);
+            font-size: 0.85rem;
+            padding: 10px;
+            border-radius: 8px;
+            color: var(--secondary-text);
+            z-index: 2;
+            line-height: 1.5;
+        }
+
+        .mt-auto { margin-top: auto; }
+        .flex-col { display: flex; flex-direction: column; height: 100%; }
+
+        /* --- Caja de Conclusiones --- */
+        .conclusion-box {
+            background-color: #f8fafc; 
+            border-left: 5px solid var(--metro-main); 
+            padding: 1.2rem 1.5rem;
+            margin-top: -1rem; 
+            margin-bottom: 3.5rem; 
+            border-radius: 0 8px 8px 0;
+            color: var(--primary-text);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .conclusion-box strong {
+            color: var(--metro-dark);
+        }
+
+        /* --- Marcas de Agua Sutiles --- */
+        .watermark-dollar::before, .watermark-number::before {
+            position: absolute;
+            right: 5px;
+            font-weight: 900;
+            color: var(--metro-main);
+            opacity: 0.12; 
+            pointer-events: none;
+            z-index: 1;
+            line-height: 1;
+        }
+
+        .watermark-dollar::before { content: '$'; bottom: -15px; font-size: 10rem; }
+        .watermark-number::before { content: '#'; bottom: -20px; font-size: 11rem; }
+
+        /* --- Tarjeta Destacada Impacto --- */
+        .highlight-card { background-color: #fff1f2; border: 2px solid #fecaca; }
+        .highlight-card .comparison-col-white { background-color: #ffffff; border-color: #fecaca; }
+        .highlight-card .formula-box { background-color: #ffffff; border-color: #fecaca; }
+
+        /* Tarifario */
+        .breakdown-list { list-style: none; padding: 0; margin: 0; }
+        .breakdown-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px dashed var(--border-color);
+            font-size: 0.9rem;
+        }
+        .breakdown-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0 !important;
+        }
+        .breakdown-label strong { color: var(--primary-text); font-weight: 600;}
+
+        /* --- Botón de Descarga Excel --- */
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background-color: red; /* Color oscuro elegante */
+            color: #ffffff;
+            padding: 8px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 0.95rem;
+            margin-top: 1.5rem;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .download-btn:hover {
+            background-color: var(--metro-main); /* Cambia al rojo del Metro al pasar el mouse */
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(220, 38, 38, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-brand">Digitalización AC</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Indicadores</a></li>
+            <li><a href="timeline.html">Línea de Tiempo</a></li>
+            <li><a href="tarjeta.html" class="active">Tarjeta Ciudad</a></li>
+            <li><a href="tuti.html">TUTI</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        
+        <section class="page-header">
+            <h2 class="metro-title">Tarjeta Ciudad - Metro</h2>
+            <p class="subtitle">Evolución de adopción e impacto</p>
+            <a href="Calculos Metro.xlsx" download="Calculos Metro.xlsx" class="download-btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px;">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg> Descargar matriz de cálculos (Excel) 
+            </a>
+        </section>
+
+        <h3 class="section-title">Adopción Ciudadana</h3>
+        <section class="adoption-grid">
+            
+            <div class="card metro-card">
+                <div class="card-header">
+                    <div class="title-with-icon"><span class="icon metro-icon">👤</span><h3>Cuentas Ciudad</h3></div>
+                    <a href="https://metrodequito.gob.ec/wp-content/uploads/2025/12/25-12-23-Boletin-Estadistico-12-2025.pdf" target="_blank" class="info-btn">REF P31</a>
+                </div>
+                <div class="horizontal-card-body">
+                    <div class="info-side">
+                        <div class="comparison-col-white">
+                            <div class="year-row"><span class="year-label">2023</span><span class="card-value-sm metro-text" id="cuentas-23">0</span></div>
+                            <div class="year-row"><span class="year-label">2024</span><span class="card-value-sm metro-text" id="cuentas-24">0</span></div>
+                            <div class="year-row"><span class="year-label">2025</span><span class="card-value-sm metro-text" id="cuentas-25">0</span></div>
+                        </div>
+                        <div class="formula-box mt-auto">Usuarios registrados en la plataforma.</div>
+                    </div>
+                    <div class="chart-side"><canvas id="chartCuentas"></canvas></div>
+                </div>
+            </div>
+
+            <div class="card metro-card">
+                <div class="card-header">
+                    <div class="title-with-icon"><span class="icon metro-icon">🪪</span><h3>Cédulas Enlazadas</h3></div>
+                    <a href="https://metrodequito.gob.ec/wp-content/uploads/2025/12/25-12-23-Boletin-Estadistico-12-2025.pdf" target="_blank" class="info-btn">REF P32</a>
+                </div>
+                <div class="horizontal-card-body">
+                    <div class="info-side">
+                        <div class="comparison-col-white">
+                            <div class="year-row"><span class="year-label">2023</span><span class="card-value-sm metro-text" id="cedulas-23">0</span></div>
+                            <div class="year-row"><span class="year-label">2024</span><span class="card-value-sm metro-text" id="cedulas-24">0</span></div>
+                            <div class="year-row"><span class="year-label">2025</span><span class="card-value-sm metro-text" id="cedulas-25">0</span></div>
+                        </div>
+                        <div class="formula-box mt-auto">Cuentas validadas con la cédula de identidad.</div>
+                    </div>
+                    <div class="chart-side"><canvas id="chartCedulas"></canvas></div>
+                </div>
+            </div>
+
+            <div class="card metro-card">
+                <div class="card-header">
+                    <div class="title-with-icon"><span class="icon metro-icon">💳</span><h3>Tarjetas Emitidas</h3></div>
+                    <a href="https://metrodequito.gob.ec/wp-content/uploads/2025/12/25-12-23-Boletin-Estadistico-12-2025.pdf" target="_blank" class="info-btn">REF P33</a>
+                </div>
+                <div class="horizontal-card-body">
+                    <div class="info-side">
+                        <div class="comparison-col-white">
+                            <div class="year-row"><span class="year-label">2023</span><span class="card-value-sm metro-text" id="tarjetas-23">0</span></div>
+                            <div class="year-row"><span class="year-label">2024</span><span class="card-value-sm metro-text" id="tarjetas-24">0</span></div>
+                            <div class="year-row"><span class="year-label">2025</span><span class="card-value-sm metro-text" id="tarjetas-25">0</span></div>
+                        </div>
+                        <div class="formula-box mt-auto">Tarjetas Cuidad fisicas.</div>
+                    </div>
+                    <div class="chart-side"><canvas id="chartTarjetas"></canvas></div>
+                </div>
+            </div>
+        </section>
+
+        <div class="conclusion-box">
+            <strong>💡 Conclusión:</strong> En relación con las cuentas Ciudad, se observa un decrecimiento debido a que en 2023 entró en operación el Metro, lo que motivó a que la mayoría de personas se registraran para utilizar el servicio. Por ello, la cifra posterior refleja principalmente a los usuarios rezagados que no validaron su registro durante el primer año.
+
+Cabe destacar que las cédulas enlazadas y las tarjetas emitidas registraron un aumento en 2024, lo cual responde a que fue el primer año completo de operación del nuevo sistema de transporte, generando una mayor regularización y adopción del servicio por parte de la ciudadanía.
+        </div>
+
+        <h3 class="section-title">Operatividad y Recaudación</h3>
+        <section class="metro-indicators-grid">
+            
+            <div class="card metro-card flex-col watermark-number">
+                <div class="card-header">
+                    <div class="title-with-icon"><span class="icon metro-icon">🎫</span><h4>Pasajes Comprados</h4></div>
+                    <a href="https://metrodequito.gob.ec/wp-content/uploads/2025/12/25-12-23-Boletin-Estadistico-12-2025.pdf" target="_blank" class="info-btn">REFP34</a>
+                </div>
+                <div class="comparison-col-white">
+                    <div class="year-row"><span class="year-label">2024</span><span class="card-value-sm metro-text" id="pasajes-24">0</span></div>
+                    <div class="year-row"><span class="year-label">2025</span><span class="card-value-sm metro-text" id="pasajes-25">0</span></div>
+                </div>
+                <div class="formula-box mt-auto">Valor anual.</div>
+            </div>
+
+            <div class="card metro-card flex-col">
+                <div class="card-header">
+                    <div class="title-with-icon"><span class="icon metro-icon">💲</span><h3>Tarifario</h3></div>
+                    <a href="https://metrodequito.gob.ec/wp-content/uploads/2025/12/25-12-23-Boletin-Estadistico-12-2025.pdf" target="_blank" class="info-btn">REFP41</a>
+                </div>
+                <div class="comparison-col-white">
+                    <ul class="breakdown-list" id="tarifas-list"></ul>
+                </div>
+                <div class="formula-box mt-auto">Costo por tipo de usuario.</div>
+            </div>
+
+            <div class="card metro-card flex-col watermark-dollar">
+                <div class="card-header">
+                    <div class="title-with-icon"><span class="icon metro-icon">💰</span><h3>Monto Recaudado</h3></div>
+                    <a href="" target="" class="info-btn">CALC</a>
+                </div>
+                <div class="comparison-col-white">
+                    <div class="year-row"><span class="year-label">2024</span><span class="card-value-sm metro-text" id="monto-24">$0</span></div>
+                    <div class="year-row"><span class="year-label">2025</span><span class="card-value-sm metro-text" id="monto-25">$0</span></div>
+                </div>
+                <div class="formula-box mt-auto">Ingresos anuales estimados por pasajes.</div>
+            </div>
+
+            <div class="card metro-card flex-col">
+                <div class="card-header">
+                    <div class="title-with-icon"><span class="icon metro-icon">📱</span><h3>Medios Digitales (vs Físico)</h3></div>
+                    <a href="https://metrodequito.gob.ec/metodos-acceso-digitales/#:~:text=47%20%25%20de%20usuarios%20usan%20m%C3%A9todos%20de,para%20viajar%20en%20el%20Metro%20de%20Quito." target="_blank" class="info-btn">REF</a>
+                </div>
+                <div class="comparison-col-white">
+                    <div class="year-row"><span class="year-label">2024</span><span class="card-value-sm metro-text" id="digitales-24">0</span></div>
+                    <div class="year-row"><span class="year-label">2025</span><span class="card-value-sm metro-text" id="digitales-25">0</span></div>
+                </div>
+                <div class="mini-chart-container"><canvas id="pagosChart"></canvas></div>
+                <div class="formula-box mt-auto">Pagos vía App, QR o Tarjeta vinculada.</div>
+            </div>
+
+            <div class="card metro-card highlight-card flex-col">
+                <div class="card-header">
+                    <div class="title-with-icon"><span class="icon metro-icon" style="background-color: #ffffff !important; color: rgb(255, 0, 0) !important;">🎯</span><h3>Impacto POS</h3></div>
+                    <a href="https://www.superbancos.gob.ec/estadisticas/portalestudios/servicios-financieros/" target="_blank" class="info-btn">REF</a>
+                </div>
+                <div class="comparison-col-white">
+                    <div class="year-row"><span class="year-label">2024</span><span class="card-value-sm metro-text" id="impacto-24">0%</span></div>
+                    <div class="year-row"><span class="year-label">2025</span><span class="card-value-sm metro-text" id="impacto-25">0%</span></div>
+                </div>
+                <div class="mini-chart-container"><canvas id="chartImpacto"></canvas></div>
+                <div class="formula-box mt-auto" style="background-color: #ffffff;">Representación frente al total de POS.</div>
+            </div>
+        </section>
+
+        <div class="conclusion-box">
+            <strong>💡 Conclusión:</strong> Para determinar el impacto del medio de pago digital, se identificó el número total de validaciones (pasajes adquiridos) y se multiplicó por sus respectivas tarifas, con el fin de estimar el monto anual recaudado por el servicio. Posteriormente, este valor se segmentó en transacciones digitales y físicas, tomando como referencia que la modalidad digital representa el 47%, según el boletín emitido por la entidad. <br><br>
+
+Los resultados muestran que la significancia de este método de pago fue de 0,085% en 2024 y 0,084% en 2025. Aunque a primera vista puede parecer un valor reducido, es importante considerar que Ecuador cuenta con 24 provincias, por lo que el hecho de que un solo cantón represente este volumen evidencia que este medio de pago incidió directamente en las transacciones digitales POS a nivel nacional.<br><br>
+
+En términos monetarios, los valores estimados oscilan entre 10 y 12 millones de dólares recaudados durante sus dos primeros años de operación, lo que demuestra una adopción relevante del sistema digital dentro del transporte público.
+        </div>
+
+    </main>
+
+    <script>
+        // =========================================================
+        // DATOS Y LÓGICA DE GRÁFICOS (De tarjeta.js)
+        // =========================================================
+        const metroData = {
+            2023: {
+                cuentas: "410,735",
+                cedulas: "128,285",
+                tarjetas: "83,687",
+                pasajesMes: "3,200,000",
+                montoMes: "$1,350,000",
+                pasajesDigitales: "850,000",
+                impactoPOS: "1.2%"
+            },
+            2024: {
+                cuentas: "212,179 ",
+                cedulas: "163,090 ",
+                tarjetas: "175,284 ",
+                pasajesMes: "53,289,753",
+                montoMes: "$22,065,606.41",
+                pasajesDigitales: "10,370,835.01",
+                impactoPOS: "0.085%"
+            },
+            2025: {
+                cuentas: "151,359 ",
+                cedulas: "109,443 ",
+                tarjetas: "73,643",
+                pasajesMes: "63,008,757",
+                montoMes: "$26,243,001.39",
+                pasajesDigitales: "12,334,210.65",
+                impactoPOS: "0.084%"
+            },
+            tarifas: [
+                { tipo: "Normal", costo: "$0.45" },
+                { tipo: "Estudiantil / 3ra Edad", costo: "$0.22" },
+                { tipo: "Discapacidad", costo: "$0.10" }
+            ]
+        };
+
+        // Helper para convertir strings ("410,735", "$26.41", "1.2%") a números reales
+        function parseNum(str) {
+            if (!str) return 0;
+            return parseFloat(String(str).replace(/[$,%\s]/g, ''));
+        }
+
+        // Gráficas de 3 barras (Para Adopción)
+        function createMiniBarChart(canvasId, val23, val24, val25) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['2023', '2024', '2025'],
+                    datasets: [{
+                        data: [val23, val24, val25],
+                        backgroundColor: ['#fecaca', '#f87171', '#dc2626'],
+                        borderRadius: 4,
+                        barPercentage: 0.6,
+                        categoryPercentage: 0.8,
+                        maxBarThickness: 40 // <--- ESTO EVITA QUE LAS BARRAS SE PONGAN GORDAS/ESTIRADAS
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return new Intl.NumberFormat('es-EC').format(context.parsed.y);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            display: true, 
+                            beginAtZero: true,
+                            ticks: {
+                                font: { size: 10 },
+                                callback: function(value) {
+                                    if (value >= 1000) return (value / 1000) + 'k';
+                                    return value;
+                                }
+                            }
+                        },
+                        x: {
+                            grid: { display: false },
+                            border: { display: false },
+                            ticks: { font: { weight: 'bold', size: 11 } }
+                        }
+                    },
+                    layout: { padding: { top: 10 } }
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // 1. Llenar Textos de Adopción (3 años)
+            document.getElementById('cuentas-23').innerText = metroData[2023].cuentas;
+            document.getElementById('cedulas-23').innerText = metroData[2023].cedulas;
+            document.getElementById('tarjetas-23').innerText = metroData[2023].tarjetas;
+            document.getElementById('cuentas-24').innerText = metroData[2024].cuentas;
+            document.getElementById('cedulas-24').innerText = metroData[2024].cedulas;
+            document.getElementById('tarjetas-24').innerText = metroData[2024].tarjetas;
+            document.getElementById('cuentas-25').innerText = metroData[2025].cuentas;
+            document.getElementById('cedulas-25').innerText = metroData[2025].cedulas;
+            document.getElementById('tarjetas-25').innerText = metroData[2025].tarjetas;
+
+            // 2. Llenar Textos de Operatividad (2024 y 2025)
+            document.getElementById('pasajes-24').innerText = metroData[2024].pasajesMes;
+            document.getElementById('monto-24').innerText = metroData[2024].montoMes;
+            document.getElementById('digitales-24').innerText = metroData[2024].pasajesDigitales;
+            document.getElementById('impacto-24').innerText = metroData[2024].impactoPOS;
+            
+            document.getElementById('pasajes-25').innerText = metroData[2025].pasajesMes;
+            document.getElementById('monto-25').innerText = metroData[2025].montoMes;
+            document.getElementById('digitales-25').innerText = metroData[2025].pasajesDigitales;
+            document.getElementById('impacto-25').innerText = metroData[2025].impactoPOS;
+
+            // 3. Pintar Tarifario
+            const tarifasList = document.getElementById('tarifas-list');
+            metroData.tarifas.forEach(tarifa => {
+                tarifasList.innerHTML += `
+                    <li class="breakdown-item" style="padding: 6px 0;">
+                        <div class="breakdown-label"><strong>${tarifa.tipo}</strong></div>
+                        <div class="breakdown-value-wrapper" style="font-weight: 800; color: #dc2626;">
+                            ${tarifa.costo}
+                        </div>
+                    </li>
+                `;
+            });
+
+            // 4. Crear Gráficos de Adopción
+            createMiniBarChart('chartCuentas', parseNum(metroData[2023].cuentas), parseNum(metroData[2024].cuentas), parseNum(metroData[2025].cuentas));
+            createMiniBarChart('chartCedulas', parseNum(metroData[2023].cedulas), parseNum(metroData[2024].cedulas), parseNum(metroData[2025].cedulas));
+            createMiniBarChart('chartTarjetas', parseNum(metroData[2023].tarjetas), parseNum(metroData[2024].tarjetas), parseNum(metroData[2025].tarjetas));
+
+            // 5. Dona de Medios Digitales vs Físicos basada en Monto Recaudado (2025)
+            const totalMonto25 = parseNum(metroData[2025].montoMes);
+            const montoDigital25 = parseNum(metroData[2025].pasajesDigitales);
+            const montoFisico25 = totalMonto25 - montoDigital25;
+            
+            const pctDigital = Math.round((montoDigital25 / totalMonto25) * 100);
+            const pctFisico = 100 - pctDigital;
+
+            const ctxPagos = document.getElementById('pagosChart').getContext('2d');
+            new Chart(ctxPagos, {
+                type: 'doughnut',
+                data: {
+                    labels: [`Digital (${pctDigital}%)`, `Físico (${pctFisico}%)`],
+                    datasets: [{
+                        data: [montoDigital25, montoFisico25],
+                        backgroundColor: ['#dc2626', '#e2e8f0'],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: { 
+                            position: 'right',
+                            labels: { boxWidth: 12, font: { size: 11 } }
+                        }
+                    }
+                }
+            });
+
+            // 6. Gráfico de Línea para Impacto POS (2024 vs 2025)
+            const impacto24 = parseNum(metroData[2024].impactoPOS);
+            const impacto25 = parseNum(metroData[2025].impactoPOS);
+
+            const ctxImpacto = document.getElementById('chartImpacto').getContext('2d');
+            new Chart(ctxImpacto, {
+                type: 'line',
+                data: {
+                    labels: ['2024', '2025'],
+                    datasets: [{
+                        data: [impacto24, impacto25],
+                        borderColor: '#991b1b', 
+                        backgroundColor: 'rgba(220, 38, 38, 0.1)', 
+                        borderWidth: 3,
+                        pointBackgroundColor: '#dc2626',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 6,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: { label: function(context) { return context.parsed.y + '%'; } }
+                        }
+                    },
+                    scales: {
+                        y: { display: false, min: 0, max: Math.max(impacto24, impacto25) * 1.2 },
+                        x: { display: false }
+                    },
+                    layout: { padding: { top: 10, bottom: 10, left: 10, right: 10 } }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

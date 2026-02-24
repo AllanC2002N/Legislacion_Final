@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Línea de Tiempo - Dashboard</title>
+    <style>
+        /* =========================================================
+           1. ESTILOS GLOBALES BASE (Provenientes de styles.css)
+           ========================================================= */
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --primary-text: #334155;
+            --secondary-text: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--primary-text);
+            line-height: 1.6;
+        }
+
+        /* ---- Navegación ---- */
+        .navbar {
+            background-color: var(--card-bg);
+            padding: 1rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-brand {
+            font-weight: 800;
+            font-size: 1.4rem;
+            letter-spacing: -0.5px;
+            color: var(--primary-text);
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--secondary-text);
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            background-color: var(--border-color);
+            color: var(--primary-text);
+        }
+
+        /* ---- Contenedor Principal ---- */
+        .container {
+            max-width: 1100px;
+            margin: 3rem auto;
+            padding: 0 1.5rem;
+        }
+
+        /* =========================================================
+           2. ESTILOS: LÍNEA DE TIEMPO INTERACTIVA (De timeline.css)
+           ========================================================= */
+        :root {
+            --tl-accent: #dc2626;   /* Rojo Metro */
+            --tl-bg: #f8fafc;       
+        }
+
+        .page-header { text-align: center; margin-bottom: 4rem; }
+        .timeline-title { font-size: 2.8rem; font-weight: 900; color: var(--primary-text); letter-spacing: -1px; margin-bottom: 0.5rem;}
+
+        /* --- Contenedor Principal --- */
+        .timeline-container {
+            position: relative;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem 0 4rem 0;
+        }
+
+        .timeline-line {
+            position: absolute;
+            width: 4px;
+            background-color: var(--border-color);
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+            z-index: 1; 
+        }
+
+        .timeline-progress {
+            position: absolute;
+            width: 4px;
+            background-color: var(--tl-accent);
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+            z-index: 2;
+            height: 0%; 
+            transition: height 0.1s ease-out;
+        }
+
+        /* --- Cada bloque --- */
+        .timeline-item {
+            padding: 10px 40px;
+            position: relative;
+            width: 50%;
+            box-sizing: border-box;
+            opacity: 0; 
+            transform: translateY(30px); 
+            transition: all 0.6s ease-out;
+            z-index: 4; 
+        }
+
+        .timeline-item.visible { opacity: 1; transform: translateY(0); }
+
+        .timeline-item.left { left: 0; }
+        .timeline-item.right { left: 50%; }
+
+        /* --- El punto en la línea (Dot) --- */
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            width: 24px;   
+            height: 24px;
+            background-color: #ffffff;
+            border: 4px solid var(--border-color);
+            top: 24px;
+            border-radius: 50%;
+            z-index: 3;    
+            transition: all 0.4s ease;
+        }
+
+        .timeline-item.left::after { right: -12px; }
+        .timeline-item.right::after { left: -12px; }
+
+        .timeline-item.active-dot::after {
+            border-color: var(--tl-accent);
+            box-shadow: 0 0 0 6px rgba(220, 38, 38, 0.15); 
+        }
+
+        .timeline-item:hover::after {
+            background-color: var(--tl-accent);
+            transform: scale(1.2);
+        }
+
+        /* --- La Tarjeta (Card) --- */
+        .timeline-card {
+            padding: 1.5rem;
+            background-color: #ffffff;
+            position: relative;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+
+        .timeline-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-color: rgba(220, 38, 38, 0.4);
+        }
+
+        /* --- Cabecera con Fecha y Botón REF --- */
+        .card-header-tl {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .timeline-date {
+            display: inline-block;
+            padding: 4px 12px;
+            background-color: var(--tl-bg);
+            color: var(--tl-accent);
+            font-size: 0.85rem;
+            font-weight: 800;
+            border-radius: 20px;
+            border: 1px solid rgba(220, 38, 38, 0.15);
+        }
+
+        .info-btn {
+            display: inline-block;
+            text-decoration: none;
+            background-color: #f1f5f9;
+            color: var(--secondary-text);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 3px 6px;
+            line-height: 1.2;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .info-btn:hover {
+            background-color: #fee2e2;
+            color: var(--tl-accent);
+            border-color: var(--tl-accent);
+        }
+
+        .timeline-card h3 { margin: 0 0 0.5rem 0; font-size: 1.3rem; color: var(--primary-text); }
+        .timeline-card p { margin: 0; font-size: 0.95rem; line-height: 1.6; color: var(--secondary-text); }
+
+        /* --- Flechitas de las tarjetas --- */
+        .timeline-card::before {
+            content: " ";
+            height: 0;
+            position: absolute;
+            top: 26px;
+            width: 0;
+            z-index: 1;
+            border: medium solid var(--border-color);
+            border-width: 10px 10px 10px 0;
+            border-color: transparent var(--border-color) transparent transparent;
+        }
+        .timeline-item.left .timeline-card::before {
+            right: -11px;
+            border-width: 10px 0 10px 10px;
+            border-color: transparent transparent transparent var(--border-color);
+        }
+        .timeline-item.right .timeline-card::before {
+            left: -11px;
+            border-width: 10px 10px 10px 0;
+            border-color: transparent var(--border-color) transparent transparent;
+        }
+
+        /* --- Interacción: Botón y Detalles Ocultos --- */
+        .expand-btn {
+            background: none;
+            border: none;
+            color: var(--tl-accent);
+            font-weight: 800;
+            font-size: 0.85rem;
+            padding: 0;
+            margin-top: 1rem;
+            cursor: pointer;
+            text-decoration: underline;
+            transition: color 0.2s;
+        }
+        .expand-btn:hover { color: #991b1b; }
+
+        .timeline-details {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px dashed var(--border-color);
+            font-size: 0.9rem;
+            color: var(--secondary-text);
+            display: none; 
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- RESPONSIVE (Móviles) --- */
+        @media screen and (max-width: 768px) {
+            .timeline-line, .timeline-progress { left: 40px; } 
+            
+            .timeline-item {
+                width: 100%;
+                padding-left: 80px; 
+                padding-right: 20px;
+            }
+            
+            .timeline-item.left, .timeline-item.right { left: 0; }
+            
+            .timeline-item.left::after, .timeline-item.right::after {
+                left: 28px; 
+                right: auto;
+            }
+            
+            .timeline-item.left .timeline-card::before, 
+            .timeline-item.right .timeline-card::before {
+                left: -11px;
+                border-width: 10px 10px 10px 0;
+                border-color: transparent var(--border-color) transparent transparent;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-brand">Digitalización AC</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Indicadores</a></li>
+            <li><a href="timeline.html" class="active">Línea de Tiempo</a></li>
+            <li><a href="tarjeta.html">Tarjeta Ciudad</a></li>
+            <li><a href="tuti.html">TUTI</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        
+        <section class="page-header">
+            <h2 class="timeline-title">Línea de Tiempo Histórica</h2>
+            <p class="subtitle">Hitos clave en el desarrollo operativo y adopción ciudadana</p>
+        </section>
+
+        <section class="timeline-container" id="timeline-container">
+            <div class="timeline-line"></div>
+            <div class="timeline-progress" id="timeline-progress"></div>
+            
+        </section>
+
+    </main>
+
+    <script>
+        // =========================================================
+        // DATOS DE LA LÍNEA DE TIEMPO (De timeline.js)
+        // =========================================================
+        const timelineData = [
+            {
+                fecha: "Junio 1992",
+                titulo: "Llegada de Internet (Ecuanet)",
+                descripcion: "La conexión de los nodos de Ecuanet marcó el ingreso formal del Ecuador a Internet desde Quito, permitiendo interconectar universidades y entidades financieras con redes globales.",
+                detalle: "<strong>Categoría:</strong> Tecnología <br> <strong>Fuente:</strong> El Telégrafo",
+                url: "https://www.eltelegrafo.com.ec/noticias/tecnologia/1/ecuador-accede-a-internet-desde-hace-25-anos"
+            },
+            {
+                fecha: "10 de Agosto 1992",
+                titulo: "Ley Especial de Telecomunicaciones",
+                descripcion: "Publicación en el Registro Oficial 996 para regular el sector. Surgió ante la necesidad de organizar una industria en crecimiento y separar los roles de control.",
+                detalle: "<strong>Categoría:</strong> Legal <br> <strong>Fuente:</strong> Registro Oficial 996",
+                url: "https://www.telecomunicaciones.gob.ec/wp-content/uploads/downloads/2012/11/Ley-Especial-de-Telecomunicaciones.pdf"
+            },
+            {
+                fecha: "5 de Septiembre 2000",
+                titulo: "Acceso Universal",
+                descripcion: "Declaración del Acceso Universal como Política de Estado, cuyo objetivo principal fue impulsar la difusión del internet a nivel nacional.",
+                detalle: "<strong>Categoría:</strong> Legal <br> <strong>Fuente:</strong> Gobierno Electrónico",
+                url: "https://www.gobiernoelectronico.gob.ec/ano2000/"
+            },
+            {
+                fecha: "17 de Abril 2002",
+                titulo: "Ley de Comercio Electrónico",
+                descripcion: "Otorgó validez legal a la firma electrónica igualándola a la manuscrita. Es la base legal que sostiene los millones de trámites digitales actuales.",
+                detalle: "<strong>Categoría:</strong> Legal <br> <strong>Fuente:</strong> Ley de Comercio Electrónico",
+                url: "https://www.gob.ec/sites/default/files/regulations/2018-11/Documento_Reglamento-General-Ley-de-Comercio-Electrónico-Firmas-Electrónicas-Mensajes-de-Datos.pdf"
+            },
+            {
+                fecha: "18 de Mayo 2004",
+                titulo: "Ley de Transparencia (LOTAIP)",
+                descripcion: "Obliga a las instituciones del Estado a transparentar su información y gestión a través de portales web, sentando las bases del Gobierno Electrónico.",
+                detalle: "<strong>Categoría:</strong> Marco Legal <br> <strong>Fuente:</strong> Corte Constitucional",
+                url: "https://esacc.corteconstitucional.gob.ec/storage/api/v1/10_DWL_FL/e2NhcnBldGE6ICJub3RhaXAyMDIzIiwgdXVpZDoiNmFhMDdkZjUtNWZjZS00MDJkLTlmZjgtMzBlMjFlZjkwMTFkLnBkZiJ9"
+            },
+            {
+                fecha: "Octubre 2008",
+                titulo: "Firma Electrónica Operativa",
+                descripcion: "El Banco Central del Ecuador se acredita como entidad de certificación oficial, otorgando validez técnica y práctica a la Ley de Comercio Electrónico de 2002.",
+                detalle: "<strong>Categoría:</strong> Certificación Digital <br> <strong>Fuente:</strong> Repositorio UTN (Pág. 28)",
+                url: "https://repositorio.utn.edu.ec/bitstream/123456789/10255/2/04%20ISC%20544%20TRABAJO%20GRADO.pdf"
+            },
+            {
+                fecha: "11 de Mayo 2009",
+                titulo: "Sistema de Gestión Documental QUIPUX",
+                descripcion: "Emisión del instructivo para el uso obligatorio de QUIPUX en la administración pública, buscando reducir el uso de papel y mejorar el control documental.",
+                detalle: "<strong>Categoría:</strong> Legal <br> <strong>Fuente:</strong> Registro Oficial No. 597",
+                url: "https://web.gestiondocumental.gob.ec/wp-content/uploads/2020/08/110713-Acuerdo-781.pdf"
+            },
+            {
+                fecha: "13 de Agosto 2009",
+                titulo: "Creación del MINTEL",
+                descripcion: "Nace el Ministerio de Telecomunicaciones y Sociedad de la Información con el objetivo de concentrar la rectoría de conectividad y gobierno electrónico.",
+                detalle: "<strong>Categoría:</strong> Institucional <br> <strong>Fuente:</strong> MINTEL",
+                url: "https://www.telecomunicaciones.gob.ec/mintel-cumple-7-anos-de-servir-a-los-ecuatorianos/"
+            },
+            {
+                fecha: "17 de Mayo 2013",
+                titulo: "Facturación Electrónica SRI",
+                descripcion: "Inicio de la obligatoriedad, organizada por grupos, para emitir comprobantes digitales, garantizando un control tributario eficiente y automatizado.",
+                detalle: "<strong>Categoría:</strong> Tecnología Financiera <br> <strong>Fuente:</strong> SRI / CCQ",
+                url: "https://ccq.ec/wp-content/uploads/2022/10/ConTribSept22.pdf"
+            },
+            {
+                fecha: "2017",
+                titulo: "Fundación de Kushki",
+                descripcion: "Nace la empresa tecnológica que estandarizaría la infraestructura y pasarelas de transacciones digitales corporativas en Ecuador y la región.",
+                detalle: "<strong>Categoría:</strong> Ecosistema Fintech <br> <strong>Fuente:</strong> Reporte Endeavor",
+                url: "https://endeavor.org/wp-content/uploads/dlm_uploads/2023/09/Endeavor-Insight-Data-Explainer_Unicorn-Founder-Pathways.pdf"
+            },
+            {
+                fecha: "23 de Octubre 2018",
+                titulo: "Ley de Optimización de Trámites",
+                descripcion: "Prohíbe exigir documentos físicos que el Estado ya posee en sus bases de datos, con el fin de reducir la burocracia y los costos para el ciudadano.",
+                detalle: "<strong>Categoría:</strong> Legal <br> <strong>Fuente:</strong> Ley Gob.ec",
+                url: "https://www.gob.ec/regulaciones/ley-organica-optimizacion-eficiencia-tramites-administrativos"
+            },
+            {
+                fecha: "6 de Noviembre 2019",
+                titulo: "Portal GOB.EC",
+                descripcion: "Lanzamiento de la plataforma centralizada de servicios ciudadanos, creada para ordenar la oferta dispersa de trámites gubernamentales.",
+                detalle: "<strong>Categoría:</strong> Tecnología <br> <strong>Fuente:</strong> Gob.ec",
+                url: "https://www.e-comex.com/gobierno-pone-en-linea-1600-tramites-ciudadanos-en-ecuador/"
+            },
+            {
+                fecha: "22 de Junio 2020",
+                titulo: "Implementación del SATJE",
+                descripcion: "Implementación del Sistema Automático de Trámite Judicial (SATJE) como plataforma informática para el registro y seguimiento de causas en la Función Judicial.",
+                detalle: "<strong>Categoría:</strong> Tecnología <br> <strong>Fuente:</strong> Función Judicial del Ecuador",
+                url: "https://www.funcionjudicial.gob.ec/consejo-de-la-judicatura-implementa-el-e-satje-2020-herramienta-tecnologica-que-permite-gestionar-tramites-judiciales-en-linea/"
+            },
+            {
+                fecha: "26 de Mayo 2021",
+                titulo: "Protección de Datos Personales",
+                descripcion: "Expedición de la Ley Orgánica de Protección de Datos Personales para proteger la privacidad ciudadana ante el tratamiento masivo de información.",
+                detalle: "<strong>Categoría:</strong> Legal <br> <strong>Fuente:</strong> Ley LOPDP",
+                url: "https://www.finanzaspopulares.gob.ec/wp-content/uploads/2021/07/ley_organica_de_proteccion_de_datos_personales.pdf"
+            },
+            {
+                fecha: "Julio 2021",
+                titulo: "Hito: Digital supera a Físico",
+                descripcion: "Histórico: El volumen de transferencias electrónicas rebasó por primera vez a las transacciones físicas en ventanilla bancaria.",
+                detalle: "<strong>Categoría:</strong> Hito Financiero <br> <strong>Fuente:</strong> Asobanca",
+                url: "https://asobanca.org.ec/wp-content/uploads/2022/07/2022-07-06-BP-Avance-Banca-Digital-transacciones.pdf"
+            },
+            {
+                fecha: "Junio 2022",
+                titulo: "Primer Unicornio Ecuatoriano",
+                descripcion: "Kushki alcanza una valoración de USD 1,500 millones tras una nueva ronda de inversión, demostrando la madurez del ecosistema tecnológico nacional.",
+                detalle: "<strong>Categoría:</strong> Hito Financiero <br> <strong>Fuente:</strong> Forbes",
+                url: "https://forbes.pe/negocios/2022-06-07/kushki-se-convierte-en-el-primer-unicornio-de-ecuador-con-adicion-de-us100-millones-en-ronda-de-inversion"
+            },
+            {
+                fecha: "22 de Diciembre 2022",
+                titulo: "Aprobación de la Ley Fintech",
+                descripcion: "Regula oficialmente el ecosistema de empresas tecnológicas financieras, brindando seguridad jurídica a las pasarelas y billeteras digitales.",
+                detalle: "<strong>Categoría:</strong> Marco Legal <br> <strong>Fuente:</strong> Registro Oficial",
+                url: "https://www.telecomunicaciones.gob.ec/wp-content/uploads/2023/01/RO_221222_0215S2.pdf"
+            },
+            {
+                fecha: "Febrero 2023",
+                titulo: "Ley de Transformación Digital",
+                descripcion: "Normativa que facilita contratos 100% digitales y ofrece incentivos para atraer inversión extranjera al sector tecnológico y audiovisual.",
+                detalle: "<strong>Categoría:</strong> Marco Legal <br> <strong>Fuente:</strong> Registro Oficial No. 245",
+                url: "https://www.supercias.gob.ec/bd_supercias/descargas/lotaip/a2/2023/Marzo/R_O_245.pdf"
+            },
+            {
+                fecha: "2023",
+                titulo: "PeiGo (Visa Virtual)",
+                descripcion: "Lanzamiento de una tarjeta Visa virtual inmediata enfocada en bancarizar de forma ágil a la población no atendida por la banca tradicional.",
+                detalle: "<strong>Categoría:</strong> Banca Digital <br> <strong>Fuente:</strong> Forbes Ecuador",
+                url: "https://www.forbes.com.ec/negocios/minsait-payments-peigo-lanzan-primera-tarjeta-100-virtual-ecuador-n29598"
+            },
+            {
+                fecha: "2024",
+                titulo: "Agenda Digital y Política 2030",
+                descripcion: "Política Pública para la Transformación Digital 2025-2030, diseñada para garantizar ciberseguridad avanzada y cerrar la brecha rural.",
+                detalle: "<strong>Categoría:</strong> Legal <br> <strong>Fuente:</strong> Política 2025",
+                url: "https://www.gobiernoelectronico.gob.ec/wp-content/uploads/2025/03/INSTRUMENTO-Politica-Publica-para-la-Transformacion-Digital-Ecuador-2025-2030-MINTEL-signed_f.pdf"
+            },
+            {
+                fecha: "Septiembre 2024",
+                titulo: "Regulación de Medios de Pago",
+                descripcion: "Normativa técnica de la Junta Financiera que aterriza operativamente la Ley Fintech, organizando formalmente a las entidades de pago auxiliares.",
+                detalle: "<strong>Categoría:</strong> Regulación Monetaria <br> <strong>Fuente:</strong> DGA Legal",
+                url: "https://www.dgalegal.com/noticia-juridica-no-208/"
+            },
+            {
+                fecha: "Enero 2025",
+                titulo: "Alianza CNT y Google Cloud",
+                descripcion: "Acuerdo estratégico entre el Estado y el gigante tecnológico para modernizar la infraestructura de nube e inteligencia artificial en Ecuador.",
+                detalle: "<strong>Categoría:</strong> Infraestructura <br> <strong>Fuente:</strong> Embajada de Estados Unidos",
+                url: "https://ec.usembassy.gov/es/los-estados-unidos-apoya-la-transformacion-digital-del-ecuador-por-medio-de-un-acuerdo-con-google-cloud/"
+            }
+        ];
+
+        // =========================================================
+        // LÓGICA DE RENDERIZADO E INTERACTIVIDAD
+        // =========================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('timeline-container');
+            const progressLine = document.getElementById('timeline-progress');
+
+            // 1. Inyectar las tarjetas dinámicamente
+            timelineData.forEach((evento, index) => {
+                const positionClass = (index % 2 === 0) ? 'left' : 'right';
+                
+                let linksHTML = '';
+                if (evento.url2) {
+                    linksHTML = `
+                        <a href="${evento.url}" target="_blank" class="info-btn">REF 1</a>
+                        <a href="${evento.url2}" target="_blank" class="info-btn" style="margin-left: 5px;">REF 2</a>
+                    `;
+                } else {
+                    linksHTML = `<a href="${evento.url}" target="_blank" class="info-btn">REF</a>`;
+                }
+                
+                const itemHTML = `
+                    <div class="timeline-item ${positionClass}">
+                        <div class="timeline-card">
+                            <div class="card-header-tl">
+                                <span class="timeline-date">${evento.fecha}</span>
+                                <div>${linksHTML}</div>
+                            </div>
+                            <h3>${evento.titulo}</h3>
+                            <p>${evento.descripcion}</p>
+                            <button class="expand-btn">Ver más detalles</button>
+                            <div class="timeline-details">${evento.detalle}</div>
+                        </div>
+                    </div>
+                `;
+                progressLine.insertAdjacentHTML('beforebegin', itemHTML);
+            });
+
+            const timelineItems = document.querySelectorAll('.timeline-item');
+
+            // 2. Interactividad del botón "Ver más"
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('expand-btn')) {
+                    const btn = e.target;
+                    const details = btn.nextElementSibling;
+                    
+                    if (details.style.display === 'block') {
+                        details.style.display = 'none';
+                        btn.innerText = 'Ver más detalles';
+                    } else {
+                        details.style.display = 'block';
+                        btn.innerText = 'Ocultar detalles';
+                    }
+                }
+            });
+
+            // 3. Progreso interactivo al hacer Scroll
+            window.addEventListener('scroll', () => {
+                const rect = container.getBoundingClientRect();
+                const start = window.innerHeight / 2; 
+                const end = rect.height;
+                let percentage = ((start - rect.top) / end) * 100;
+                
+                if (percentage < 0) percentage = 0;
+                if (percentage > 100) percentage = 100;
+                
+                progressLine.style.height = percentage + '%';
+
+                timelineItems.forEach(item => {
+                    const itemRect = item.getBoundingClientRect();
+                    if (itemRect.top < window.innerHeight / 2 + 50) {
+                        item.classList.add('visible');
+                        item.classList.add('active-dot');
+                    } else {
+                        item.classList.remove('active-dot');
+                    }
+                });
+            });
+
+            window.dispatchEvent(new Event('scroll'));
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tablero de Digitalización AC</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* =========================================================
+           1. ESTILOS GLOBALES BASE 
+           ========================================================= */
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --primary-text: #334155;
+            --secondary-text: #64748b;
+            --border-color: #e2e8f0;
+            
+            /* Indicadores Azules */
+            --blue-edgi: #38bdf8; --blue-edgi-light: #e0f2fe;
+            --blue-acc: #0284c7;  --blue-acc-light: #e0f8ff;
+            --blue-eco: #6366f1;  --blue-eco-light: #eef2ff;
+            --blue-pay: #0d9488;  --blue-pay-light: #ccfbf1;
+            
+            /* Metro Rojos */
+            --metro-main: #dc2626; --metro-light: #fee2e2; --metro-dark: #991b1b;
+            
+            /* Tuti */
+            --tuti-main: #0033a0; --tuti-accent: #ffd100; --tuti-danger: #e3000f; --tuti-light: #e6eff7;
+            
+            --hover-shadow-generic: 0 10px 25px rgba(0,0,0,0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--primary-text);
+            line-height: 1.6;
+        }
+
+        /* ---- NAVEGACIÓN SPA ---- */
+        .navbar {
+            background-color: var(--card-bg);
+            padding: 1rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-brand {
+            font-weight: 800;
+            font-size: 1.4rem;
+            letter-spacing: -0.5px;
+            color: var(--primary-text);
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-links button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--secondary-text);
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-links button:hover, .nav-links button.active {
+            background-color: var(--border-color);
+            color: var(--primary-text);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 3rem auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Ocultar/Mostrar Vistas (La magia de la SPA) */
+        .view-section {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+        .view-section.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* =========================================================
+           2. ESTILOS COMPARTIDOS (Botones, Cajas, Textos)
+           ========================================================= */
+        .page-header { text-align: center; margin-bottom: 3rem; }
+        .main-title { font-size: 2.8rem; font-weight: 900; letter-spacing: -1px; text-align: center; margin-bottom: 0.5rem; }
+        .subtitle { color: var(--secondary-text); font-size: 1.1rem; font-weight: 500;}
+        .section-title { font-size: 1.4rem; color: var(--primary-text); margin-bottom: 1.5rem; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; margin-top: 2rem; }
+        .section-title:first-of-type { margin-top: 0; }
+
+        .formula-box { background-color: #f8fafc; border: 1px solid var(--border-color); font-size: 0.85rem; padding: 10px; border-radius: 8px; color: var(--secondary-text); z-index: 2; line-height: 1.5;}
+        .formula-box strong { color: var(--primary-text); display: block; margin-bottom: 0.3rem; }
+        
+        .conclusion-box { background-color: #f8fafc; border-left: 5px solid var(--primary-text); padding: 1.2rem 1.5rem; margin-top: -1rem; margin-bottom: 3.5rem; border-radius: 0 8px 8px 0; color: var(--primary-text); font-size: 0.95rem; line-height: 1.6; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        
+        .info-btn { display: inline-block; text-decoration: none; background-color: #f1f5f9; color: var(--secondary-text); border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.75rem; font-weight: 800; padding: 3px 6px; line-height: 1.2; cursor: pointer; transition: all 0.2s ease; }
+        .info-btn:hover { background-color: #e2e8f0; color: var(--blue-acc); border-color: var(--blue-acc); }
+
+        .btn-ref { display: inline-block; padding: 4px 8px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px; font-size: 12px; font-weight: bold; margin-left: 10px; transition: background-color 0.3s ease; }
+        .btn-ref:hover { background-color: #0056b3; }
+
+        /* =========================================================
+           3. ESTILOS: INDICADORES GLOBALES (IND-DIG)
+           ========================================================= */
+        .main-indicator-card { background-color: var(--card-bg); border-radius: 20px; padding: 3rem 2rem; text-align: center; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); margin-bottom: 3rem; border: 1px solid var(--border-color); }
+        .indicator-header h2 { font-size: 3rem; font-weight: 900; letter-spacing: -1.5px; line-height: 1; margin-bottom: 0.5rem; color: var(--primary-text); }
+        .main-value-display { font-size: 5rem; font-weight: 900; color: var(--blue-acc); margin: 1.5rem 0 1rem 0; line-height: 1; letter-spacing: -2px; }
+        .unit { font-size: 1.5rem; color: var(--secondary-text); font-weight: 600; margin-left: 0.5rem; }
+        
+        .main-formula { background-color: #f8fafc; display: inline-block; padding: 8px 20px; border-radius: 20px; font-size: 0.95rem; color: var(--secondary-text); margin-bottom: 0.5rem; border: 1px solid var(--border-color); }
+        .main-formula strong { color: var(--primary-text); display: inline; font-weight: 700; }
+
+        .year-selector { display: flex; justify-content: center; gap: 0.8rem; margin-top: 2rem; flex-wrap: wrap; }
+        .year-btn { padding: 0.6rem 1.8rem; border: 2px solid var(--border-color); background-color: transparent; color: var(--secondary-text); cursor: pointer; border-radius: 50px; font-size: 0.95rem; font-weight: 700; transition: all 0.2s ease; }
+        .year-btn:hover { border-color: var(--blue-acc); color: var(--blue-acc); background-color: var(--blue-acc-light); }
+        .year-btn.active { background-color: var(--blue-acc); color: white; border-color: var(--blue-acc); box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25); }
+
+        .sub-indicators-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; margin-bottom: 4rem; }
+        @media (max-width: 768px) { .sub-indicators-grid { grid-template-columns: 1fr; } }
+
+        .card { background-color: var(--card-bg); padding: 2rem; border-radius: 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid var(--border-color); cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; }
+        .card:hover { box-shadow: var(--hover-shadow-generic); transform: translateY(-4px); }
+
+        .edgi-card { border-top: 4px solid var(--blue-edgi); }
+        .acc-card { border-top: 4px solid var(--blue-acc); }
+        .eco-card { border-top: 4px solid var(--blue-eco); }
+        .pay-card { border-top: 4px solid var(--blue-pay); }
+
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .title-with-icon { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .icon { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 12px; }
+        .card-header h3 { color: var(--primary-text); font-size: 1.2rem; font-weight: 700; }
+        .weight-badge { font-size: 0.75rem; font-weight: 800; padding: 4px 10px; border-radius: 12px; margin-left: 4px; text-transform: uppercase; }
+        .expand-icon { font-size: 1.5rem; color: var(--border-color); transition: all 0.3s ease; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background-color: #f1f5f9; }
+        .card:hover .expand-icon { color: var(--secondary-text); }
+        .card.expanded .expand-icon { transform: rotate(45deg); background-color: var(--secondary-text); color: white; }
+
+        .circular-chart-container { display: flex; justify-content: center; margin: 1rem 0 2rem 0; }
+        .circular-chart { width: 160px; height: 160px; border-radius: 50%; display: flex; align-items: center; justify-content: center; position: relative; transition: background 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        .inner-circle { width: 130px; height: 130px; border-radius: 50%; background-color: var(--card-bg); display: flex; align-items: center; justify-content: center; position: absolute; box-shadow: inset 0 2px 4px rgba(0,0,0,0.06); }
+        .card-value { font-size: 2rem; font-weight: 800; color: var(--primary-text); margin: 0; text-align: center; line-height: 1; letter-spacing: -1px; }
+
+        .card-details { max-height: 0; overflow-y: hidden; transition: max-height 0.4s cubic-bezier(0, 1, 0, 1), opacity 0.3s ease; opacity: 0; }
+        .card.expanded .card-details { max-height: 380px; opacity: 1; overflow-y: auto; padding-right: 12px; transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease 0.1s; }
+        .card-details::-webkit-scrollbar { width: 6px; }
+        .card-details::-webkit-scrollbar-track { background: #f8fafc; border-radius: 10px; }
+        .card-details::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
+        .card-details::-webkit-scrollbar-thumb:hover { background-color: #94a3b8; }
+
+        .details-content { padding-top: 1.5rem; margin-top: 1rem; border-top: 1px dashed var(--border-color); }
+        .details-content h4 { font-size: 1rem; font-weight: 700; color: var(--primary-text); margin-bottom: 0.8rem; margin-top: 1.5rem; }
+        .details-content h4:first-child { margin-top: 0; }
+        .details-content p { font-size: 0.95rem; color: var(--secondary-text); margin-bottom: 1.2rem; line-height: 1.7; }
+        .method-text { background-color: #f8fafc; padding: 1.2rem; border-radius: 12px; border-left: 4px solid var(--secondary-text); font-style: italic; color: var(--primary-text); margin-bottom: 1rem; }
+
+        .breakdown-details { margin-top: 1rem; margin-bottom: 1.5rem; }
+        .breakdown-details summary { color: var(--blue-acc); font-weight: 700; cursor: pointer; margin-bottom: 0.8rem; list-style: none; display: inline-flex; align-items: center; gap: 8px; font-size: 0.95rem; }
+        .breakdown-details summary::before { content: "▶"; font-size: 0.7rem; transition: transform 0.2s ease; }
+        .breakdown-details[open] summary::before { transform: rotate(90deg); }
+        .breakdown-details summary::-webkit-details-marker { display: none; }
+        .breakdown-box { background-color: #ffffff; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+        .breakdown-formula-code { font-family: 'Courier New', Courier, monospace; color: #4f46e5; background-color: #f5f3ff; padding: 10px 14px; border-radius: 8px; margin-bottom: 1.2rem; font-size: 0.85rem; font-weight: 600; }
+        .breakdown-list { list-style: none; padding: 0; margin: 0; }
+        .breakdown-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px dashed var(--border-color); font-size: 0.9rem; }
+        .breakdown-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .breakdown-label { color: var(--secondary-text); }
+        .breakdown-label strong { color: var(--primary-text); font-weight: 600; }
+        .breakdown-value-wrapper { display: flex; align-items: center; gap: 12px; }
+        .breakdown-extra { font-size: 0.75rem; color: var(--secondary-text); font-style: italic; }
+
+        /* Botón Descarga Global */
+        .download-section { margin-top: 1.5rem; margin-bottom: 0.5rem; display: flex; justify-content: center; }
+        .download-btn { display: inline-flex; align-items: center; gap: 8px; color: white; text-decoration: none; padding: 10px 24px; border-radius: 50px; font-weight: 700; font-size: 0.9rem; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .download-btn svg { flex-shrink: 0; }
+        .download-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
+        .btn-ind { background-color: var(--blue-acc); } .btn-ind:hover { background-color: #0369a1; }
+
+        /* =========================================================
+           4. ESTILOS: LÍNEA DE TIEMPO
+           ========================================================= */
+        .timeline-container { position: relative; max-width: 1000px; margin: 0 auto; padding: 2rem 0 4rem 0; }
+        .timeline-line { position: absolute; width: 4px; background-color: var(--border-color); top: 0; bottom: 0; left: 50%; transform: translateX(-50%); border-radius: 2px; z-index: 1; }
+        .timeline-progress { position: absolute; width: 4px; background-color: var(--metro-main); top: 0; left: 50%; transform: translateX(-50%); border-radius: 2px; z-index: 2; height: 0%; transition: height 0.1s ease-out; }
+        .timeline-item { padding: 10px 40px; position: relative; width: 50%; box-sizing: border-box; opacity: 0; transform: translateY(30px); transition: all 0.6s ease-out; z-index: 4; }
+        .timeline-item.visible { opacity: 1; transform: translateY(0); }
+        .timeline-item.left { left: 0; }
+        .timeline-item.right { left: 50%; }
+        .timeline-item::after { content: ''; position: absolute; width: 24px; height: 24px; background-color: #ffffff; border: 4px solid var(--border-color); top: 24px; border-radius: 50%; z-index: 3; transition: all 0.4s ease; }
+        .timeline-item.left::after { right: -12px; }
+        .timeline-item.right::after { left: -12px; }
+        .timeline-item.active-dot::after { border-color: var(--metro-main); box-shadow: 0 0 0 6px rgba(220, 38, 38, 0.15); }
+        .timeline-item:hover::after { background-color: var(--metro-main); transform: scale(1.2); }
+        
+        .timeline-card { padding: 1.5rem; background-color: #ffffff; position: relative; border-radius: 12px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); border: 1px solid var(--border-color); transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease; }
+        .timeline-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); border-color: rgba(220, 38, 38, 0.4); }
+        .card-header-tl { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; }
+        .timeline-date { display: inline-block; padding: 4px 12px; background-color: var(--metro-light); color: var(--metro-main); font-size: 0.85rem; font-weight: 800; border-radius: 20px; border: 1px solid rgba(220, 38, 38, 0.15); }
+        .timeline-card h3 { margin: 0 0 0.5rem 0; font-size: 1.3rem; color: var(--primary-text); }
+        .timeline-card p { margin: 0; font-size: 0.95rem; line-height: 1.6; color: var(--secondary-text); }
+        
+        .timeline-card::before { content: " "; height: 0; position: absolute; top: 26px; width: 0; z-index: 1; border: medium solid var(--border-color); border-width: 10px 10px 10px 0; border-color: transparent var(--border-color) transparent transparent; }
+        .timeline-item.left .timeline-card::before { right: -11px; border-width: 10px 0 10px 10px; border-color: transparent transparent transparent var(--border-color); }
+        .timeline-item.right .timeline-card::before { left: -11px; border-width: 10px 10px 10px 0; border-color: transparent var(--border-color) transparent transparent; }
+        
+        .expand-btn { background: none; border: none; color: var(--metro-main); font-weight: 800; font-size: 0.85rem; padding: 0; margin-top: 1rem; cursor: pointer; text-decoration: underline; transition: color 0.2s; }
+        .expand-btn:hover { color: #991b1b; }
+        .timeline-details { margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed var(--border-color); font-size: 0.9rem; color: var(--secondary-text); display: none; animation: fadeIn 0.3s ease; }
+        
+        @media screen and (max-width: 768px) {
+            .timeline-line, .timeline-progress { left: 40px; } 
+            .timeline-item { width: 100%; padding-left: 80px; padding-right: 20px; }
+            .timeline-item.left, .timeline-item.right { left: 0; }
+            .timeline-item.left::after, .timeline-item.right::after { left: 28px; right: auto; }
+            .timeline-item.left .timeline-card::before, .timeline-item.right .timeline-card::before { left: -11px; border-width: 10px 10px 10px 0; border-color: transparent var(--border-color) transparent transparent; }
+        }
+
+        /* =========================================================
+           5. ESTILOS: METRO & TUTI (Componentes de Análisis)
+           ========================================================= */
+        .metro-title { color: var(--metro-main); }
+        .tuti-title { color: var(--tuti-main); }
+        
+        .metro-card-item { border-top: 4px solid var(--metro-main); border-radius: 20px; background: #ffffff; padding: 1.5rem; display: flex; flex-direction: column; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden; border-left: 1px solid var(--border-color); border-right: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); }
+        .metro-card-item:hover { border-color: var(--metro-main); box-shadow: 0 10px 25px rgba(220, 38, 38, 0.15); transform: translateY(-4px); }
+        
+        .tuti-card-item { border-top: 4px solid var(--tuti-main); border-radius: 8px; background: #ffffff; padding: 1.5rem; display: flex; flex-direction: column; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden; border-left: 1px solid var(--border-color); border-right: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); }
+        .tuti-card-item:hover { border-color: var(--tuti-accent); box-shadow: 0 10px 25px rgba(0, 51, 160, 0.15); transform: translateY(-4px); }
+
+        .metro-icon { background-color: var(--metro-light) !important; color: var(--metro-main) !important; padding: 10px; border-radius: 12px; font-size: 1.2rem; z-index: 2; }
+        .tuti-icon { background-color: var(--tuti-light) !important; color: var(--tuti-main) !important; padding: 10px; border-radius: 8px; font-size: 1.2rem; z-index: 2; }
+
+        .horizontal-card-body { display: flex; flex-direction: row; gap: 1.5rem; align-items: stretch; margin-top: 0.5rem; z-index: 2; }
+        .info-side { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+        .chart-side { flex: 1.5; position: relative; min-height: 180px; width: 100%; }
+        .chart-container-large { position: relative; height: 400px; width: 100%; margin-top: 1rem; z-index: 2; }
+        @media (max-width: 768px) { .horizontal-card-body { flex-direction: column; } .chart-side { min-height: 200px; } .chart-container-large { height: 320px; } }
+
+        .comparison-col-white { background-color: #ffffff; border: 1px solid var(--border-color); border-radius: 12px; padding: 12px 15px; margin: 10px 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); z-index: 2; }
+        .year-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; }
+        .year-row:not(:last-child) { border-bottom: 1px dashed #f1f5f9; }
+        .year-label { font-size: 0.75rem; font-weight: 800; color: var(--secondary-text); text-transform: uppercase; }
+        .card-value-sm { font-size: 1.2rem; font-weight: 900; }
+        
+        .grid-1 { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 3rem; }
+        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 3rem; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 4rem; align-items: stretch; }
+        .grid-3 .span-2 { grid-column: 1 / 3; }
+        @media (max-width: 800px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } .grid-3 .span-2 { grid-column: span 1; } }
+
+        .mt-auto { margin-top: auto; }
+        .watermark-number::before { content: '#'; position: absolute; right: 5px; bottom: -20px; font-size: 11rem; font-weight: 900; color: var(--metro-main); opacity: 0.08; z-index: 0; line-height: 1; pointer-events: none;}
+        .watermark-dollar::before { content: '$'; position: absolute; right: 5px; bottom: -15px; font-size: 10rem; font-weight: 900; color: var(--metro-main); opacity: 0.08; z-index: 0; line-height: 1; pointer-events: none;}
+        
+        .highlight-card { background-color: #fff1f2 !important; border: 2px solid #fecaca !important; }
+        .highlight-card .comparison-col-white, .highlight-card .formula-box { background-color: #ffffff; border-color: #fecaca; }
+
+        .btn-metro { background-color: var(--metro-main); border-radius: 30px; } .btn-metro:hover { background-color: var(--metro-dark); }
+        .btn-tuti { background-color: var(--primary-text); border-radius: 8px; } .btn-tuti:hover { background-color: var(--tuti-main); }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-brand">Digitalización AC</div>
+        <ul class="nav-links">
+            <li><button onclick="switchTab('tab-indicadores', this)" class="nav-btn active">Indicadores</button></li>
+            <li><button onclick="switchTab('tab-timeline', this)" class="nav-btn">Línea de Tiempo</button></li>
+            <li><button onclick="switchTab('tab-metro', this)" class="nav-btn">Tarjeta Ciudad</button></li>
+            <li><button onclick="switchTab('tab-tuti', this)" class="nav-btn">TUTI</button></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        
+        <div id="tab-indicadores" class="view-section active">
+            <section class="main-indicator-card">
+                <div class="indicator-header">
+                    <h2>IND-DIG</h2>
+                    <span class="subtitle">Índice de Digitalización General</span>
+                </div>
+                
+                <div class="main-value-display">
+                    <span id="ind-dig-value">0.00</span><span class="unit">%</span>
+                </div>
+
+                <div class="main-formula">
+                    <strong>Fórmula:</strong> (0.25 × EDGI) + (0.25 × ACC) + (0.25 × ECO) + (0.25 × PAY)
+                </div> <a href="nri-2025.pdf" target="_blank" class="btn-ref">ref</a>
+
+                <div class="download-section">
+                    <a href="Calculos correspondientes al Indicador.xlsx" download class="download-btn btn-ind">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        Descargar matriz de cálculos
+                    </a>
+                </div>
+
+                <div class="year-selector">
+                    <button class="year-btn" onclick="updateDashboard(2020)" id="btn-2020">2020</button>
+                    <button class="year-btn" onclick="updateDashboard(2021)" id="btn-2021">2021</button>
+                    <button class="year-btn" onclick="updateDashboard(2022)" id="btn-2022">2022</button>
+                    <button class="year-btn" onclick="updateDashboard(2023)" id="btn-2023">2023</button>
+                    <button class="year-btn" onclick="updateDashboard(2024)" id="btn-2024">2024</button>
+                    <button class="year-btn active" onclick="updateDashboard(2025)" id="btn-2025">2025</button>
+                </div>
+            </section>
+
+            <section class="sub-indicators-grid">
+                <div class="card edgi-card" onclick="toggleDetails('edgi')" id="card-edgi">
+                    <div class="card-header">
+                        <div class="title-with-icon">
+                            <span class="icon" style="background-color: var(--blue-edgi-light); color: var(--blue-edgi);">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            </span>
+                            <h3>EDGI</h3>
+                            <span class="weight-badge" style="background-color: var(--blue-edgi-light); color: var(--blue-edgi);">Peso: 25%</span>
+                        </div>
+                        <span class="expand-icon">+</span>
+                    </div>
+                    <div class="circular-chart-container">
+                        <div class="circular-chart" id="edgi-chart">
+                            <div class="inner-circle"><span class="card-value" id="edgi-value" style="color: var(--blue-edgi);">0.00</span></div>
+                        </div>
+                    </div>
+                    <div class="formula-box"><strong>Fórmula:</strong> <span id="edgi-formula">Cargando...</span></div>
+                    <div class="card-details" id="edgi-details">
+                        <div class="details-content">
+                            <details class="breakdown-details" onclick="event.stopPropagation()">
+                                <summary>Ver desglose</summary>
+                                <div class="breakdown-box">
+                                    <div class="breakdown-formula-code" id="edgi-breakdown-formula">Cargando...</div>
+                                    <ul class="breakdown-list" id="edgi-breakdown-list"></ul>
+                                </div>
+                            </details>
+                            <h4>Contexto del Cálculo</h4><p id="edgi-context">Cargando contexto...</p>
+                            <h4>Extracción de Datos</h4><p id="edgi-method" class="method-text">Cargando método...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card acc-card" onclick="toggleDetails('acc')" id="card-acc">
+                    <div class="card-header">
+                        <div class="title-with-icon">
+                            <span class="icon" style="background-color: var(--blue-acc-light); color: var(--blue-acc);">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+                            </span>
+                            <h3>ACC</h3>
+                            <span class="weight-badge" style="background-color: var(--blue-acc-light); color: var(--blue-acc);">Peso: 25%</span>
+                        </div>
+                        <span class="expand-icon">+</span>
+                    </div>
+                    <div class="circular-chart-container">
+                        <div class="circular-chart" id="acc-chart">
+                            <div class="inner-circle"><span class="card-value" id="acc-value" style="color: var(--blue-acc);">0.00</span></div>
+                        </div>
+                    </div>
+                    <div class="formula-box"><strong>Fórmula:</strong> <span id="acc-formula">Cargando...</span></div>
+                    <div class="card-details" id="acc-details">
+                        <div class="details-content">
+                            <details class="breakdown-details" onclick="event.stopPropagation()">
+                                <summary>Ver desglose</summary>
+                                <div class="breakdown-box">
+                                    <div class="breakdown-formula-code" id="acc-breakdown-formula">Cargando...</div>
+                                    <ul class="breakdown-list" id="acc-breakdown-list"></ul>
+                                </div>
+                            </details>
+                            <h4>Contexto del Cálculo</h4><p id="acc-context">Cargando contexto...</p>
+                            <h4>Extracción de Datos</h4><p id="acc-method" class="method-text">Cargando método...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card eco-card" onclick="toggleDetails('eco')" id="card-eco">
+                    <div class="card-header">
+                        <div class="title-with-icon">
+                            <span class="icon" style="background-color: var(--blue-eco-light); color: var(--blue-eco);">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </span>
+                            <h3>ECO</h3>
+                            <span class="weight-badge" style="background-color: var(--blue-eco-light); color: var(--blue-eco);">Peso: 25%</span>
+                        </div>
+                        <span class="expand-icon">+</span>
+                    </div>
+                    <div class="circular-chart-container">
+                        <div class="circular-chart" id="eco-chart">
+                            <div class="inner-circle"><span class="card-value" id="eco-value" style="color: var(--blue-eco);">0.00</span></div>
+                        </div>
+                    </div>
+                    <div class="formula-box"><strong>Fórmula:</strong> <span id="eco-formula">Cargando...</span></div>
+                    <div class="card-details" id="eco-details">
+                        <div class="details-content">
+                            <details class="breakdown-details" onclick="event.stopPropagation()">
+                                <summary>Ver desglose</summary>
+                                <div class="breakdown-box">
+                                    <div class="breakdown-formula-code" id="eco-breakdown-formula">Cargando...</div>
+                                    <ul class="breakdown-list" id="eco-breakdown-list"></ul>
+                                </div>
+                            </details>
+                            <h4>Contexto del Cálculo</h4><p id="eco-context">Cargando contexto...</p>
+                            <h4>Extracción de Datos</h4><p id="eco-method" class="method-text">Cargando método...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card pay-card" onclick="toggleDetails('pay')" id="card-pay">
+                    <div class="card-header">
+                        <div class="title-with-icon">
+                            <span class="icon" style="background-color: var(--blue-pay-light); color: var(--blue-pay);">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                            </span>
+                            <h3>PAY</h3>
+                            <span class="weight-badge" style="background-color: var(--blue-pay-light); color: var(--blue-pay);">Peso: 25%</span>
+                        </div>
+                        <span class="expand-icon">+</span>
+                    </div>
+                    <div class="circular-chart-container">
+                        <div class="circular-chart" id="pay-chart">
+                            <div class="inner-circle"><span class="card-value" id="pay-value" style="color: var(--blue-pay);">0.00</span></div>
+                        </div>
+                    </div>
+                    <div class="formula-box"><strong>Fórmula:</strong> <span id="pay-formula">Cargando...</span></div>
+                    <div class="card-details" id="pay-details">
+                        <div class="details-content">
+                            <details class="breakdown-details" onclick="event.stopPropagation()">
+                                <summary>Ver desglose</summary>
+                                <div class="breakdown-box">
+                                    <div class="breakdown-formula-code" id="pay-breakdown-formula">Cargando...</div>
+                                    <ul class="breakdown-list" id="pay-breakdown-list"></ul>
+                                </div>
+                            </details>
+                            <h4>Contexto del Cálculo</h4><p id="pay-context">Cargando contexto...</p>
+                            <h4>Extracción de Datos</h4><p id="pay-method" class="method-text">Cargando método...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div id="tab-timeline" class="view-section">
+            <section class="page-header">
+                <h2 class="main-title" style="color: var(--primary-text);">Línea de Tiempo Histórica</h2>
+                <p class="subtitle">Hitos clave en el desarrollo operativo y adopción ciudadana</p>
+            </section>
+            <section class="timeline-container" id="timeline-container">
+                <div class="timeline-line"></div>
+                <div class="timeline-progress" id="timeline-progress"></div>
+                </section>
+        </div>
+
+        <div id="tab-metro" class="view-section">
+            <section class="page-header">
+                <h2 class="main-title metro-title">Tarjeta Ciudad - Metro</h2>
+                <p class="subtitle">Evolución de adopción e impacto</p>
+                <a href="Calculos Metro.xlsx" download="Calculos Metro.xlsx" class="download-btn btn-metro">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px;">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg> Descargar matriz de cálculos (Excel) 
+                </a>
+            </section>
+
+            <h3 class="section-title">Adopción Ciudadana</h3>
+            <section class="grid-1">
+                <div class="metro-card-item">
+                    <div class="card-header">
+                        <div class="title-with-icon"><span class="icon metro-icon">👤</span><h3>Cuentas Ciudad</h3></div>
+                        <a href="https://metrodequito.gob.ec/wp-content/uploads/2025/12/25-12-23-Boletin-Estadistico-12-2025.pdf" target="_blank" class="info-btn">REF P31</a>
+                    </div>
+                    <div class="horizontal-card-body">
+                        <div class="info-side">
+                            <div class="comparison-col-white">
+                                <div class="year-row"><span class="year-label">2023</span><span class="card-value-sm" style="color:var(--metro-main)" id="cuentas-23">0</span></div>
+                                <div class="year-row"><span class="year-label">2024</span><span class="card-value-sm" style="color:var(--metro-main)" id="cuentas-24">0</span></div>
+                                <div class="year-row"><span class="year-label">2025</span><span class="card-value-sm" style="color:var(--metro-main)" id="cuentas-25">0</span></div>
+                            </div>
+                            <div class="formula-box mt-auto">Usuarios registrados en la plataforma.</div>
+                        </div>
+                        <div class="chart-side"><canvas id="chartCuentas"></canvas></div>
+                    </div>
+                </div>
+
+                <div class="metro-card-item">
+                    <div class="card-header">
+                        <div class="title-with-icon"><span class="icon metro-icon">🪪</span><h3>Cédulas Enlazadas</h3></div>
+                        <a href="https://metrodequito.gob.ec/wp-content/uploads/2025/12/25-12-23-Boletin-Estadistico-12-2025.pdf" target="_blank" class="info-btn">REF P32</a>
+                    </div>
+                    <div class="horizontal-card-body">
+                        <div class="info-side">
+                            <div class="comparison-col-white">
+                                <div class="year-row"><span class="year-label">2023</span><span class="card-value-sm" style="color:var(--metro-main)" id="cedulas-23">0</span></div>
+                                <div class="year-row"><span class="year-label">2024</span><span class="card-value-sm" style="color:var(--metro-main)" id="cedulas-24">0</span></div>
+                                <div class="year-row"><span class="year-label">2025</span><span class="card-value-sm" style="color:var(--metro-main)" id="cedulas-25">0</span></div>
+                            </div>
+                            <div class="formula-box mt-auto">Cuentas validadas con la cédula de identidad.</div>
+                        </div>
+                        <div class="chart-side"><canvas id="chartCedulas"></canvas></div>
+                    </div>
+                </div>
+
+                <div class="metro-card-item">
+                    <div class="card-header">
+                        <div class="title-with-icon"><span class="icon metro-icon">💳</span><h3>Tarjetas Emitidas</h3></div>
+                        <a href="https://metrodequito.gob.ec/wp-content/uploads/2025/12/25-12-23-Boletin-Estadistico-12-2025.pdf" target="_blank" class="info-btn">REF P33</a>
+                    </div>
+                    <div class="horizontal-card-body">
+                        <div class="info-side">
+                            <div class="comparison-col-white">
+                                <div class="year-row"><span class="year-label">2023</span><span class="card-value-sm" style="color:var(--metro-main)" id="tarjetas-23">0</span></div>
+                                <div class="year-row"><span class="year-label">2024</span><span class="card-value-sm" style="color:var(--metro-main)" id="tarjetas-24">0</span></div>
+                                <div class="year-row"><span class="year-label">2025</span><span class="card-value-sm" style="color:var(--metro-main)" id="tarjetas-25">0</span></div>
+                            </div>
+                            <div class="formula-box mt-auto">Tarjetas Ciudad físicas entregadas.</div>
+                        </div>
+                        <div class="chart-side"><canvas id="chartTarjetas"></canvas></div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="conclusion-box" style="border-color: var(--metro-main);">
+                <strong>💡 Conclusión:</strong> En relación con las cuentas Ciudad, se observa un decrecimiento debido a que en 2023 entró en operación el Metro, lo que motivó a que la mayoría de personas se registraran. La cifra posterior refleja principalmente a los usuarios rezagados. Cabe destacar que las cédulas enlazadas y las tarjetas emitidas registraron un aumento en 2024 al ser el primer año completo de operación del sistema, generando una mayor regularización ciudadana.
+            </div>
+
+            <h3 class="section-title">Operatividad y Recaudación</h3>
+            <section class="grid-3">
+                <div class="metro-card-item watermark-number">
+                    <div class="card-header"><div class="title-with-icon"><span class="icon metro-icon">🎫</span><h4>Pasajes Comprados</h4></div><a href="https://metrodequito.gob.ec/wp-content/uploads/2025/12/25-12-23-Boletin-Estadistico-12-2025.pdf" target="_blank" class="info-btn">REF P34</a></div>
+                    <div class="comparison-col-white">
+                        <div class="year-row"><span class="year-label">2024</span><span class="card-value-sm" style="color:var(--metro-main)" id="pasajes-24">0</span></div>
+                        <div class="year-row"><span class="year-label">2025</span><span class="card-value-sm" style="color:var(--metro-main)" id="pasajes-25">0</span></div>
+                    </div>
+                    <div class="formula-box mt-auto">Valor anual.</div>
+                </div>
+
+                <div class="metro-card-item">
+                    <div class="card-header"><div class="title-with-icon"><span class="icon metro-icon">💲</span><h4>Tarifario</h4></div><a href="https://metrodequito.gob.ec/wp-content/uploads/2025/12/25-12-23-Boletin-Estadistico-12-2025.pdf" target="_blank" class="info-btn">REF P41</a></div>
+                    <div class="comparison-col-white"><ul class="breakdown-list" id="tarifas-list"></ul></div>
+                    <div class="formula-box mt-auto">Costo por tipo de usuario.</div>
+                </div>
+
+                <div class="metro-card-item watermark-dollar">
+                    <div class="card-header"><div class="title-with-icon"><span class="icon metro-icon">💰</span><h4>Monto Recaudado</h4></div><a href="#" class="info-btn">CALC</a></div>
+                    <div class="comparison-col-white">
+                        <div class="year-row"><span class="year-label">2024</span><span class="card-value-sm" style="color:var(--metro-main)" id="monto-24">$0</span></div>
+                        <div class="year-row"><span class="year-label">2025</span><span class="card-value-sm" style="color:var(--metro-main)" id="monto-25">$0</span></div>
+                    </div>
+                    <div class="formula-box mt-auto">Ingresos anuales estimados por pasajes.</div>
+                </div>
+                
+                <div class="metro-card-item span-2">
+                    <div class="card-header"><div class="title-with-icon"><span class="icon metro-icon">📱</span><h4>Medios Digitales (vs Físico)</h4></div><a href="https://metrodequito.gob.ec/metodos-acceso-digitales/#:~:text=47%20%25%20de%20usuarios%20usan%20m%C3%A9todos%20de,para%20viajar%20en%20el%20Metro%20de%20Quito." target="_blank" class="info-btn">REF</a></div>
+                    <div class="comparison-col-white">
+                        <div class="year-row"><span class="year-label">Digital 2024</span><span class="card-value-sm" style="color:var(--metro-main)" id="digitales-24">0</span></div>
+                        <div class="year-row"><span class="year-label">Digital 2025</span><span class="card-value-sm" style="color:var(--metro-main)" id="digitales-25">0</span></div>
+                    </div>
+                    <div style="height: 150px; position:relative; z-index:2;"><canvas id="pagosChart"></canvas></div>
+                    <div class="formula-box mt-auto">Pagos vía App, QR o Tarjeta vinculada (Muestra 2025).</div>
+                </div>
+                
+                <div class="metro-card-item highlight-card flex-col">
+                    <div class="card-header"><div class="title-with-icon"><span class="icon metro-icon" style="background-color: #ffffff !important; color: rgb(255, 0, 0) !important;">🎯</span><h4>Impacto POS</h4></div><a href="https://www.superbancos.gob.ec/estadisticas/portalestudios/servicios-financieros/" target="_blank" class="info-btn">REF</a></div>
+                    <div class="comparison-col-white">
+                        <div class="year-row"><span class="year-label">2024</span><span class="card-value-sm" style="color:var(--metro-main)" id="impacto-24">0%</span></div>
+                        <div class="year-row"><span class="year-label">2025</span><span class="card-value-sm" style="color:var(--metro-main)" id="impacto-25">0%</span></div>
+                    </div>
+                    <div style="height: 130px; position:relative; z-index:2;"><canvas id="chartImpactoMetro"></canvas></div>
+                    <div class="formula-box mt-auto">Representación frente al total de POS.</div>
+                </div>
+            </section>
+
+            <div class="conclusion-box" style="border-color: var(--metro-main);">
+                <strong>💡 Conclusión:</strong> Para determinar el impacto del medio de pago digital, se identificó el total de validaciones y se multiplicó por sus tarifas, estimando el monto anual recaudado. Este valor se segmentó tomando como referencia que la modalidad digital representa el 47%. <br><br>
+                Los resultados muestran una significancia de 0,085% (2024) y 0,084% (2025). Aunque parece reducido, considerar que Ecuador tiene 24 provincias evidencia que un solo cantón incidió directamente en el POS nacional. En términos monetarios, los valores oscilan entre 10 y 12 millones de dólares, demostrando una adopción relevante.
+            </div>
+        </div>
+
+        <div id="tab-tuti" class="view-section">
+            <section class="page-header">
+                <h2 class="main-title tuti-title">Expansión y Mercado - TUTI</h2>
+                <p class="subtitle">Análisis de crecimiento, cobertura y comportamiento del consumidor</p>
+                <a href="Calculos TUTI.xlsx" download="Calculos TUTI.xlsx" class="download-btn btn-tuti">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px;">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg> Descargar Cálculos (Excel)
+                </a>
+            </section>
+
+            <h3 class="section-title">Comparativa Financiera del Sector Retail</h3>
+            
+            <section class="grid-1">
+                <div class="tuti-card-item">
+                    <div class="card-header"><div class="title-with-icon"><span class="icon tuti-icon">📈</span><h3>Utilidad Neta (2019 - 2024)</h3></div><a href="https://appscvsgen.supercias.gob.ec/consultaCompanias/societario/busquedaCompanias.jsf" target="_blank" class="info-btn">REF</a></div>
+                    <div class="chart-container-large"><canvas id="chartUtilidad"></canvas></div>
+                    <div class="formula-box" style="margin-top: 1.5rem;">Evolución de la utilidad o pérdida neta (Valores expresados en Millones de USD).</div>
+                </div>
+            </section>
+
+            <section class="grid-2">
+                <div class="tuti-card-item">
+                    <div class="card-header"><div class="title-with-icon"><span class="icon tuti-icon">📊</span><h3>Ingresos Operacionales</h3></div><a href="https://appscvsgen.supercias.gob.ec/consultaCompanias/societario/busquedaCompanias.jsf" target="_blank" class="info-btn">REF</a></div>
+                    <div class="chart-container-large"><canvas id="chartIngresos"></canvas></div>
+                    <div class="formula-box" style="margin-top: 1.5rem;">Facturación bruta entre competidores (Millones de USD).</div>
+                </div>
+                <div class="tuti-card-item">
+                    <div class="card-header"><div class="title-with-icon"><span class="icon tuti-icon">🍩</span><h3>Participación en el Mercado</h3></div><a href="https://appscvsgen.supercias.gob.ec/consultaCompanias/societario/busquedaCompanias.jsf" target="_blank" class="info-btn">REF</a></div>
+                    <div class="chart-container-large"><canvas id="chartMercado"></canvas></div>
+                    <div class="formula-box" style="margin-top: 1.5rem;">Cuota de mercado actual sobre el 100% de la industria retail alimentaria.</div>
+                </div>
+            </section>
+
+            <section class="grid-2">
+                <div class="tuti-card-item">
+                    <div class="card-header"><div class="title-with-icon"><span class="icon tuti-icon">⚖️</span><h3>Impacto de Comisiones sobre Utilidad (2024)</h3></div></div>
+                    <div class="chart-container-large"><canvas id="chartImpactoUtilidad"></canvas></div>
+                    <div class="formula-box" style="margin-top: 1.5rem;">Proporción de las ganancias absorbidas por costos transaccionales POS.</div>
+                </div>
+                <div class="tuti-card-item">
+                    <div class="card-header">
+                        <div class="title-with-icon"><span class="icon tuti-icon">💳</span><h3>Composición de Pagos POS</h3></div>
+                        <div><a href="https://contenido.bce.fin.ec/documentos/Administracion/snp-estadistica-10.pdf" target="_blank" class="info-btn">REF 1</a> <a href="https://www.superbancos.gob.ec/bancos/pronunciamiento-de-la-sb-frente-a-pagos-realizados-con-tarjeta-de-credito-o-debito/" target="_blank" class="info-btn">REF 2</a></div>
+                    </div>
+                    <div class="chart-container-large"><canvas id="chartMacroPagos"></canvas></div>
+                    <div class="formula-box" style="margin-top: 1.5rem;">Proporción del volumen monetario transaccionado en terminales POS (Crédito vs. Débito).</div>
+                </div>
+            </section>
+
+            <h3 class="section-title">Impacto del Gasto Financiero (Comisiones Bancarias)</h3>
+            <section class="grid-1">
+                <div class="tuti-card-item">
+                    <div class="card-header"><div class="title-with-icon"><span class="icon tuti-icon">💰</span><h3>Costo Total por Comisión de Tarjetas (Millones USD)</h3></div></div>
+                    <div class="chart-container-large"><canvas id="chartComisiones"></canvas></div>
+                    <div class="formula-box" style="margin-top: 1.5rem;">Gasto financiero anual estimado por Tarjeta de Crédito (Rojo) y Débito (Gris).</div>
+                </div>
+            </section>
+
+            <h3 class="section-title">Proyección Estratégica: Medio de Pago Digital</h3>
+            <section class="grid-1">
+                <div class="tuti-card-item" style="border-color: var(--tuti-danger);">
+                    <div class="card-header"><div class="title-with-icon"><span class="icon tuti-icon" style="background-color: #fff5f5 !important; color: var(--tuti-danger) !important;">📉</span><h3 style="color: var(--tuti-danger);">Impacto POS: Retail vs TUTI</h3></div></div>
+                    <div class="chart-container-large" style="height: 250px;"><canvas id="chartImpactoPOSTuti"></canvas></div>
+                    <div class="formula-box" style="margin-top: 1.5rem; background-color: #fff5f5; border-color: #fecaca;">Contraste del impacto positivo que generan las empresas tradicionales en el POS frente a la afectación (-1.28%) que sufre el ecosistema debido a que TUTI no adopta este medio.</div>
+                </div>
+            </section>
+
+            <div class="conclusion-box" style="border-left-color: var(--tuti-danger); background-color: #fff5f5;">
+                <h4 style="color: var(--tuti-danger); margin-top: 0; display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 1.2rem;">🚀</span> El Gran Ausente: La Ventaja Competitiva de Tuti
+                </h4>
+                <p style="margin-bottom: 10px;">
+                    Para calcular la fuga de capital por comisiones, se aplicó un coeficiente de digitalización transaccional <strong>CS = 22.49%</strong> (POS / POS + Retiros). Se proyectaron las tasas de descuento: <strong>4.02%</strong> para Crédito y <strong>2.00%</strong> para Débito.
+                </p>
+                <p style="margin-bottom: 10px;">
+                    Como se observa, el peso del POS es devastador: en empresas como TIA S.A., <strong>casi el 90% de su Utilidad Neta equivalente</strong> se diluye en pagar comisiones. <strong>Tuti no asume estos costos</strong> porque su modelo <em>Hard Discount</em> elimina casi por completo la intermediación financiera tradicional.
+                </p>
+                <p style="margin-bottom: 0;">
+                    A nivel macroeconómico, esto genera un fuerte contraste: mientras la industria del retail tradicional aporta positivamente un <strong>10.38%</strong> al volumen del ecosistema POS, el hecho de que Tuti no ofrezca este medio de pago provoca una afectación directa del <strong>-1.28%</strong> al volumen transaccional nacional. Sin embargo, para la empresa, prescindir de este sistema es vital para blindar sus márgenes y trasladar ese ahorro directamente al consumidor final.
+                </p>
+            </div>
+        </div>
+
+    </main>
+    <script>
+        // =========================================================
+        // LÓGICA DE NAVEGACIÓN SPA (Single Page Application)
+        // =========================================================
+        let timelineInitialized = false;
+        let metroRendered = false;
+        let tutiRendered = false;
+
+        function switchTab(tabId, btnElement) {
+            // Actualizar botones
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+
+            // Actualizar vistas
+            document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+
+            // Lazy Load de gráficos/animaciones según la pestaña
+            if (tabId === 'tab-timeline' && !timelineInitialized) { initTimeline(); timelineInitialized = true; }
+            if (tabId === 'tab-metro' && !metroRendered) { renderMetroCharts(); metroRendered = true; }
+            if (tabId === 'tab-tuti' && !tutiRendered) { renderTutiCharts(); tutiRendered = true; }
+            
+            // Forzar evento de scroll para la línea de tiempo si se entra a ella
+            if (tabId === 'tab-timeline') { setTimeout(() => window.dispatchEvent(new Event('scroll')), 100); }
+        }
+
+        // =========================================================
+        // DATOS Y LÓGICA: 1. INDICADORES GLOBALES
+        // =========================================================
+        const dbIndicadores = {
+            2020: {
+                indDig: 47.09, 
+                edgi: { 
+                    val: 70.15, 
+                    formula: "(OSI + HCI + TI) / 3",
+                    context: "La fórmula propuesta por la ONU se basa en el cálculo del promedio de tres dimensiones fundamentales: el Índice de Servicios en Línea (OSI), el Índice de Capital Humano (HCI) y el Índice de Infraestructura de Telecomunicaciones (TII). Este indicador mide el nivel de digitalización de los países en una escala de 0 a 1.",
+                    method: "Extracción de datos de los informes anuales de la ONU sobre gobierno digital y análisis de las plataformas digitales del Estado.",
+                    breakdownFormula: "EDGI = (OSI + HCI + TI) / 3",
+                    breakdown: [
+                        { label: "OSI (Servicios en línea)", value: "0.8118", extra: "", ref: "https://publicadministration.un.org/egovkb/en-us/Data/Country-Information/id/52-Ecuador/dataYear/2020" },
+                        { label: "HCI (Capital humano)", value: "0.7793", extra: "", ref: "https://publicadministration.un.org/egovkb/en-us/Data/Country-Information/id/52-Ecuador/dataYear/2020" },
+                        { label: "TII (Infraestructura)", value: "0.5133", extra: "", ref: "https://publicadministration.un.org/egovkb/en-us/Data/Country-Information/id/52-Ecuador/dataYear/2020" }
+                    ]
+                },
+                acc: { 
+                    val: 65.62, 
+                    formula: "(HI + PI + CA + SP + AD) / 5",
+                    context: "Índice compuesto que mide la madurez digital integrando infraestructura, equipamiento y capacidad humana. Ofreciendo una visión realista de la inclusión tecnológica su objetivo es determinar qué tan preparada está la población para participar plenamente en la economía y sociedad digital moderna.",
+                    method: "Recolección de datos de los informes del INEC.",
+                    breakdownFormula: "ACC = (HI + PI + CA + SP + AD) / 5",
+                    breakdown: [
+                        { label: "HI (Hogares Internet)", value: "53.20%", extra: "", ref: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Sociales/TIC/2024/202407_Tecnologia_de_la_Informacion_y_Comunicacion-TICs.pdf" },
+                        { label: "PI (Usuarios Internet)", value: "70.70%", extra: "", ref: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Sociales/TIC/2024/202407_Tecnologia_de_la_Informacion_y_Comunicacion-TICs.pdf" },
+                        { label: "CA (Celulares activos)", value: "62.90%", extra: "", ref: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Sociales/TIC/2024/202407_Tecnologia_de_la_Informacion_y_Comunicacion-TICs.pdf" },
+                        { label: "SP (Smartphones)", value: "51.50%", extra: "", ref: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Sociales/TIC/2024/202407_Tecnologia_de_la_Informacion_y_Comunicacion-TICs.pdf" },
+                        { label: "AD (Alfabetismo)", value: "89.80%", extra: "", ref: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Sociales/TIC/2024/202407_Tecnologia_de_la_Informacion_y_Comunicacion-TICs.pdf" }
+                    ]
+                },
+                eco: { 
+                    val: 17.62, 
+                    formula: "( EXP + IDE + VAB(TI) ) / VAB(COM)",
+                    context: "Este indicador permite analizar el impacto de las exportaciones (EXP), la inversión extranjera directa (IDE) y el valor agregado bruto del sector de tecnologías de la información VAB (TI), en comparación con el sector más representativo dentro del PIB, que es el comercio al por mayor y menor VAB (Com).",
+                    method: "Los datos fueron obtenidos de los informes oficiales del Banco Central del Ecuador. Para el indicador de Inversión Extranjera Directa (IDE), se accedió a la sección “Estadísticas y Reportes”, luego a la opción “Inversión Directa por Rama de Actividad Económica”. En el caso del indicador de Exportaciones (EXP), se ingresó a “Estadísticas y Reportes”, posteriormente al “Boletín de Resultados de la Balanza de Pagos”, seleccionando la edición correspondiente a 2025 y, dentro de esta, el apartado de “Servicios”. Finalmente, para el indicador de Valor Agregado Bruto (VAB), se consultó la sección “Cuadros de Resultados”, luego “Cuentas Nacionales Anuales” y, dentro de esta, la opción “Serie Histórica y PIB per cápita”.",
+                    breakdownFormula: "ECO = (EXP + IDE + VAB_TI) / VAB_COM",
+                    breakdown: [
+                        { label: "EXP (Exportaciones TI)", value: "$3.57M", extra: "", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/SectorExterno/ix_BalanzaPagos.html" },
+                        { label: "IDE (Inv. Extranjera TI)", value: "$82.49M", extra: "", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/SectorExterno/ix_InversionExtranjeraDirecta.html" },
+                        { label: "VAB(TI) (Valor Agregado TI)", value: "$2310.19M", extra: "", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/cuentasnacionales/ix_cuentasnacionalesanuales.html" },
+                        { label: "VAB(COM) (Sector Com.)", value: "$13602.42M", extra: "", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/cuentasnacionales/ix_cuentasnacionalesanuales.html" }
+                    ]
+                },
+                pay: { 
+                    val: 34.98, 
+                    formula: "PAY = √(GD_norm * CS)",
+                    context: "Este indicador evalúa el impacto de la adopción de medios de pago digitales, considerando la relación SPI/PIB, que mide el monto de pagos interbancarios en proporción al Producto Interno Bruto.",
+                    method: "Los datos fueron extraídos del Banco Central del Ecuador (BCE). Para el indicador SPI/PIB, se accedió a la sección “Sistema de Pagos Interbancarios / PIB”, donde, en los tres puntos ubicados en la parte inferior izquierda del recuadro, se encuentra la opción para descargar la serie histórica. En el caso del indicador POS, se ingresó a la opción “Estadísticas de Puntos de Venta Electrónicos (POS)”, donde se puede consultar la información correspondiente al año 2025. Para acceder a datos históricos, se selecciona la opción “Otros años”. Finalmente, para el indicador de retiros de efectivo, se ingresó a la opción “Estadísticas de Retiros de Dinero”, siguiendo el mismo procedimiento utilizado para obtener la información histórica del indicador POS.",
+                    breakdownFormula: "<strong>1. GD Normalizado:</strong><br> GD_norm = (GDi - min(GD)) / (Max(GD) - Min(GD))<br><br><strong>2. CS:</strong><br> CS = POS / (POS + RETIROS)<br><br><strong>3. Índice PAY:</strong><br> PAY = √(GD_norm * CS)",
+                    breakdown: [
+                        { label: "GD (SIP/PIB)", value: "115.37", extra: "", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/MediosPago/ix_MediosPagoPrin.html#" },
+                        { label: "min(GD) [Año 2010]", value: "44.96", extra: "Base Histórica", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/MediosPago/ix_MediosPagoPrin.html#" },
+                        { label: "Max(GD) [Año 2025]", value: "152.46", extra: "Tope Histórico", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/MediosPago/ix_MediosPagoPrin.html#" },
+                        { label: "GD_norm", value: "65.50%", extra: "Pag 85", ref: "https://www.oecd.org/content/dam/oecd/en/publications/reports/2008/08/handbook-on-constructing-composite-indicators-methodology-and-user-guide_g1gh9301/9789264043466-en.pdf" },
+                        { label: "POS", value: "$7,848,015,622", extra: "", ref: "https://www.superbancos.gob.ec/estadisticas/portalestudios/servicios-financieros/" },
+                        { label: "RETIROS", value: "$34,159,135,840", extra: "", ref: "https://www.superbancos.gob.ec/estadisticas/portalestudios/servicios-financieros/" },
+                        { label: "CS", value: "18.68%", extra: "Calculo prom", ref: "https://www.uaeh.edu.mx/docencia/VI_Lectura/licenciatura/documentos/LEC4.pdf" }
+                    ]
+                }
+            },
+            2021: {
+                indDig: 46.88, 
+                edgi: { 
+                    val: 68.75, 
+                    formula: "(OSI + HCI + TI) / 3",
+                    context: "La fórmula propuesta por la ONU se basa en el cálculo del promedio de tres dimensiones fundamentales: el Índice de Servicios en Línea (OSI), el Índice de Capital Humano (HCI) y el Índice de Infraestructura de Telecomunicaciones (TII). Este indicador mide el nivel de digitalización de los países en una escala de 0 a 1.",
+                    method: "Extracción de datos de los informes anuales de la ONU sobre gobierno digital y análisis de las plataformas digitales del Estado.",
+                    breakdownFormula: "EDGI = (OSI + HCI + TI) / 3",
+                    breakdown: [
+                        { label: "OSI (Servicios en línea)", value: "0.78285", extra: "", ref: "https://publicadministration.un.org/egovkb/en-us/Data/Country-Information/id/52-Ecuador/dataYear/2021" },
+                        { label: "HCI (Capital humano)", value: "0.7514", extra: "", ref: "https://publicadministration.un.org/egovkb/en-us/Data/Country-Information/id/52-Ecuador/dataYear/2021" },
+                        { label: "TII (Infraestructura)", value: "0.52825", extra: "", ref: "https://publicadministration.un.org/egovkb/en-us/Data/Country-Information/id/52-Ecuador/dataYear/2021" }
+                    ]
+                },
+                acc: { 
+                    val: 65.46, 
+                    formula: "(HI + PI + CA + SP + AD) / 5",
+                    context: "Índice compuesto que mide la madurez digital integrando infraestructura, equipamiento y capacidad humana. Ofreciendo una visión realista de la inclusión tecnológica su objetivo es determinar qué tan preparada está la población para participar plenamente en la economía y sociedad digital moderna.",
+                    method: "Recolección de datos de los informes del INEC.",
+                    breakdownFormula: "ACC = (HI + PI + CA + SP + AD) / 5",
+                    breakdown: [
+                        { label: "HI (Hogares Internet)", value: "56.39%", extra: "", ref: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Sociales/TIC/2024/202407_Tecnologia_de_la_Informacion_y_Comunicacion-TICs.pdf" },
+                        { label: "PI (Usuarios Internet)", value: "70.47%", extra: "", ref: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Sociales/TIC/2024/202407_Tecnologia_de_la_Informacion_y_Comunicacion-TICs.pdf" },
+                        { label: "CA (Celulares activos)", value: "57.64%", extra: "", ref: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Sociales/TIC/2024/202407_Tecnologia_de_la_Informacion_y_Comunicacion-TICs.pdf" },
+                        { label: "SP (Smartphones)", value: "52.23%", extra: "", ref: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Sociales/TIC/2024/202407_Tecnologia_de_la_Informacion_y_Comunicacion-TICs.pdf" },
+                        { label: "AD (Alfabetismo)", value: "90.57%", extra: "", ref: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Sociales/TIC/2024/202407_Tecnologia_de_la_Informacion_y_Comunicacion-TICs.pdf" }
+                    ]
+                },
+                eco: { 
+                    val: 14.96, 
+                    formula: "( EXP + IDE + VAB(TI) ) / VAB(COM)",
+                    context: "Este indicador permite analizar el impacto de las exportaciones (EXP), la inversión extranjera directa (IDE) y el valor agregado bruto del sector de tecnologías de la información VAB (TI), en comparación con el sector más representativo dentro del PIB, que es el comercio al por mayor y menor VAB (Com).",
+                    method: "Los datos fueron obtenidos de los informes oficiales del Banco Central del Ecuador. Para el indicador de Inversión Extranjera Directa (IDE), se accedió a la sección “Estadísticas y Reportes”, luego a la opción “Inversión Directa por Rama de Actividad Económica”. En el caso del indicador de Exportaciones (EXP), se ingresó a “Estadísticas y Reportes”, posteriormente al “Boletín de Resultados de la Balanza de Pagos”, seleccionando la edición correspondiente a 2025 y, dentro de esta, el apartado de “Servicios”. Finalmente, para el indicador de Valor Agregado Bruto (VAB), se consultó la sección “Cuadros de Resultados”, luego “Cuentas Nacionales Anuales” y, dentro de esta, la opción “Serie Histórica y PIB per cápita”.",
+                    breakdownFormula: "ECO = (EXP + IDE + VAB_TI) / VAB_COM",
+                    breakdown: [
+                        { label: "EXP (Exportaciones TI)", value: "$45.21M", extra: "", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/SectorExterno/ix_BalanzaPagos.html" },
+                        { label: "IDE (Inv. Extranjera TI)", value: "$73.23M", extra: "", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/SectorExterno/ix_InversionExtranjeraDirecta.html" },
+                        { label: "VAB(TI) (Valor Agregado TI)", value: "$2310.11M", extra: "", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/cuentasnacionales/ix_cuentasnacionalesanuales.html" },
+                        { label: "VAB(COM) (Sector Com.)", value: "$16230.15M", extra: "", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/cuentasnacionales/ix_cuentasnacionalesanuales.html" }
+                    ]
+                },
+                pay: { 
+                    val: 38.34, 
+                    formula: "PAY = √(GD_norm * CS)",
+                    context: "Este indicador evalúa el impacto de la adopción de medios de pago digitales, considerando la relación SPI/PIB, que mide el monto de pagos interbancarios en proporción al Producto Interno Bruto.",
+                    method: "Los datos fueron extraídos del Banco Central del Ecuador (BCE). Para el indicador SPI/PIB, se accedió a la sección “Sistema de Pagos Interbancarios / PIB”, donde, en los tres puntos ubicados en la parte inferior izquierda del recuadro, se encuentra la opción para descargar la serie histórica. En el caso del indicador POS, se ingresó a la opción “Estadísticas de Puntos de Venta Electrónicos (POS)”, donde se puede consultar la información correspondiente al año 2025. Para acceder a datos históricos, se selecciona la opción “Otros años”. Finalmente, para el indicador de retiros de efectivo, se ingresó a la opción “Estadísticas de Retiros de Dinero”, siguiendo el mismo procedimiento utilizado para obtener la información histórica del indicador POS.",
+                    breakdownFormula: "<strong>1. GD Normalizado:</strong><br> GD_norm = (GDi - min(GD)) / (Max(GD) - Min(GD))<br><br><strong>2. CS:</strong><br> CS = POS / (POS + RETIROS)<br><br><strong>3. Índice PAY:</strong><br> PAY = √(GD_norm * CS)",
+                    breakdown: [
+                        { label: "GD (SIP/PIB)", value: "127.74", extra: "", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/MediosPago/ix_MediosPagoPrin.html#" },
+                        { label: "min(GD) [Año 2010]", value: "44.96", extra: "Base Histórica", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/MediosPago/ix_MediosPagoPrin.html#" },
+                        { label: "Max(GD) [Año 2025]", value: "152.46", extra: "Tope Histórico", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/MediosPago/ix_MediosPagoPrin.html#" },
+                        { label: "GD_norm", value: "77.00%", extra: "Pag 85", ref: "https://www.oecd.org/content/dam/oecd/en/publications/reports/2008/08/handbook-on-constructing-composite-indicators-methodology-and-user-guide_g1gh9301/9789264043466-en.pdf" },
+                        { label: "POS", value: "$9,520,203,267", extra: "", ref: "https://www.superbancos.gob.ec/estadisticas/portalestudios/servicios-financieros/" },
+                        { label: "RETIROS", value: "$40,338,425,906", extra: "", ref: "https://www.superbancos.gob.ec/estadisticas/portalestudios/servicios-financieros/" },
+                        { label: "CS", value: "19.09%", extra: "Calculo prom", ref: "https://www.uaeh.edu.mx/docencia/VI_Lectura/licenciatura/documentos/LEC4.pdf" }
+                    ]
+                }
+            },
+            2022: {
+                indDig: 47.48, 
+                edgi: { 
+                    val: 68.89, 
+                    formula: "(OSI + HCI + TI) / 3",
+                    context: "La fórmula propuesta por la ONU se basa en el cálculo del promedio de tres dimensiones fundamentales: el Índice de Servicios en Línea (OSI), el Índice de Capital Humano (HCI) y el Índice de Infraestructura de Telecomunicaciones (TII). Este indicador mide el nivel de digitalización de los países en una escala de 0 a 1. El resultado obtenido permite identificar el grado de desarrollo y el rango de crecimiento de la digitalización del Ecuador en comparación con el resto del mundo.",
+                    method: "Extracción de datos de los informes anuales de la ONU sobre gobierno digital y análisis de las plataformas digitales del Estado del Año 2022.",
+                    breakdownFormula: "EDGI = (OSI + HCI + TI) / 3",
+                    breakdown: [
+                        { label: "OSI (Servicios en línea)", value: "0.7651", extra: "", ref: "https://publicadministration.un.org/egovkb/en-us/Data/Country-Information/id/52-Ecuador/dataYear/2022" },
+                        { label: "HCI (Capital humano)", value: "0.7748", extra: "", ref: "https://publicadministration.un.org/egovkb/en-us/Data/Country-Information/id/52-Ecuador/dataYear/2022" },
+                        { label: "TII (Infraestructura)", value: "0.5269", extra: "", ref: "https://publicadministration.un.org/egovkb/en-us/Data/Country-Information/id/52-Ecuador/dataYear/2022" }
+                    ]
+                },
+                acc: { 
+                    val: 66.58, 
+                    formula: "(HI + PI + CA + SP + AD) / 5",
+                    context: "Índice compuesto que mide la madurez digital integrando infraestructura, equipamiento y capacidad humana. Ofreciendo una visión realista de la inclusión tecnológica su objetivo es determinar qué tan preparada está la población para participar plenamente en la economía y sociedad digital moderna.",
+                    method: "Recolección de datos de los informes del INEC.",
+                    breakdownFormula: "ACC = (HI + PI + CA + SP + AD) / 5",
+                    breakdown: [
+                        { label: "HI (Hogares Internet)", value: "60.4%", extra: "", ref: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Sociales/TIC/2024/202407_Tecnologia_de_la_Informacion_y_Comunicacion-TICs.pdf" },
+                        { label: "PI (Usuarios Internet)", value: "69.7%", extra: "", ref: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Sociales/TIC/2024/202407_Tecnologia_de_la_Informacion_y_Comunicacion-TICs.pdf" },
+                        { label: "CA (Celulares activos)", value: "58.8%", extra: "", ref: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Sociales/TIC/2024/202407_Tecnologia_de_la_Informacion_y_Comunicacion-TICs.pdf" },
+                        { label: "SP (Smartphones)", value: "52.2%", extra: "", ref: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Sociales/TIC/2024/202407_Tecnologia_de_la_Informacion_y_Comunicacion-TICs.pdf" },
+                        { label: "AD (Alfabetismo)", value: "91.8%", extra: "1-8.2%", ref: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Sociales/TIC/2024/202407_Tecnologia_de_la_Informacion_y_Comunicacion-TICs.pdf" }
+                    ]
+                },
+                eco: { 
+                    val: 14.16, 
+                    formula: "( EXP + IDE + VAB(TI) ) / VAB(COM)",
+                    context: "Este indicador permite analizar el impacto de las exportaciones (EXP), la inversión extranjera directa (IDE) y el valor agregado bruto del sector de tecnologías de la información VAB (TI), en comparación con el sector más representativo dentro del PIB, que es el comercio al por mayor y menor VAB (Com). De esta manera, se contrasta la evolución de la industria digital emergente frente a una industria tradicional con mayor peso en la economía nacional.",
+                    method: "Los datos fueron obtenidos de los informes oficiales del Banco Central del Ecuador. Para el indicador de Inversión Extranjera Directa (IDE), se accedió a la sección “Estadísticas y Reportes”, luego a la opción “Inversión Directa por Rama de Actividad Económica”. En el caso del indicador de Exportaciones (EXP), se ingresó a “Estadísticas y Reportes”, posteriormente al “Boletín de Resultados de la Balanza de Pagos”, seleccionando la edición correspondiente a 2025 y, dentro de esta, el apartado de “Servicios”. Finalmente, para el indicador de Valor Agregado Bruto (VAB), se consultó la sección “Cuadros de Resultados”, luego “Cuentas Nacionales Anuales” y, dentro de esta, la opción “Serie Histórica y PIB per cápita”.",
+                    breakdownFormula: "ECO = (EXP + IDE + VAB_TI) / VAB_COM",
+                    breakdown: [
+                        { label: "EXP (Exportaciones TI)", value: "$72.94M", extra: "", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/SectorExterno/ix_BalanzaPagos.html" },
+                        { label: "IDE (Inv. Extranjera TI)", value: "$18.03M", extra: "", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/SectorExterno/ix_InversionExtranjeraDirecta.html" },
+                        { label: "VAB(TI) (Valor Agregado TI)", value: "$2483.29M", extra: "", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/cuentasnacionales/ix_cuentasnacionalesanuales.html" },
+                        { label: "VAB(COM) (Sector Com.)", value: "$18183.80M", extra: "", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/cuentasnacionales/ix_cuentasnacionalesanuales.html" }
+                    ]
+                },
+                pay: { 
+                    val: 40.29, 
+                    formula: "PAY = √(GD_norm * CS)",
+                    context: "Este indicador evalúa el impacto de la adopción de medios de pago digitales, considerando la relación SPI/PIB, que mide el monto de pagos interbancarios en proporción al Producto Interno Bruto. Además, incorpora el nivel de transacciones realizadas a través de terminales POS, comparando el monto de pagos electrónicos con los retiros de efectivo, con el fin de analizar el grado de sustitución del dinero físico por medios digitales en la economía.",
+                    method: "Los datos fueron extraídos del Banco Central del Ecuador (BCE). Para el indicador SPI/PIB, se accedió a la sección “Sistema de Pagos Interbancarios / PIB”, donde, en los tres puntos ubicados en la parte inferior izquierda del recuadro, se encuentra la opción para descargar la serie histórica. En el caso del indicador POS, se ingresó a la opción “Estadísticas de Puntos de Venta Electrónicos (POS)”, donde se puede consultar la información correspondiente al año 2025. Para acceder a datos históricos, se selecciona la opción “Otros años”. Finalmente, para el indicador de retiros de efectivo, se ingresó a la opción “Estadísticas de Retiros de Dinero”, siguiendo el mismo procedimiento utilizado para obtener la información histórica del indicador POS.",
+                    breakdownFormula: "<strong>1. GD Normalizado:</strong><br> GD_norm = (GDi - min(GD)) / (Max(GD) - Min(GD))<br><br><strong>2. CS:</strong><br> CS = POS / (POS + RETIROS)<br><br><strong>3. Índice PAY:</strong><br> PAY = √(GD_norm * CS)",
+                    breakdown: [
+                        { label: "GD (SIP/PIB)", value: "134.66", extra: "", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/MediosPago/ix_MediosPagoPrin.html#" },
+                        { label: "min(GD) [Año 2010]", value: "44.96", extra: "Base Histórica", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/MediosPago/ix_MediosPagoPrin.html#" },
+                        { label: "Max(GD) [Año 2025]", value: "152.46", extra: "Tope Histórico", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/MediosPago/ix_MediosPagoPrin.html#" },
+                        { label: "GD_norm", value: "83.44%", extra: "Pag 85", ref: "https://www.oecd.org/content/dam/oecd/en/publications/reports/2008/08/handbook-on-constructing-composite-indicators-methodology-and-user-guide_g1gh9301/9789264043466-en.pdf" },
+                        { label: "POS", value: "$10,910,791,431", extra: "", ref: "https://www.superbancos.gob.ec/estadisticas/portalestudios/servicios-financieros/" },
+                        { label: "RETIROS", value: "$45,181,473,635", extra: "", ref: "https://www.superbancos.gob.ec/estadisticas/portalestudios/servicios-financieros/" },
+                        { label: "CS", value: "19.45%", extra: "Calculo prom", ref: "https://www.uaeh.edu.mx/docencia/VI_Lectura/licenciatura/documentos/LEC4.pdf" }
+                    ]
+                }
+            },
+            2023: {
+                indDig: 50.12, 
+                edgi: { 
+                    val: 74.15, 
+                    formula: "(OSI + HCI + TI) / 3",
+                    context: "La fórmula propuesta por la ONU se basa en el cálculo del promedio de tres dimensiones fundamentales: el Índice de Servicios en Línea (OSI), el Índice de Capital Humano (HCI) y el Índice de Infraestructura de Telecomunicaciones (TII). Este indicador mide el nivel de digitalización de los países en una escala de 0 a 1, lo que permite identificar el grado de desarrollo y el rango de crecimiento de la digitalización del Ecuador en comparación con el resto del mundo. Si bien el estudio oficial se publica únicamente en años pares, en este caso se realizó una aproximación lineal para estimar los valores correspondientes al año 2023.",
+                    method: "Extracción de datos de los informes anuales de la ONU sobre gobierno digital y análisis de las plataformas digitales del Estado.",
+                    breakdownFormula: "EDGI = (OSI + HCI + TI) / 3",
+                    breakdown: [
+                        { label: "OSI (Servicios en línea)", value: "0.85055", extra: "Dato Calculado", ref:"https://publicadministration.un.org/egovkb/en-us/Data/Country-Information/id/52-Ecuador/dataYear/2024" },
+                        { label: "HCI (Capital humano)", value: "0.7823", extra: "Dato Calculado" , ref:"https://publicadministration.un.org/egovkb/en-us/Data/Country-Information/id/52-Ecuador/dataYear/2024" },
+                        { label: "TII (Infraestructura)", value: "0.59155", extra: "Dato Calculado", ref:"https://publicadministration.un.org/egovkb/en-us/Data/Country-Information/id/52-Ecuador/dataYear/2024" }
+                    ]
+                },
+                acc: { 
+                    val: 68.50, 
+                    formula: "(HI + PI + CA + SP + AD) / 5",
+                    context: "Índice compuesto que mide la madurez digital integrando infraestructura, equipamiento y capacidad humana. Ofreciendo una visión realista de la inclusión tecnológica su objetivo es determinar qué tan preparada está la población para participar plenamente en la economía y sociedad digital moderna.",
+                    method: "Recolección de datos de los informes del INEC.",
+                    breakdownFormula: "ACC = (HI + PI + CA + SP + AD) / 5",
+                    breakdown: [
+                        { label: "HI (Hogares Internet)", value: "62.2%", extra: "", ref: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Sociales/TIC/2024/202407_Tecnologia_de_la_Informacion_y_Comunicacion-TICs.pdf" },
+                        { label: "PI (Usuarios Internet)", value: "72.7%", extra: "", ref: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Sociales/TIC/2024/202407_Tecnologia_de_la_Informacion_y_Comunicacion-TICs.pdf" },
+                        { label: "CA (Celulares activos)", value: "59.6%", extra: "", ref: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Sociales/TIC/2024/202407_Tecnologia_de_la_Informacion_y_Comunicacion-TICs.pdf" },
+                        { label: "SP (Smartphones)", value: "55.6%", extra: "", ref: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Sociales/TIC/2024/202407_Tecnologia_de_la_Informacion_y_Comunicacion-TICs.pdf" },
+                        { label: "AD (Alfabetismo)", value: "92.4%", extra: "1-7,6%", ref: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Sociales/TIC/2024/202407_Tecnologia_de_la_Informacion_y_Comunicacion-TICs.pdf" }
+                    ]
+                },
+                eco: { 
+                    val: 13.99, 
+                    formula: "( EXP + IDE + VAB(TI) ) / VAB(COM)",
+                    context: "Este indicador permite analizar el impacto de las exportaciones (EXP), la inversión extranjera directa (IDE) y el valor agregado bruto del sector de tecnologías de la información VAB (TI), en comparación con el sector más representativo dentro del PIB, que es el comercio al por mayor y menor VAB (Com). De esta manera, se contrasta la evolución de la industria digital emergente frente a una industria tradicional con mayor peso en la economía nacional.",
+                    method: "Los datos fueron obtenidos de los informes oficiales del Banco Central del Ecuador. Para el indicador de Inversión Extranjera Directa (IDE), se accedió a la sección “Estadísticas y Reportes”, luego a la opción “Inversión Directa por Rama de Actividad Económica”. En el caso del indicador de Exportaciones (EXP), se ingresó a “Estadísticas y Reportes”, posteriormente al “Boletín de Resultados de la Balanza de Pagos”, seleccionando la edición correspondiente a 2025 y, dentro de esta, el apartado de “Servicios”. Finalmente, para el indicador de Valor Agregado Bruto (VAB), se consultó la sección “Cuadros de Resultados”, luego “Cuentas Nacionales Anuales” y, dentro de esta, la opción “Serie Histórica y PIB per cápita”.",
+                    breakdownFormula: "ECO = (EXP + IDE + VAB_TI) / VAB_COM",
+                    breakdown: [
+                        { label: "EXP (Exportaciones TI)", value: "$96.83M", extra: "", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/SectorExterno/ix_BalanzaPagos.html" },
+                        { label: "IDE (Inv. Extranjera TI)", value: "$37.96M", extra: "", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/SectorExterno/ix_InversionExtranjeraDirecta.html" },
+                        { label: "VAB(TI) (Valor Agregado TI)", value: "$2469.60M", extra: "", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/cuentasnacionales/ix_cuentasnacionalesanuales.html" },
+                        { label: "VAB(COM) (Sector Com.)", value: "$18620.26M", extra: "", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/cuentasnacionales/ix_cuentasnacionalesanuales.html" }
+                    ]
+                },
+                pay: { 
+                    val: 43.82, 
+                    formula: "PAY = √(GD_norm * CS)",
+                    context: "Este indicador evalúa el impacto de la adopción de medios de pago digitales, considerando la relación SPI/PIB, que mide el monto de pagos interbancarios en proporción al Producto Interno Bruto.",
+                    method: "Los datos fueron extraídos del Banco Central del Ecuador (BCE). Para el indicador SPI/PIB, se accedió a la sección “Sistema de Pagos Interbancarios / PIB”, donde, en los tres puntos ubicados en la parte inferior izquierda del recuadro, se encuentra la opción para descargar la serie histórica. En el caso del indicador POS, se ingresó a la opción “Estadísticas de Puntos de Venta Electrónicos (POS)”, donde se puede consultar la información correspondiente al año 2025. Para acceder a datos históricos, se selecciona la opción “Otros años”. Finalmente, para el indicador de retiros de efectivo, se ingresó a la opción “Estadísticas de Retiros de Dinero”, siguiendo el mismo procedimiento utilizado para obtener la información histórica del indicador POS.",
+                    breakdownFormula: "<strong>1. GD Normalizado:</strong><br> GD_norm = (GDi - min(GD)) / (Max(GD) - Min(GD))<br><br><strong>2. CS:</strong><br> CS = POS / (POS + RETIROS)<br><br><strong>3. Índice PAY:</strong><br> PAY = √(GD_norm * CS)",
+                    breakdown: [
+                        { label: "GD (SIP/PIB)", value: "136.80", extra: "", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/MediosPago/ix_MediosPagoPrin.html#" },
+                        { label: "min(GD) [Año 2010]", value: "44.96", extra: "Base Histórica", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/MediosPago/ix_MediosPagoPrin.html#" },
+                        { label: "Max(GD) [Año 2025]", value: "152.46", extra: "Tope Histórico C", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/MediosPago/ix_MediosPagoPrin.html#" },
+                        { label: "GD_norm", value: "85.43%", extra: "Pag 85", ref: "https://www.oecd.org/content/dam/oecd/en/publications/reports/2008/08/handbook-on-constructing-composite-indicators-methodology-and-user-guide_g1gh9301/9789264043466-en.pdf" },
+                        { label: "POS", value: "$12,154,309,528", extra: "", ref: "https://www.superbancos.gob.ec/estadisticas/portalestudios/servicios-financieros/" },
+                        { label: "RETIROS", value: "$41,913,411,487", extra: "", ref: "https://www.superbancos.gob.ec/estadisticas/portalestudios/servicios-financieros/" },
+                        { label: "CS", value: "22.48%", extra: "Calculo prom", ref: "https://www.uaeh.edu.mx/docencia/VI_Lectura/licenciatura/documentos/LEC4.pdf" }
+                    ]
+                }
+            },
+            2024: {
+                indDig: 52.65, 
+                edgi: { 
+                    val: 78.00, 
+                    formula: "(OSI + HCI + TI) / 3",
+                    context: "La fórmula propuesta por la ONU se basa en el cálculo del promedio de tres dimensiones fundamentales: el Índice de Servicios en Línea (OSI), el Índice de Capital Humano (HCI) y el Índice de Infraestructura de Telecomunicaciones (TII). Este indicador mide el nivel de digitalización de los países en una escala de 0 a 1.",
+                    method: "Extracción de datos de los informes anuales de la ONU sobre gobierno digital.",
+                    breakdownFormula: "EDGI = (OSI + HCI + TI) / 3",
+                    breakdown: [
+                        { label: "OSI (Servicios en línea)", value: "0.8851", extra: "", ref: "https://publicadministration.un.org/egovkb/en-us/Data/Country-Information/id/52-Ecuador/dataYear/2024" },
+                        { label: "HCI (Capital humano)", value: "0.7715", extra: "", ref: "https://publicadministration.un.org/egovkb/en-us/Data/Country-Information/id/52-Ecuador/dataYear/2024" },
+                        { label: "TII (Infraestructura)", value: "0.6834", extra: "", ref: "https://publicadministration.un.org/egovkb/en-us/Data/Country-Information/id/52-Ecuador/dataYear/2024" }
+                    ]
+                },
+                acc: { 
+                    val: 71.36, 
+                    formula: "(HI + PI + CA + SP + AD) / 5",
+                    context: "Índice compuesto que mide la madurez digital integrando infraestructura, equipamiento y capacidad humana.",
+                    method: "Recolección de datos de los informes del INEC.",
+                    breakdownFormula: "ACC = (HI + PI + CA + SP + AD) / 5",
+                    breakdown: [
+                        { label: "HI (Hogares Internet)", value: "66.0%", extra: "", ref: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Sociales/TIC/2024/202407_Tecnologia_de_la_Informacion_y_Comunicacion-TICs.pdf" },
+                        { label: "PI (Usuarios Internet)", value: "77.2%", extra: "", ref: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Sociales/TIC/2024/202407_Tecnologia_de_la_Informacion_y_Comunicacion-TICs.pdf" },
+                        { label: "CA (Celulares activos)", value: "61.3%", extra: "", ref: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Sociales/TIC/2024/202407_Tecnologia_de_la_Informacion_y_Comunicacion-TICs.pdf" },
+                        { label: "SP (Smartphones)", value: "57.7%", extra: "", ref: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Sociales/TIC/2024/202407_Tecnologia_de_la_Informacion_y_Comunicacion-TICs.pdf" },
+                        { label: "AD (Alfabetismo)", value: "94.6%", extra: "1-5.4%", ref: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Sociales/TIC/2024/202407_Tecnologia_de_la_Informacion_y_Comunicacion-TICs.pdf" }
+                    ]
+                },
+                eco: { 
+                    val: 16.73, 
+                    formula: "( EXP + IDE + VAB(TI) ) / VAB(COM)",
+                    context: "Este indicador permite analizar el impacto de las exportaciones, la inversión extranjera directa y el valor agregado bruto del sector tecnológico frente al comercio.",
+                    method: "Los datos fueron obtenidos de los informes oficiales del Banco Central del Ecuador. Para el indicador de Inversión Extranjera Directa (IDE), se accedió a la sección “Estadísticas y Reportes”, luego a la opción “Inversión Directa por Rama de Actividad Económica”. En el caso del indicador de Exportaciones (EXP), se ingresó a “Estadísticas y Reportes”, posteriormente al “Boletín de Resultados de la Balanza de Pagos”, seleccionando la edición correspondiente a 2025 y, dentro de esta, el apartado de “Servicios”. Finalmente, para el indicador de Valor Agregado Bruto (VAB), se consultó la sección “Cuadros de Resultados”, luego “Cuentas Nacionales Anuales” y, dentro de esta, la opción “Serie Histórica y PIB per cápita”.",
+                    breakdownFormula: "ECO = (EXP + IDE + VAB_TI) / VAB_COM",
+                    breakdown: [
+                        { label: "EXP (Exportaciones TI)", value: "$94.85M", extra: "", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/SectorExterno/ix_BalanzaPagos.html" },
+                        { label: "IDE (Inv. Extranjera TI)", value: "$103.69M", extra: "", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/SectorExterno/ix_InversionExtranjeraDirecta.html" },
+                        { label: "VAB(TI) (Valor Agregado TI)", value: "$2979.27M", extra: "Dato Calculado", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/cuentasnacionales/ix_cuentasnacionalesanuales.html" },
+                        { label: "VAB(COM) (Sector Com.)", value: "$18992.65M", extra: "Dato Calculado", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/cuentasnacionales/ix_cuentasnacionalesanuales.html" }
+                    ]
+                },
+                pay: { 
+                    val: 44.49, 
+                    formula: "PAY = √(GD_norm * CS)",
+                    context: "Este indicador evalúa el impacto de la adopción de medios de pago digitales y el uso de terminales POS.",
+                    method: "Los datos fueron extraídos del Banco Central del Ecuador (BCE). Para el indicador SPI/PIB, se accedió a la sección “Sistema de Pagos Interbancarios / PIB”, donde, en los tres puntos ubicados en la parte inferior izquierda del recuadro, se encuentra la opción para descargar la serie histórica. En el caso del indicador POS, se ingresó a la opción “Estadísticas de Puntos de Venta Electrónicos (POS)”, donde se puede consultar la información correspondiente al año 2025. Para acceder a datos históricos, se selecciona la opción “Otros años”. Finalmente, para el indicador de retiros de efectivo, se ingresó a la opción “Estadísticas de Retiros de Dinero”, siguiendo el mismo procedimiento utilizado para obtener la información histórica del indicador POS.",
+                    breakdownFormula: "<strong>1. GD Normalizado:</strong><br> GD_norm = (GDi - min(GD)) / (Max(GD) - Min(GD))<br><br><strong>2. CS:</strong><br> CS = POS / (POS + RETIROS)<br><br><strong>3. Índice PAY:</strong><br> PAY = √(GD_norm * CS)",
+                    breakdown: [
+                        { label: "GD (SIP/PIB)", value: "139.55", extra: "", ref: "#" },
+                        { label: "min(GD) [Año 2010]", value: "44.96", extra: "Base Histórica", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/MediosPago/ix_MediosPagoPrin.html#" },
+                        { label: "Max(GD) [Año 2025]", value: "152.46", extra: "Tope Histórico C", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/MediosPago/ix_MediosPagoPrin.html#" },
+                        { label: "GD_norm", value: "87.99%", extra: "Pag 85", ref: "https://www.oecd.org/content/dam/oecd/en/publications/reports/2008/08/handbook-on-constructing-composite-indicators-methodology-and-user-guide_g1gh9301/9789264043466-en.pdf" },
+                        { label: "POS", value: "$12,207,088,440", extra: "", ref: "https://www.superbancos.gob.ec/estadisticas/portalestudios/servicios-financieros/" },
+                        { label: "RETIROS", value: "$42,060,487,320", extra: "", ref: "https://www.superbancos.gob.ec/estadisticas/portalestudios/servicios-financieros/" },
+                        { label: "CS", value: "22.49%", extra: "Calculo prom", ref: "https://www.uaeh.edu.mx/docencia/VI_Lectura/licenciatura/documentos/LEC4.pdf" }
+                    ]
+                }
+            },
+            2025: {
+                indDig: 56.53, 
+                edgi: { 
+                    val: 79.96, 
+                    formula: "(OSI + HCI + TI) / 3",
+                    context: "La fórmula propuesta por la ONU se basa en el cálculo del promedio de tres dimensiones fundamentales: el Índice de Servicios en Línea (OSI), el Índice de Capital Humano (HCI) y el Índice de Infraestructura de Telecomunicaciones (TII).",
+                    method: "Extracción de datos de los informes anuales de la ONU sobre gobierno digital y análisis de las plataformas digitales del Estado.",
+                    breakdownFormula: "EDGI = (OSI + HCI + TI) / 3",
+                    breakdown: [
+                        { label: "OSI (Servicios en línea)", value: "0.91825", extra: "Dato Calculado", ref: "https://publicadministration.un.org/egovkb/en-us/Data/Country-Information/id/52-Ecuador/dataYear/2024" },
+                        { label: "HCI (Capital humano)", value: "0.8256", extra: "Dato Calculado", ref: "https://publicadministration.un.org/egovkb/en-us/Data/Country-Information/id/52-Ecuador/dataYear/2024" },
+                        { label: "TII (Infraestructura)", value: "0.65485", extra: "Dato Calculado", ref: "https://publicadministration.un.org/egovkb/en-us/Data/Country-Information/id/52-Ecuador/dataYear/2024" }
+                    ]
+                },
+                acc: { 
+                    val: 74.11, 
+                    formula: "(HI + PI + CA + SP + AD) / 5",
+                    context: "Índice compuesto que mide la madurez digital integrando infraestructura, equipamiento y capacidad humana.",
+                    method: "Recolección de datos de los informes del INEC.",
+                    breakdownFormula: "ACC = (HI + PI + CA + SP + AD) / 5",
+                    breakdown: [
+                        { label: "HI (Hogares Internet)", value: "71.34%", extra: "", ref: "https://www.ecuadorencifras.gob.ec/tecnologias-de-la-informacion-y-comunicacion-tic/" },
+                        { label: "PI (Usuarios Internet)", value: "80.07%", extra: "", ref: "https://www.ecuadorencifras.gob.ec/tecnologias-de-la-informacion-y-comunicacion-tic/" },
+                        { label: "CA (Celulares activos)", value: "61.93%", extra: "", ref: "https://www.ecuadorencifras.gob.ec/tecnologias-de-la-informacion-y-comunicacion-tic/" },
+                        { label: "SP (Smartphones)", value: "59.33%", extra: "", ref: "https://www.ecuadorencifras.gob.ec/tecnologias-de-la-informacion-y-comunicacion-tic/" },
+                        { label: "AD (Alfabetismo)", value: "97.87%", extra: "1-2.1%", ref: "https://www.ecuadorencifras.gob.ec/tecnologias-de-la-informacion-y-comunicacion-tic/" }
+                    ]
+                },
+                eco: { 
+                    val: 16.40, 
+                    formula: "( EXP + IDE + VAB(TI) ) / VAB(COM)",
+                    context: "Este indicador permite analizar el impacto de las exportaciones, inversión extranjera directa y el valor agregado bruto del sector TI.",
+                    method: "Los datos fueron obtenidos de los informes oficiales del Banco Central del Ecuador. Para el indicador de Inversión Extranjera Directa (IDE), se accedió a la sección “Estadísticas y Reportes”, luego a la opción “Inversión Directa por Rama de Actividad Económica”. En el caso del indicador de Exportaciones (EXP), se ingresó a “Estadísticas y Reportes”, posteriormente al “Boletín de Resultados de la Balanza de Pagos”, seleccionando la edición correspondiente a 2025 y, dentro de esta, el apartado de “Servicios”. Finalmente, para el indicador de Valor Agregado Bruto (VAB), se consultó la sección “Cuadros de Resultados”, luego “Cuentas Nacionales Anuales” y, dentro de esta, la opción “Serie Histórica y PIB per cápita”.",
+                    breakdownFormula: "ECO = (EXP + IDE + VAB_TI) / VAB_COM",
+                    breakdown: [
+                        { label: "EXP (Exportaciones TI)", value: "$125.79M", extra: "Dato Calculado", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/SectorExterno/ix_BalanzaPagos.html" },
+                        { label: "IDE (Inv. Extranjera TI)", value: "$26.62M", extra: "Dato Calculado", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/SectorExterno/ix_InversionExtranjeraDirecta.html" },
+                        { label: "VAB(TI) (Valor Agregado TI)", value: "$3079.27M", extra: "Dato Calculado", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/cuentasnacionales/ix_cuentasnacionalesanuales.html" },
+                        { label: "VAB(COM) (Sector Com.)", value: "$19709.46M", extra: "Dato Calculado", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/cuentasnacionales/ix_cuentasnacionalesanuales.html" }
+                    ]
+                },
+                pay: { 
+                    val: 55.65, 
+                    formula: "PAY = √(GD_norm * CS)",
+                    context: "Este indicador evalúa el impacto de la adopción de medios de pago digitales en relación con el PIB y los terminales POS.",
+                    method: "Los datos fueron extraídos del Banco Central del Ecuador (BCE). Para el indicador SPI/PIB, se accedió a la sección “Sistema de Pagos Interbancarios / PIB”, donde, en los tres puntos ubicados en la parte inferior izquierda del recuadro, se encuentra la opción para descargar la serie histórica. En el caso del indicador POS, se ingresó a la opción “Estadísticas de Puntos de Venta Electrónicos (POS)”, donde se puede consultar la información correspondiente al año 2025. Para acceder a datos históricos, se selecciona la opción “Otros años”. Finalmente, para el indicador de retiros de efectivo, se ingresó a la opción “Estadísticas de Retiros de Dinero”, siguiendo el mismo procedimiento utilizado para obtener la información histórica del indicador POS.",
+                    breakdownFormula: "<strong>1. GD Normalizado:</strong><br> GD_norm = (GDi - min(GD)) / (Max(GD) - Min(GD))<br><br><strong>2. CS:</strong><br> CS = POS / (POS + RETIROS)<br><br><strong>3. Índice PAY:</strong><br> PAY = √(GD_norm * CS)",
+                    breakdown: [
+                        { label: "GD (SIP/PIB)", value: "152.46", extra: "Dato Calculado", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/MediosPago/ix_MediosPagoPrin.html#"},
+                        { label: "min(GD) [Año 2010]", value: "44.96", extra: "Base Histórica", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/MediosPago/ix_MediosPagoPrin.html#" },
+                        { label: "Max(GD) [Año 2025]", value: "152.46", extra: "Tope Histórico C", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/MediosPago/ix_MediosPagoPrin.html#" },
+                        { label: "GD_norm", value: "100.00%", extra: "Pag 85", ref: "https://www.oecd.org/content/dam/oecd/en/publications/reports/2008/08/handbook-on-constructing-composite-indicators-methodology-and-user-guide_g1gh9301/9789264043466-en.pdf" },
+                        { label: "POS", value: "$14,658,240,959", extra: "", ref: "https://www.superbancos.gob.ec/estadisticas/portalestudios/servicios-financieros/" },
+                        { label: "RETIROS", value: "$32,669,043,537", extra: "", ref: "https://www.superbancos.gob.ec/estadisticas/portalestudios/servicios-financieros/" },
+                        { label: "CS", value: "30.97%", extra: "Calculo prom", ref: "https://www.uaeh.edu.mx/docencia/VI_Lectura/licenciatura/documentos/LEC4.pdf" }
+                    ]
+                }
+            }
+        };
+
+        function updateDashboard(year) {
+            const data = dbIndicadores[year] || dbIndicadores[2025]; 
+            document.getElementById('ind-dig-value').innerText = data.indDig.toFixed(2);
+            ['edgi', 'acc', 'eco', 'pay'].forEach(ind => {
+                document.getElementById(`${ind}-value`).innerText = data[ind].val + '%';
+                document.getElementById(`${ind}-formula`).innerText = data[ind].formula;
+                document.getElementById(`${ind}-context`).innerText = data[ind].context;
+                document.getElementById(`${ind}-method`).innerText = data[ind].method;
+                const chart = document.getElementById(`${ind}-chart`);
+                if (chart) chart.style.background = `conic-gradient(var(--blue-${ind === 'pay' ? 'pay' : ind}) ${data[ind].val}%, #e2e8f0 0%)`;
+                
+                if (data[ind].breakdown) {
+                    document.getElementById(`${ind}-breakdown-formula`).innerHTML = data[ind].breakdownFormula;
+                    const listEl = document.getElementById(`${ind}-breakdown-list`);
+                    listEl.innerHTML = '';
+                    data[ind].breakdown.forEach(item => {
+                        let extraHtml = item.extra ? `<span class="breakdown-extra">${item.extra}</span>` : '';
+                        let refHtml = item.ref && item.ref !== '#' ? `<a href="${item.ref}" target="_blank" class="info-btn" onclick="event.stopPropagation()">REF</a>` : '';
+                        listEl.innerHTML += `
+                            <li class="breakdown-item">
+                                <div class="breakdown-label"><strong>${item.label}</strong>: ${item.value}</div>
+                                <div class="breakdown-value-wrapper">${extraHtml} ${refHtml}</div>
+                            </li>`;
+                    });
+                }
+            });
+            document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
+            if(document.getElementById(`btn-${year}`)) document.getElementById(`btn-${year}`).classList.add('active');
+        }
+
+        function toggleDetails(indId) {
+            const card = document.getElementById(`${indId}-value`).closest('.card');
+            document.querySelectorAll('.card').forEach(c => { if(c !== card) c.classList.remove('expanded'); });
+            card.classList.toggle('expanded');
+        }
+
+        // =========================================================
+        // DATOS Y LÓGICA: 2. TIMELINE
+        // =========================================================
+        const timelineData = [
+            { fecha: "Junio 1992", titulo: "Llegada de Internet (Ecuanet)", descripcion: "La conexión de los nodos de Ecuanet marcó el ingreso formal del Ecuador a Internet desde Quito, permitiendo interconectar universidades y entidades financieras con redes globales.", detalle: "<strong>Categoría:</strong> Tecnología <br> <strong>Fuente:</strong> El Telégrafo", url: "https://www.eltelegrafo.com.ec/noticias/tecnologia/1/ecuador-accede-a-internet-desde-hace-25-anos" },
+            { fecha: "10 de Agosto 1992", titulo: "Ley Especial de Telecomunicaciones", descripcion: "Publicación en el Registro Oficial 996 para regular el sector. Surgió ante la necesidad de organizar una industria en crecimiento y separar los roles de control.", detalle: "<strong>Categoría:</strong> Legal <br> <strong>Fuente:</strong> Registro Oficial 996", url: "https://www.telecomunicaciones.gob.ec/wp-content/uploads/downloads/2012/11/Ley-Especial-de-Telecomunicaciones.pdf" },
+            { fecha: "5 de Septiembre 2000", titulo: "Acceso Universal", descripcion: "Declaración del Acceso Universal como Política de Estado, cuyo objetivo principal fue impulsar la difusión del internet a nivel nacional.", detalle: "<strong>Categoría:</strong> Legal <br> <strong>Fuente:</strong> Gobierno Electrónico", url: "https://www.gobiernoelectronico.gob.ec/ano2000/" },
+            { fecha: "17 de Abril 2002", titulo: "Ley de Comercio Electrónico", descripcion: "Otorgó validez legal a la firma electrónica igualándola a la manuscrita. Es la base legal que sostiene los millones de trámites digitales actuales.", detalle: "<strong>Categoría:</strong> Legal <br> <strong>Fuente:</strong> Ley de Comercio Electrónico", url: "https://www.gob.ec/sites/default/files/regulations/2018-11/Documento_Reglamento-General-Ley-de-Comercio-Electrónico-Firmas-Electrónicas-Mensajes-de-Datos.pdf" },
+            { fecha: "18 de Mayo 2004", titulo: "Ley de Transparencia (LOTAIP)", descripcion: "Obliga a las instituciones del Estado a transparentar su información y gestión a través de portales web, sentando las bases del Gobierno Electrónico.", detalle: "<strong>Categoría:</strong> Marco Legal <br> <strong>Fuente:</strong> Corte Constitucional", url: "https://esacc.corteconstitucional.gob.ec/storage/api/v1/10_DWL_FL/e2NhcnBldGE6ICJub3RhaXAyMDIzIiwgdXVpZDoiNmFhMDdkZjUtNWZjZS00MDJkLTlmZjgtMzBlMjFlZjkwMTFkLnBkZiJ9" },
+            { fecha: "Octubre 2008", titulo: "Firma Electrónica Operativa", descripcion: "El Banco Central del Ecuador se acredita como entidad de certificación oficial, otorgando validez técnica y práctica a la Ley de Comercio Electrónico de 2002.", detalle: "<strong>Categoría:</strong> Certificación Digital <br> <strong>Fuente:</strong> Repositorio UTN (Pág. 28)", url: "https://repositorio.utn.edu.ec/bitstream/123456789/10255/2/04%20ISC%20544%20TRABAJO%20GRADO.pdf" },
+            { fecha: "11 de Mayo 2009", titulo: "Sistema de Gestión Documental QUIPUX", descripcion: "Emisión del instructivo para el uso obligatorio de QUIPUX en la administración pública, buscando reducir el uso de papel y mejorar el control documental.", detalle: "<strong>Categoría:</strong> Legal <br> <strong>Fuente:</strong> Registro Oficial No. 597", url: "https://web.gestiondocumental.gob.ec/wp-content/uploads/2020/08/110713-Acuerdo-781.pdf" },
+            { fecha: "13 de Agosto 2009", titulo: "Creación del MINTEL", descripcion: "Nace el Ministerio de Telecomunicaciones y Sociedad de la Información con el objetivo de concentrar la rectoría de conectividad y gobierno electrónico.", detalle: "<strong>Categoría:</strong> Institucional <br> <strong>Fuente:</strong> MINTEL", url: "https://www.telecomunicaciones.gob.ec/mintel-cumple-7-anos-de-servir-a-los-ecuatorianos/" },
+            { fecha: "17 de Mayo 2013", titulo: "Facturación Electrónica SRI", descripcion: "Inicio de la obligatoriedad, organizada por grupos, para emitir comprobantes digitales, garantizando un control tributario eficiente y automatizado.", detalle: "<strong>Categoría:</strong> Tecnología Financiera <br> <strong>Fuente:</strong> SRI / CCQ", url: "https://ccq.ec/wp-content/uploads/2022/10/ConTribSept22.pdf" },
+            { fecha: "2017", titulo: "Fundación de Kushki", descripcion: "Nace la empresa tecnológica que estandarizaría la infraestructura y pasarelas de transacciones digitales corporativas en Ecuador y la región.", detalle: "<strong>Categoría:</strong> Ecosistema Fintech <br> <strong>Fuente:</strong> Reporte Endeavor", url: "https://endeavor.org/wp-content/uploads/dlm_uploads/2023/09/Endeavor-Insight-Data-Explainer_Unicorn-Founder-Pathways.pdf" },
+            { fecha: "23 de Octubre 2018", titulo: "Ley de Optimización de Trámites", descripcion: "Prohíbe exigir documentos físicos que el Estado ya posee en sus bases de datos, con el fin de reducir la burocracia y los costos para el ciudadano.", detalle: "<strong>Categoría:</strong> Legal <br> <strong>Fuente:</strong> Ley Gob.ec", url: "https://www.gob.ec/regulaciones/ley-organica-optimizacion-eficiencia-tramites-administrativos" },
+            { fecha: "6 de Noviembre 2019", titulo: "Portal GOB.EC", descripcion: "Lanzamiento de la plataforma centralizada de servicios ciudadanos, creada para ordenar la oferta dispersa de trámites gubernamentales.", detalle: "<strong>Categoría:</strong> Tecnología <br> <strong>Fuente:</strong> Gob.ec", url: "https://www.e-comex.com/gobierno-pone-en-linea-1600-tramites-ciudadanos-en-ecuador/" },
+            { fecha: "22 de Junio 2020", titulo: "Implementación del SATJE", descripcion: "Implementación del Sistema Automático de Trámite Judicial (SATJE) como plataforma informática para el registro y seguimiento de causas en la Función Judicial.", detalle: "<strong>Categoría:</strong> Tecnología <br> <strong>Fuente:</strong> Función Judicial del Ecuador", url: "https://www.funcionjudicial.gob.ec/consejo-de-la-judicatura-implementa-el-e-satje-2020-herramienta-tecnologica-que-permite-gestionar-tramites-judiciales-en-linea/" },
+            { fecha: "26 de Mayo 2021", titulo: "Protección de Datos Personales", descripcion: "Expedición de la Ley Orgánica de Protección de Datos Personales para proteger la privacidad ciudadana ante el tratamiento masivo de información.", detalle: "<strong>Categoría:</strong> Legal <br> <strong>Fuente:</strong> Ley LOPDP", url: "https://www.finanzaspopulares.gob.ec/wp-content/uploads/2021/07/ley_organica_de_proteccion_de_datos_personales.pdf" },
+            { fecha: "Julio 2021", titulo: "Hito: Digital supera a Físico", descripcion: "Histórico: El volumen de transferencias electrónicas rebasó por primera vez a las transacciones físicas en ventanilla bancaria.", detalle: "<strong>Categoría:</strong> Hito Financiero <br> <strong>Fuente:</strong> Asobanca", url: "https://asobanca.org.ec/wp-content/uploads/2022/07/2022-07-06-BP-Avance-Banca-Digital-transacciones.pdf" },
+            { fecha: "Junio 2022", titulo: "Primer Unicornio Ecuatoriano", descripcion: "Kushki alcanza una valoración de USD 1,500 millones tras una nueva ronda de inversión, demostrando la madurez del ecosistema tecnológico nacional.", detalle: "<strong>Categoría:</strong> Hito Financiero <br> <strong>Fuente:</strong> Forbes", url: "https://forbes.pe/negocios/2022-06-07/kushki-se-convierte-en-el-primer-unicornio-de-ecuador-con-adicion-de-us100-millones-en-ronda-de-inversion" },
+            { fecha: "22 de Diciembre 2022", titulo: "Aprobación de la Ley Fintech", descripcion: "Regula oficialmente el ecosistema de empresas tecnológicas financieras, brindando seguridad jurídica a las pasarelas y billeteras digitales.", detalle: "<strong>Categoría:</strong> Marco Legal <br> <strong>Fuente:</strong> Registro Oficial", url: "https://www.telecomunicaciones.gob.ec/wp-content/uploads/2023/01/RO_221222_0215S2.pdf" },
+            { fecha: "Febrero 2023", titulo: "Ley de Transformación Digital", descripcion: "Normativa que facilita contratos 100% digitales y ofrece incentivos para atraer inversión extranjera al sector tecnológico y audiovisual.", detalle: "<strong>Categoría:</strong> Marco Legal <br> <strong>Fuente:</strong> Registro Oficial No. 245", url: "https://www.supercias.gob.ec/bd_supercias/descargas/lotaip/a2/2023/Marzo/R_O_245.pdf" },
+            { fecha: "2023", titulo: "PeiGo (Visa Virtual)", descripcion: "Lanzamiento de una tarjeta Visa virtual inmediata enfocada en bancarizar de forma ágil a la población no atendida por la banca tradicional.", detalle: "<strong>Categoría:</strong> Banca Digital <br> <strong>Fuente:</strong> Forbes Ecuador", url: "https://www.forbes.com.ec/negocios/minsait-payments-peigo-lanzan-primera-tarjeta-100-virtual-ecuador-n29598" },
+            { fecha: "2024", titulo: "Agenda Digital y Política 2030", descripcion: "Política Pública para la Transformación Digital 2025-2030, diseñada para garantizar ciberseguridad avanzada y cerrar la brecha rural.", detalle: "<strong>Categoría:</strong> Legal <br> <strong>Fuente:</strong> Política 2025", url: "https://www.gobiernoelectronico.gob.ec/wp-content/uploads/2025/03/INSTRUMENTO-Politica-Publica-para-la-Transformacion-Digital-Ecuador-2025-2030-MINTEL-signed_f.pdf" },
+            { fecha: "Septiembre 2024", titulo: "Regulación de Medios de Pago", descripcion: "Normativa técnica de la Junta Financiera que aterriza operativamente la Ley Fintech, organizando formalmente a las entidades de pago auxiliares.", detalle: "<strong>Categoría:</strong> Regulación Monetaria <br> <strong>Fuente:</strong> DGA Legal", url: "https://www.dgalegal.com/noticia-juridica-no-208/" },
+            { fecha: "Enero 2025", titulo: "Alianza CNT y Google Cloud", descripcion: "Acuerdo estratégico entre el Estado y el gigante tecnológico para modernizar la infraestructura de nube e inteligencia artificial en Ecuador.", detalle: "<strong>Categoría:</strong> Infraestructura <br> <strong>Fuente:</strong> Embajada de Estados Unidos", url: "https://ec.usembassy.gov/es/los-estados-unidos-apoya-la-transformacion-digital-del-ecuador-por-medio-de-un-acuerdo-con-google-cloud/" }
+        ];
+
+        function initTimeline() {
+            const container = document.getElementById('timeline-progress');
+            timelineData.forEach((evento, index) => {
+                const positionClass = (index % 2 === 0) ? 'left' : 'right';
+                const linkHtml = evento.url && evento.url !== '#' ? `<a href="${evento.url}" target="_blank" class="info-btn">REF</a>` : '';
+                
+                const itemHTML = `
+                    <div class="timeline-item ${positionClass}">
+                        <div class="timeline-card">
+                            <div class="card-header-tl">
+                                <span class="timeline-date">${evento.fecha}</span>
+                                <div>${linkHtml}</div>
+                            </div>
+                            <h3>${evento.titulo}</h3>
+                            <p>${evento.descripcion}</p>
+                            <button class="expand-btn">Ver más detalles</button>
+                            <div class="timeline-details">${evento.detalle}</div>
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforebegin', itemHTML);
+            });
+            
+            // Lógica de interactividad y scroll de la timeline
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('expand-btn')) {
+                    const btn = e.target;
+                    const details = btn.nextElementSibling;
+                    if (details.style.display === 'block') {
+                        details.style.display = 'none';
+                        btn.innerText = 'Ver más detalles';
+                    } else {
+                        details.style.display = 'block';
+                        btn.innerText = 'Ocultar detalles';
+                    }
+                }
+            });
+
+            window.addEventListener('scroll', () => {
+                if(document.getElementById('tab-timeline').classList.contains('active')){
+                    const containerRect = document.getElementById('timeline-container').getBoundingClientRect();
+                    const start = window.innerHeight / 2; 
+                    const end = containerRect.height;
+                    let percentage = ((start - containerRect.top) / end) * 100;
+                    
+                    if (percentage < 0) percentage = 0;
+                    if (percentage > 100) percentage = 100;
+                    
+                    document.getElementById('timeline-progress').style.height = percentage + '%';
+
+                    document.querySelectorAll('.timeline-item').forEach(item => {
+                        const itemRect = item.getBoundingClientRect();
+                        if (itemRect.top < window.innerHeight / 2 + 50) {
+                            item.classList.add('visible');
+                            item.classList.add('active-dot');
+                        } else {
+                            item.classList.remove('active-dot');
+                        }
+                    });
+                }
+            });
+        }
+
+        // =========================================================
+        // DATOS Y GRÁFICOS: 3. METRO DE QUITO
+        // =========================================================
+        const metroData = {
+            2023: { cuentas: "410,735", cedulas: "128,285", tarjetas: "83,687", pasajesMes: "3,200,000", montoMes: "$1,350,000", pasajesDigitales: "850,000", impactoPOS: "1.2%" },
+            2024: { cuentas: "212,179", cedulas: "163,090", tarjetas: "175,284", pasajesMes: "53,289,753", montoMes: "$22,065,606.41", pasajesDigitales: "10,370,835.01", impactoPOS: "0.085%" },
+            2025: { cuentas: "151,359", cedulas: "109,443", tarjetas: "73,643", pasajesMes: "63,008,757", montoMes: "$26,243,001.39", pasajesDigitales: "12,334,210.65", impactoPOS: "0.084%" },
+            tarifas: [ { tipo: "Normal", costo: "$0.45" }, { tipo: "Estudiantil / 3ra Edad", costo: "$0.22" }, { tipo: "Discapacidad", costo: "$0.10" } ]
+        };
+
+        function parseNum(str) { return parseFloat(String(str).replace(/[$,%\s]/g, '')) || 0; }
+
+        function createMiniBarChart(canvasId, val23, val24, val25) {
+            new Chart(document.getElementById(canvasId).getContext('2d'), {
+                type: 'bar',
+                data: { labels: ['2023', '2024', '2025'], datasets: [{ data: [val23, val24, val25], backgroundColor: ['#fecaca', '#f87171', '#dc2626'], borderRadius: 4, barPercentage: 0.6, categoryPercentage: 0.8, maxBarThickness: 40 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(c) { return new Intl.NumberFormat('es-EC').format(c.parsed.y); } } } }, scales: { y: { display: true, beginAtZero: true, ticks: { font: { size: 10 }, callback: function(value) { return value >= 1000 ? (value / 1000) + 'k' : value; } } }, x: { grid: { display: false }, border: { display: false }, ticks: { font: { weight: 'bold', size: 11 } } } }, layout: { padding: { top: 10 } } }
+            });
+        }
+
+        function renderMetroCharts() {
+            // Llenar Textos
+            document.getElementById('cuentas-23').innerText = metroData[2023].cuentas; document.getElementById('cuentas-24').innerText = metroData[2024].cuentas; document.getElementById('cuentas-25').innerText = metroData[2025].cuentas;
+            document.getElementById('cedulas-23').innerText = metroData[2023].cedulas; document.getElementById('cedulas-24').innerText = metroData[2024].cedulas; document.getElementById('cedulas-25').innerText = metroData[2025].cedulas;
+            document.getElementById('tarjetas-23').innerText = metroData[2023].tarjetas; document.getElementById('tarjetas-24').innerText = metroData[2024].tarjetas; document.getElementById('tarjetas-25').innerText = metroData[2025].tarjetas;
+            
+            document.getElementById('pasajes-24').innerText = metroData[2024].pasajesMes; document.getElementById('pasajes-25').innerText = metroData[2025].pasajesMes;
+            document.getElementById('monto-24').innerText = metroData[2024].montoMes; document.getElementById('monto-25').innerText = metroData[2025].montoMes;
+            document.getElementById('digitales-24').innerText = metroData[2024].pasajesDigitales; document.getElementById('digitales-25').innerText = metroData[2025].pasajesDigitales;
+            document.getElementById('impacto-24').innerText = metroData[2024].impactoPOS; document.getElementById('impacto-25').innerText = metroData[2025].impactoPOS;
+
+            const tarifasList = document.getElementById('tarifas-list');
+            tarifasList.innerHTML = '';
+            metroData.tarifas.forEach(tarifa => {
+                tarifasList.innerHTML += `<li class="breakdown-item" style="padding: 6px 0;"><div class="breakdown-label"><strong>${tarifa.tipo}</strong></div><div class="breakdown-value-wrapper" style="font-weight: 800; color: #dc2626;">${tarifa.costo}</div></li>`;
+            });
+
+            // Gráficos Metro
+            createMiniBarChart('chartCuentas', parseNum(metroData[2023].cuentas), parseNum(metroData[2024].cuentas), parseNum(metroData[2025].cuentas));
+            createMiniBarChart('chartCedulas', parseNum(metroData[2023].cedulas), parseNum(metroData[2024].cedulas), parseNum(metroData[2025].cedulas));
+            createMiniBarChart('chartTarjetas', parseNum(metroData[2023].tarjetas), parseNum(metroData[2024].tarjetas), parseNum(metroData[2025].tarjetas));
+
+            const totalMonto25 = parseNum(metroData[2025].montoMes);
+            const montoDigital25 = parseNum(metroData[2025].pasajesDigitales);
+            const montoFisico25 = totalMonto25 - montoDigital25;
+            const pctDigital = Math.round((montoDigital25 / totalMonto25) * 100);
+            
+            new Chart(document.getElementById('pagosChart').getContext('2d'), { type: 'doughnut', data: { labels: [`Digital (${pctDigital}%)`, `Físico (${100 - pctDigital}%)`], datasets: [{ data: [montoDigital25, montoFisico25], backgroundColor: ['#dc2626', '#e2e8f0'], borderWidth: 0, hoverOffset: 4 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'right', labels: { boxWidth: 12, font: { size: 11 } } } } } });
+
+            new Chart(document.getElementById('chartImpactoMetro').getContext('2d'), { type: 'line', data: { labels: ['2024', '2025'], datasets: [{ data: [parseNum(metroData[2024].impactoPOS), parseNum(metroData[2025].impactoPOS)], borderColor: '#991b1b', backgroundColor: 'rgba(220, 38, 38, 0.1)', borderWidth: 3, pointBackgroundColor: '#dc2626', pointBorderColor: '#fff', pointBorderWidth: 2, pointRadius: 6, fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(context) { return context.parsed.y + '%'; } } } }, scales: { y: { display: false, min: 0, max: Math.max(parseNum(metroData[2024].impactoPOS), parseNum(metroData[2025].impactoPOS)) * 1.2 }, x: { display: false } }, layout: { padding: { top: 10, bottom: 10, left: 10, right: 10 } } } });
+        }
+
+        // =========================================================
+        // DATOS Y GRÁFICOS: 4. TUTI
+        // =========================================================
+        const tutiUtilidadData = {
+            labels: ['2019', '2020', '2021', '2022', '2023', '2024'],
+            datasets: [
+                { label: 'Tiendas Tuti TTDE S.A.', data: [-3531909.25, -5905384.03, -6773706.07, -6749267.17, -6051477.18, 632855.98], borderColor: '#e3000f', backgroundColor: '#e3000f', borderWidth: 4, tension: 0.3, pointRadius: 5, pointHoverRadius: 8, showLine: true },
+                { label: 'Corporación Favorita', data: [146948162.24, 147499234.25, 143823630.32, 155767666.19, 165187931.58, 169565587.88], borderColor: '#334155', borderWidth: 2, tension: 0.3, pointRadius: 3, showLine: true },
+                { label: 'Corporación El Rosado', data: [28656111.27, 27622934.68, 25507431.13, 34172869.60, 38196833.17, 14646069.77], borderColor: '#64748b', borderWidth: 2, tension: 0.3, pointRadius: 3, showLine: true },
+                { label: 'TIA S.A.', data: [28975054.28, 28489595.55, 22699894.74, 30230705.00, 20086074.00, 6642977.00], borderColor: '#94a3b8', borderWidth: 2, tension: 0.3, pointRadius: 3, showLine: true },
+                { label: 'Gerardo Ortiz e Hijos', data: [12727412.00, 18171357.00, 23441765.33, 24095565.72, 20645569.49, 35348055.06], borderColor: '#cbd5e1', borderWidth: 2, tension: 0.3, pointRadius: 3, showLine: true },
+                { label: 'Mega Santamaria', data: [477228.00, 5639201.00, 5318398.00, 6856480.64, 5398336.15, 2823643.67], borderColor: '#e2e8f0', borderWidth: 2, tension: 0.3, pointRadius: 3, showLine: true }
+            ]
+        };
+
+        const tutiIngresosData = {
+            labels: ['2022', '2023', '2024'],
+            datasets: [
+                { label: 'Tiendas Tuti TTDE S.A.', data: [240094053.15, 446665993.97, 693240837.34], backgroundColor: '#e3000f', borderRadius: 4 },
+                { label: 'Corporación Favorita', data: [2355580171.13, 2483015099.25, 2546101459.75], backgroundColor: '#334155', borderRadius: 4 },
+                { label: 'Corporación El Rosado', data: [1431995151.99, 1567038006.29, 1570185672.02], backgroundColor: '#64748b', borderRadius: 4 },
+                { label: 'TIA S.A.', data: [776159786.92, 787980599.00, 754405497.00], backgroundColor: '#94a3b8', borderRadius: 4 },
+                { label: 'Gerardo Ortiz e Hijos', data: [472127549.26, 505779781.14, 527892328.87], backgroundColor: '#cbd5e1', borderRadius: 4 },
+                { label: 'Mega Santamaria', data: [293503606.50, 282256705.61, 237964565.18], backgroundColor: '#e2e8f0', borderRadius: 4 }
+            ]
+        };
+
+        const tutiMercadoData = {
+            labels: ['Corporación Favorita', 'Corporación El Rosado', 'TIA S.A.', 'Gerardo Ortiz e Hijos', 'Tiendas Tuti', 'Mega Santamaria'],
+            datasets: [{ data: [41.09, 25.42, 12.90, 8.38, 7.68, 4.53], backgroundColor: ['#334155', '#64748b', '#94a3b8', '#cbd5e1', '#e3000f', '#f1f5f9'], borderWidth: 3, borderColor: '#ffffff', hoverOffset: 6 }]
+        };
+
+        const tutiImpactoData = {
+            labels: ['Corp. Favorita', 'Corp. El Rosado', 'TIA S.A.', 'Gerardo Ortiz', 'Mega Santamaria'],
+            datasets: [
+                { type: 'bar', label: 'Utilidad Neta 2024 ($M)', data: [169.56, 14.64, 6.64, 35.34, 2.82], backgroundColor: '#334155', yAxisID: 'y' },
+                { type: 'bar', label: 'Costo Comisiones ($M)', data: [20.12, 12.41, 5.96, 4.17, 1.88], backgroundColor: '#e3000f', yAxisID: 'y' },
+                { type: 'line', label: 'Impacto en Utilidad (%)', data: [11.87, 84.76, 89.78, 11.81, 66.63], borderColor: '#fbbf24', backgroundColor: '#fbbf24', borderWidth: 3, pointRadius: 5, tension: 0.3, yAxisID: 'y1' }
+            ]
+        };
+
+        const tutiMacroPagosData = {
+            labels: ['Tarjetas de Crédito', 'Tarjetas de Débito'],
+            datasets: [{ data: [75.01, 24.99], backgroundColor: ['#e3000f', '#334155'], borderWidth: 3, borderColor: '#ffffff', hoverOffset: 6 }]
+        };
+
+        const tutiComisionesData = {
+            labels: ['Corp. Favorita C.A.', 'Corp. El Rosado S.A.', 'TIA S.A.', 'Gerardo Ortiz e Hijos', 'Mega Santamaria S.A.'],
+            datasets: [
+                { label: 'Comisión T. Crédito (4.02%)', data: [17.266741, 10.648432, 5.116105, 3.579975, 1.613789], backgroundColor: '#e3000f', borderRadius: 4 },
+                { label: 'Comisión T. Débito (2.00%)', data: [2.861945, 1.764967, 0.847989, 0.593377, 0.267484], backgroundColor: '#334155', borderRadius: 4 }
+            ]
+        };
+
+        const tutiNuevoImpactoPOSData = {
+            labels: ['Aporte del Retail Tradicional', 'Afectación por ausencia en TUTI'],
+            datasets: [{ label: 'Impacto en el ecosistema POS (%)', data: [10.38, -1.28], backgroundColor: ['#334155', '#e3000f'], borderRadius: 6, barPercentage: 0.5 }]
+        };
+
+        function renderTutiCharts() {
+            new Chart(document.getElementById('chartUtilidad').getContext('2d'), { type: 'line', data: tutiUtilidadData, options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8, font: { size: 11 } } }, tooltip: { callbacks: { label: function(c) { return c.dataset.label + ': $' + (c.parsed.y / 1000000).toFixed(2) + ' M'; } } } }, scales: { y: { display: true, title: { display: true, text: 'Utilidad Neta (Millones USD)' }, grid: { color: '#f1f5f9' }, ticks: { callback: function(value) { return '$' + (value / 1000000).toFixed(0) + 'M'; } } }, x: { grid: { display: false }, ticks: { font: { weight: 'bold' } } } } } });
+            
+            new Chart(document.getElementById('chartIngresos').getContext('2d'), { type: 'bar', data: tutiIngresosData, options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8, font: { size: 11 } } }, tooltip: { callbacks: { label: function(c) { return c.dataset.label + ': $' + (c.parsed.y / 1000000).toFixed(2) + ' M'; } } } }, scales: { y: { display: true, title: { display: true, text: 'Ingresos Operacionales (Millones USD)' }, grid: { color: '#f1f5f9' }, ticks: { callback: function(value) { return '$' + (value / 1000000).toFixed(0) + 'M'; } } }, x: { grid: { display: false }, ticks: { font: { weight: 'bold' } } } } } });
+
+            new Chart(document.getElementById('chartMercado').getContext('2d'), { type: 'doughnut', data: tutiMercadoData, options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'right', labels: { usePointStyle: true, boxWidth: 10, font: { size: 11 } } }, tooltip: { callbacks: { label: function(c) { return ' ' + c.label + ': ' + c.parsed + '%'; } } } } } });
+
+            new Chart(document.getElementById('chartImpactoUtilidad').getContext('2d'), { data: tutiImpactoData, options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 10, font: { size: 11 } } }, tooltip: { callbacks: { label: function(context) { if (context.dataset.yAxisID === 'y1') { return context.dataset.label + ': ' + context.parsed.y + '%'; } return context.dataset.label + ': $' + context.parsed.y + ' Millones'; } } } }, scales: { x: { grid: { display: false }, ticks: { font: { weight: 'bold', size: 10 } } }, y: { type: 'linear', display: true, position: 'left', title: { display: true, text: 'Millones USD' }, ticks: { callback: function(value) { return '$' + value + 'M'; } } }, y1: { type: 'linear', display: true, position: 'right', title: { display: true, text: 'Impacto (%)' }, grid: { drawOnChartArea: false }, ticks: { callback: function(value) { return value + '%'; } } } } } });
+
+            new Chart(document.getElementById('chartMacroPagos').getContext('2d'), { type: 'doughnut', data: tutiMacroPagosData, options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 10, font: { size: 12, weight: 'bold' } } }, tooltip: { callbacks: { label: function(c) { return ' ' + c.label + ': ' + c.parsed + '%'; } } } } } });
+
+            new Chart(document.getElementById('chartComisiones').getContext('2d'), { type: 'bar', data: tutiComisionesData, options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 10, font: { size: 12, weight: 'bold' } } }, tooltip: { callbacks: { label: function(context) { return context.dataset.label + ': $' + context.parsed.y.toFixed(2) + ' M'; }, footer: function(tooltipItems) { let total = 0; tooltipItems.forEach(function(item) { total += item.parsed.y; }); return 'Costo Total POS: $' + total.toFixed(2) + ' M'; } } } }, scales: { x: { stacked: true, grid: { display: false }, ticks: { font: { weight: 'bold', size: 11 } } }, y: { stacked: true, title: { display: true, text: 'Costo Bancario (Millones de USD)', font: { weight: 'bold' } }, grid: { color: '#f1f5f9' }, ticks: { callback: function(value) { return '$' + value + 'M'; } } } } } });
+
+            new Chart(document.getElementById('chartImpactoPOSTuti').getContext('2d'), { type: 'bar', data: tutiNuevoImpactoPOSData, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(c) { return c.parsed.y + '%'; } } } }, scales: { x: { grid: { display: false }, ticks: { font: { weight: 'bold', size: 12 } } }, y: { display: true, title: { display: true, text: 'Impacto Global (%)', font: { weight: 'bold' } }, grid: { color: function(context) { return context.tick.value === 0 ? '#000000' : '#e2e8f0'; }, lineWidth: function(context) { return context.tick.value === 0 ? 2 : 1; } }, ticks: { callback: function(value) { return value + '%'; } } } } } });
+        }
+
+        // =========================================================
+        // INICIO AUTOMÁTICO
+        // =========================================================
+        document.addEventListener('DOMContentLoaded', () => { 
+            updateDashboard(2025); 
+        });
+    </script>
+</body>
+</html>
