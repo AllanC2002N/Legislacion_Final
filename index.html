@@ -5,6 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tablero de Indicadores</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+  /* Estilos para que el enlace se vea como botón */
+  .btn-ref {
+    display: inline-block;
+    padding: 4px 8px;
+    background-color: #007bff; /* Color azul del botón */
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-left: 10px; /* Separación de la fórmula */
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn-ref:hover {
+    background-color: #0056b3; /* Color al pasar el mouse */
+  }
+</style>
 </head>
 <body>
 
@@ -33,7 +52,7 @@
 
             <div class="main-formula">
                 <strong>Fórmula:</strong> (0.25 × EDGI) + (0.25 × ACC) + (0.25 × ECO) + (0.25 × PAY)
-            </div>
+            </div> <a href="nri-2025.pdf" target="_blank" class="btn-ref">ref</a>
 
             <div class="download-section">
                 <a href="Calculos correspondientes al Indicador.xlsx" download="Calculos_IND_DIG_Ecuador.xlsx" class="download-btn">
@@ -43,6 +62,8 @@
             </div>
 
             <div class="year-selector">
+                <button class="year-btn" onclick="updateDashboard(2020)" id="btn-2020">2020</button>
+                <button class="year-btn" onclick="updateDashboard(2021)" id="btn-2021">2021</button>
                 <button class="year-btn" onclick="updateDashboard(2022)" id="btn-2022">2022</button>
                 <button class="year-btn" onclick="updateDashboard(2023)" id="btn-2023">2023</button>
                 <button class="year-btn" onclick="updateDashboard(2024)" id="btn-2024">2024</button>

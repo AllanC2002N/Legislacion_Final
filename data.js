@@ -1,6 +1,130 @@
 // data.js
 
 export const database = {
+    2020: {
+        indDig: 47.09, 
+        edgi: { 
+            val: 70.15, 
+            formula: "(OSI + HCI + TI) / 3",
+            context: "La fórmula propuesta por la ONU se basa en el cálculo del promedio de tres dimensiones fundamentales: el Índice de Servicios en Línea (OSI), el Índice de Capital Humano (HCI) y el Índice de Infraestructura de Telecomunicaciones (TII). Este indicador mide el nivel de digitalización de los países en una escala de 0 a 1.",
+            method: "Extracción de datos de los informes anuales de la ONU sobre gobierno digital y análisis de las plataformas digitales del Estado.",
+            ref: "https://publicadministration.un.org/egovkb/en-us/Data/Country-Information/id/52-Ecuador/dataYear/2020",
+            breakdownFormula: "EDGI = (OSI + HCI + TI) / 3",
+            breakdown: [
+                { label: "OSI (Servicios en línea)", value: "0.8118", extra: "", ref: "https://publicadministration.un.org/egovkb/en-us/Data/Country-Information/id/52-Ecuador/dataYear/2020" },
+                { label: "HCI (Capital humano)", value: "0.7793", extra: "", ref: "https://publicadministration.un.org/egovkb/en-us/Data/Country-Information/id/52-Ecuador/dataYear/2020" },
+                { label: "TII (Infraestructura)", value: "0.5133", extra: "", ref: "https://publicadministration.un.org/egovkb/en-us/Data/Country-Information/id/52-Ecuador/dataYear/2020" }
+            ]
+        },
+        acc: { 
+            val: 65.62, 
+            formula: "(HI + PI + CA + SP + AD) / 5",
+            context: "Índice compuesto que mide la madurez digital integrando infraestructura, equipamiento y capacidad humana. Ofreciendo una visión realista de la inclusión tecnológica su objetivo es determinar qué tan preparada está la población para participar plenamente en la economía y sociedad digital moderna.",
+            method: "Recolección de datos de los informes del INEC.",
+            ref: "https://datos.gob.ec/dataset/accesibilidad-2020",
+            breakdownFormula: "ACC = (HI + PI + CA + SP + AD) / 5",
+            breakdown: [
+                { label: "HI (Hogares Internet)", value: "53.20%", extra: "", ref: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Sociales/TIC/2024/202407_Tecnologia_de_la_Informacion_y_Comunicacion-TICs.pdf" },
+                { label: "PI (Usuarios Internet)", value: "70.70%", extra: "", ref: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Sociales/TIC/2024/202407_Tecnologia_de_la_Informacion_y_Comunicacion-TICs.pdf" },
+                { label: "CA (Celulares activos)", value: "62.90%", extra: "", ref: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Sociales/TIC/2024/202407_Tecnologia_de_la_Informacion_y_Comunicacion-TICs.pdf" },
+                { label: "SP (Smartphones)", value: "51.50%", extra: "", ref: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Sociales/TIC/2024/202407_Tecnologia_de_la_Informacion_y_Comunicacion-TICs.pdf" },
+                { label: "AD (Alfabetismo)", value: "89.80%", extra: "", ref: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Sociales/TIC/2024/202407_Tecnologia_de_la_Informacion_y_Comunicacion-TICs.pdf" }
+            ]
+        },
+        eco: { 
+            val: 17.62, 
+            formula: "( EXP + IDE + VAB(TI) ) / VAB(COM)",
+            context: "Este indicador permite analizar el impacto de las exportaciones (EXP), la inversión extranjera directa (IDE) y el valor agregado bruto del sector de tecnologías de la información VAB (TI), en comparación con el sector más representativo dentro del PIB, que es el comercio al por mayor y menor VAB (Com).",
+            method: "Los datos fueron obtenidos de los informes oficiales del Banco Central del Ecuador.",
+            ref: "https://finanzas.gob.ec/reporte-ahorro-2020",
+            breakdownFormula: "ECO = (EXP + IDE + VAB_TI) / VAB_COM",
+            breakdown: [
+                { label: "EXP (Exportaciones TI)", value: "$3.57M", extra: "", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/SectorExterno/ix_BalanzaPagos.html" },
+                { label: "IDE (Inv. Extranjera TI)", value: "$82.49M", extra: "", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/SectorExterno/ix_InversionExtranjeraDirecta.html" },
+                { label: "VAB(TI) (Valor Agregado TI)", value: "$2310.19M", extra: "", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/cuentasnacionales/ix_cuentasnacionalesanuales.html" },
+                { label: "VAB(COM) (Sector Com.)", value: "$13602.42M", extra: "", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/cuentasnacionales/ix_cuentasnacionalesanuales.html" }
+            ]
+        },
+        pay: { 
+            val: 34.98, 
+            formula: "PAY = √(GD_norm * CS)",
+            context: "Este indicador evalúa el impacto de la adopción de medios de pago digitales, considerando la relación SPI/PIB, que mide el monto de pagos interbancarios en proporción al Producto Interno Bruto.",
+            method: "Los datos fueron extraídos del Banco Central del Ecuador (BCE).",
+            ref: "https://bce.fin.ec/medios-pago-2020",
+            breakdownFormula: "<strong>1. GD Normalizado:</strong><br> GD_norm = (GDi - min(GD)) / (Max(GD) - Min(GD))<br><br><strong>2. CS:</strong><br> CS = POS / (POS + RETIROS)<br><br><strong>3. Índice PAY:</strong><br> PAY = √(GD_norm * CS)",
+            breakdown: [
+                { label: "GD (SIP/PIB)", value: "115.37", extra: "", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/MediosPago/ix_MediosPagoPrin.html#" },
+                { label: "min(GD) [Año 2010]", value: "44.96", extra: "Base Histórica", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/MediosPago/ix_MediosPagoPrin.html#" },
+                { label: "Max(GD) [Año 2025]", value: "152.46", extra: "Tope Histórico", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/MediosPago/ix_MediosPagoPrin.html#" },
+                { label: "GD_norm", value: "65.50%", extra: "Pag 85", ref: "https://www.oecd.org/content/dam/oecd/en/publications/reports/2008/08/handbook-on-constructing-composite-indicators-methodology-and-user-guide_g1gh9301/9789264043466-en.pdf" },
+                { label: "POS", value: "$7,848,015,622", extra: "", ref: "https://www.superbancos.gob.ec/estadisticas/portalestudios/servicios-financieros/" },
+                { label: "RETIROS", value: "$34,159,135,840", extra: "", ref: "https://www.superbancos.gob.ec/estadisticas/portalestudios/servicios-financieros/" },
+                { label: "CS", value: "18.68%", extra: "Calculo prom", ref: "https://www.uaeh.edu.mx/docencia/VI_Lectura/licenciatura/documentos/LEC4.pdf" }
+            ]
+        }
+    },
+    2021: {
+        indDig: 46.88, 
+        edgi: { 
+            val: 68.75, 
+            formula: "(OSI + HCI + TI) / 3",
+            context: "La fórmula propuesta por la ONU se basa en el cálculo del promedio de tres dimensiones fundamentales: el Índice de Servicios en Línea (OSI), el Índice de Capital Humano (HCI) y el Índice de Infraestructura de Telecomunicaciones (TII). Este indicador mide el nivel de digitalización de los países en una escala de 0 a 1.",
+            method: "Extracción de datos de los informes anuales de la ONU sobre gobierno digital y análisis de las plataformas digitales del Estado.",
+            ref: "https://publicadministration.un.org/egovkb/en-us/Data/Country-Information/id/52-Ecuador/dataYear/2021",
+            breakdownFormula: "EDGI = (OSI + HCI + TI) / 3",
+            breakdown: [
+                { label: "OSI (Servicios en línea)", value: "0.78285", extra: "", ref: "https://publicadministration.un.org/egovkb/en-us/Data/Country-Information/id/52-Ecuador/dataYear/2021" },
+                { label: "HCI (Capital humano)", value: "0.7514", extra: "", ref: "https://publicadministration.un.org/egovkb/en-us/Data/Country-Information/id/52-Ecuador/dataYear/2021" },
+                { label: "TII (Infraestructura)", value: "0.52825", extra: "", ref: "https://publicadministration.un.org/egovkb/en-us/Data/Country-Information/id/52-Ecuador/dataYear/2021" }
+            ]
+        },
+        acc: { 
+            val: 65.46, 
+            formula: "(HI + PI + CA + SP + AD) / 5",
+            context: "Índice compuesto que mide la madurez digital integrando infraestructura, equipamiento y capacidad humana. Ofreciendo una visión realista de la inclusión tecnológica su objetivo es determinar qué tan preparada está la población para participar plenamente en la economía y sociedad digital moderna.",
+            method: "Recolección de datos de los informes del INEC.",
+            ref: "https://datos.gob.ec/dataset/accesibilidad-2021",
+            breakdownFormula: "ACC = (HI + PI + CA + SP + AD) / 5",
+            breakdown: [
+                { label: "HI (Hogares Internet)", value: "56.39%", extra: "", ref: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Sociales/TIC/2024/202407_Tecnologia_de_la_Informacion_y_Comunicacion-TICs.pdf" },
+                { label: "PI (Usuarios Internet)", value: "70.47%", extra: "", ref: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Sociales/TIC/2024/202407_Tecnologia_de_la_Informacion_y_Comunicacion-TICs.pdf" },
+                { label: "CA (Celulares activos)", value: "57.64%", extra: "", ref: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Sociales/TIC/2024/202407_Tecnologia_de_la_Informacion_y_Comunicacion-TICs.pdf" },
+                { label: "SP (Smartphones)", value: "52.23%", extra: "", ref: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Sociales/TIC/2024/202407_Tecnologia_de_la_Informacion_y_Comunicacion-TICs.pdf" },
+                { label: "AD (Alfabetismo)", value: "90.57%", extra: "", ref: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Sociales/TIC/2024/202407_Tecnologia_de_la_Informacion_y_Comunicacion-TICs.pdf" }
+            ]
+        },
+        eco: { 
+            val: 14.96, 
+            formula: "( EXP + IDE + VAB(TI) ) / VAB(COM)",
+            context: "Este indicador permite analizar el impacto de las exportaciones (EXP), la inversión extranjera directa (IDE) y el valor agregado bruto del sector de tecnologías de la información VAB (TI), en comparación con el sector más representativo dentro del PIB, que es el comercio al por mayor y menor VAB (Com).",
+            method: "Los datos fueron obtenidos de los informes oficiales del Banco Central del Ecuador.",
+            ref: "https://finanzas.gob.ec/reporte-ahorro-2021",
+            breakdownFormula: "ECO = (EXP + IDE + VAB_TI) / VAB_COM",
+            breakdown: [
+                { label: "EXP (Exportaciones TI)", value: "$45.21M", extra: "", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/SectorExterno/ix_BalanzaPagos.html" },
+                { label: "IDE (Inv. Extranjera TI)", value: "$73.23M", extra: "", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/SectorExterno/ix_InversionExtranjeraDirecta.html" },
+                { label: "VAB(TI) (Valor Agregado TI)", value: "$2310.11M", extra: "", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/cuentasnacionales/ix_cuentasnacionalesanuales.html" },
+                { label: "VAB(COM) (Sector Com.)", value: "$16230.15M", extra: "", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/cuentasnacionales/ix_cuentasnacionalesanuales.html" }
+            ]
+        },
+        pay: { 
+            val: 38.34, 
+            formula: "PAY = √(GD_norm * CS)",
+            context: "Este indicador evalúa el impacto de la adopción de medios de pago digitales, considerando la relación SPI/PIB, que mide el monto de pagos interbancarios en proporción al Producto Interno Bruto.",
+            method: "Los datos fueron extraídos del Banco Central del Ecuador (BCE).",
+            ref: "https://bce.fin.ec/medios-pago-2021",
+            breakdownFormula: "<strong>1. GD Normalizado:</strong><br> GD_norm = (GDi - min(GD)) / (Max(GD) - Min(GD))<br><br><strong>2. CS:</strong><br> CS = POS / (POS + RETIROS)<br><br><strong>3. Índice PAY:</strong><br> PAY = √(GD_norm * CS)",
+            breakdown: [
+                { label: "GD (SIP/PIB)", value: "127.74", extra: "", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/MediosPago/ix_MediosPagoPrin.html#" },
+                { label: "min(GD) [Año 2010]", value: "44.96", extra: "Base Histórica", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/MediosPago/ix_MediosPagoPrin.html#" },
+                { label: "Max(GD) [Año 2025]", value: "152.46", extra: "Tope Histórico", ref: "https://contenido.bce.fin.ec/documentos/informacioneconomica/MediosPago/ix_MediosPagoPrin.html#" },
+                { label: "GD_norm", value: "77.00%", extra: "Pag 85", ref: "https://www.oecd.org/content/dam/oecd/en/publications/reports/2008/08/handbook-on-constructing-composite-indicators-methodology-and-user-guide_g1gh9301/9789264043466-en.pdf" },
+                { label: "POS", value: "$9,520,203,267", extra: "", ref: "https://www.superbancos.gob.ec/estadisticas/portalestudios/servicios-financieros/" },
+                { label: "RETIROS", value: "$40,338,425,906", extra: "", ref: "https://www.superbancos.gob.ec/estadisticas/portalestudios/servicios-financieros/" },
+                { label: "CS", value: "19.09%", extra: "Calculo prom", ref: "https://www.uaeh.edu.mx/docencia/VI_Lectura/licenciatura/documentos/LEC4.pdf" }
+            ]
+        }
+    },
     2022: {
         indDig: 47.48, 
         edgi: { 
